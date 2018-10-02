@@ -17,12 +17,12 @@
         </div>
     </div>
     <!-- FOOTER INFO AREA -->
-    <div class="footerInfoArea full-width clearfix" style="background-image: url(assets/img/footer/footer-bg-1.png);">
+    <div class="footerInfoArea full-width clearfix" style="background-image: url({{ asset('assets/img/footer/footer-bg-1.png') }});">
         <div class="container">
             <div class="row">
                 <div class="col-sm-3 col-xs-12">
                     <div class="footerTitle">
-                        <a href="index.html"><img src="assets/img/logo-footer.png"></a>
+                        <a href="index.html"><img src="{{ asset('assets/img/logo-footer.png') }}"></a>
                     </div>
                     <div class="footerInfo">
                         <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa officia.Lorem ipsum dolor sit amet.</p>
@@ -73,7 +73,7 @@
                             <li>
                             <div class="media">
                                 <a class="media-left" href="single-blog.html">
-                                <img class="media-object img-rounded border-color-1" src="assets/img/footer/footer-img-1.png" alt="Image">
+                                <img class="media-object img-rounded border-color-1" src="{{ asset('assets/img/footer/footer-img-1.png') }}" alt="Image">
                                 </a>
                                 <div class="media-body">
                                 <h5 class="media-heading"><a href="single-blog.html">A Clean Website Gives More Experience To The Visitors</a></h5>
@@ -84,7 +84,7 @@
                             <li>
                             <div class="media">
                                 <a class="media-left" href="single-blog-left-sidebar.html">
-                                <img class="media-object img-rounded border-color-2" src="assets/img/footer/footer-img-2.png" alt="Image">
+                                <img class="media-object img-rounded border-color-2" src="{{ asset('assets/img/footer/footer-img-2.png') }}" alt="Image">
                                 </a>
                                 <div class="media-body">
                                 <h5 class="media-heading"><a href="single-blog-left-sidebar.html">A Clean Website Gives More Experience To The Visitors</a></h5>
@@ -95,7 +95,7 @@
                             <li>
                             <div class="media">
                                 <a class="media-left" href="single-blog-left-sidebar.html">
-                                <img class="media-object img-rounded border-color-4" src="assets/img/footer/footer-img-3.png" alt="Image">
+                                <img class="media-object img-rounded border-color-4" src="{{ asset('assets/img/footer/footer-img-3.png') }}" alt="Image">
                                 </a>
                                 <div class="media-body">
                                 <h5 class="media-heading"><a href="single-blog-left-sidebar.html">A Clean Website Gives More Experience To The Visitors</a></h5>

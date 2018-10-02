@@ -15,11 +15,15 @@ class CreateUsuariosTable extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nombres', 100)->nullable()->default('text');
-            $table->string('apellidos', 100)->nullable()->default('text');
-            $table->string('sexo', 2)->nullable()->default('text');
-            $table->string('tipo_documento', 2)->nullable()->default('text');
-            $table->string('numero_documento', 2)->nullable()->default('text');
+            $table->string('sexo', 2);
+            $table->integer('user_id');
+            $table->string('nombres', 255);
+            $table->string('apellidos', 255);
+            $table->string('tipo_usuario', 2);
+            $table->string('tipo_documento', 5);
+            $table->string('numero_documento', 255);
+            $table->string('grupo_etnico', 2)->nullable();
+            $table->timestamp('fecha_nacimiento')->nullable();
             $table->timestamps();
         });
     }

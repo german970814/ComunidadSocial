@@ -12,9 +12,16 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/partial-home', function () {
     return view('home');
 });
+
+Route::resource('usuario', 'UsuarioController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get(
+    '/usuarios/{id}/solicitar-amistad/',
+    '\App\Http\Controllers\SolicitudAmistadController@enviar_solicitud_amistad'
+);

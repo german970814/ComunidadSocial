@@ -19,7 +19,7 @@
 </head>
 
 <body class="body-wrapper">
-  @include('layouts/preloader')
+  {{-- @include('layouts/preloader') --}}
 
   <div class="main-wrapper">
     @include('layouts/header')
@@ -41,20 +41,7 @@
                 <h3 class="panel-title">Login</h3>
               </div>
               <div class="panel-body">
-                <form action="#" method="POST" role="form">
-                  <div class="form-group formField">
-                    <input type="text" class="form-control" placeholder="User name">
-                  </div>
-                  <div class="form-group formField">
-                    <input type="password" class="form-control" placeholder="Password">
-                  </div>
-                  <div class="form-group formField">
-                    <input type="submit" class="btn btn-primary btn-block bg-color-3 border-color-3" value="Log in">
-                  </div>
-                  <div class="form-group formField">
-                    <p class="help-block"><a href="#">Forgot password?</a></p>
-                  </div>
-                </form>
+                @include('layouts/login')
               </div>
             </div>
           </div>
