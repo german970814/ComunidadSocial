@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\User;
 use App\Models\Usuario;
+use App\Libraries\Form;
 
 class UsuarioController extends Controller
 {
@@ -15,8 +16,18 @@ class UsuarioController extends Controller
         'required' => 'Este campo es requerido'
     ];
 
+    public function __construct()
+    {
+        $this->middleware('guest', ['only' => ['create']]);
+    }
+
     public function index() {
         return view('usuarios.index');
+    }
+
+    public function profile() {
+        $usuario = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
+        return view('usuarios.detail', ['usuario' => $usuario]);
     }
 
     public function create() {
@@ -44,7 +55,7 @@ class UsuarioController extends Controller
             );
             DB::commit();
 
-            return redirect(sprintf('/usuario/%s/', $usuario->id));
+            return redirect()->route('usuario.show', $usuario->id);
         } catch(\PDOException $e) {
             DB::rollback();
             throw $e;
@@ -52,62 +63,15 @@ class UsuarioController extends Controller
     }
 
     public function show($id) {
-        $usuario = Usuario::find($id);
+        $usuario = Usuario::findOrFail($id);
         return view('usuarios.detail', ['usuario' => $usuario]);
     }
 
     public function edit($id) {
-        $usuario = Usuario::find($id);
-        $form = [
-            'nombres' => [
-                'type' => 'text',
-                'label' => 'Nombres',
-                'value' => $usuario->nombres
-            ],
-            'apellidos' => [
-                'label' => 'Apellidos',
-                'value' => $usuario->apellidos
-            ],
-            'sexo' => [
-                'label' => 'Sexo',
-                'value' => $usuario->sexo,
-                'type' => 'select',
-                'options' => [
-                    'M' => 'Masculino',
-                    'F' => 'Femenino',
-                ]
-            ],
-            'tipo_documento' => [
-                'label' => 'Tipo de documento',
-                'value' => $usuario->tipo_documento,
-                'type' => 'select',
-                'options' => [
-                    'CC' => 'Cedula de ciudadanía',
-                    'TI' => 'Tarjeta de identidad',
-                    'RG' => 'Registro civil',
-                    'NES' => 'Número establecido por la secretaría',
-                    'NIP' => 'Número de identificación personal',
-                    'NUIP' => 'Número único de identificación personal'
-                ]
-            ],
-            'numero_documento' => [
-                'type' => 'number',
-                'label' => 'Numero documento',
-                'value' => $usuario->numero_documento
-            ],
-            'grupo_etnico' => [
-                'label' => 'Grupo étnico',
-                'value' => $usuario->grupo_etnico,
-                'type' => 'select',
-                'options' => [
-                    'IN' => 'Indigenas',
-                    'AF' => 'Afrocolombianos',
-                    'RO' => 'ROM',
-                    'NI' => 'Ninguno'
-                ]
-            ]
-        ];
-
+        $usuario = Usuario::findOrFail($id);
+        $form_fields = ['nombres', 'apellidos', 'sexo', 'tipo_documento', 'numero_documento', 'grupo_etnico'];
+        // $form = new Form('\App\Models\Usuario', $form);
+        $form = new Form($usuario, $form_fields);
         return view('usuarios.edit', ['usuario' => $usuario, 'form' => $form]);
     }
 
@@ -127,7 +91,7 @@ class UsuarioController extends Controller
             $user = $usuario->user->update($validated_data);
             DB::commit();
 
-            return redirect(sprintf('/usuario/%s/edit/', $usuario->id));
+            return redirect()->route('usuario.edit', $usuario->id);
         } catch(\PDOException $e) {
             DB::rollback();
             throw $e;

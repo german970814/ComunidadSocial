@@ -13,13 +13,51 @@ class Usuario extends Model
         'numero_documento', 'tipo_usuario', 'grupo_etnico'
     ];
 
+    static $form_schema = [
+        'email' => [
+            'type' => 'email',
+            'validators' => 'email'
+        ],
+        'password' => [
+            'type' => 'password',
+            'label' => 'Contraseña'
+        ],
+        'sexo' => [
+            'type' => 'select',
+            'options' => [
+                'M' => 'Masculino',
+                'F' => 'Femenino'
+            ]
+        ],
+        'tipo_documento' => [
+            'label' => 'Tipo de documento',
+            'type' => 'select',
+            'options' => [
+                'CC' => 'Cedula de ciudadanía',
+                'TI' => 'Tarjeta de identidad',
+                'RG' => 'Registro civil',
+                'NES' => 'Número establecido por la secretaría',
+                'NIP' => 'Número de identificación personal',
+                'NUIP' => 'Número único de identificación personal'
+            ]
+        ],
+        'numero_documento' => [
+            'type' => 'number',
+        ],
+        'grupo_etnico' => [
+            'type' => 'select',
+            'options' => [
+                'IN' => 'Indigenas',
+                'AF' => 'Afrocolombianos',
+                'RO' => 'ROM',
+                'NI' => 'Ninguno'
+            ]
+        ]
+    ];
+
     public function user() {
         return $this->belongsTo('App\User');
     }
-
-    // public function amigos() {
-    //     return $this->belongsToMany('Usuario', 'amigos', 'usuario_id', 'amigo_id');
-    // }
 
     public function solicitudes() {
         return $this->belongsToMany(
@@ -36,10 +74,6 @@ class Usuario extends Model
 
     public function get_full_name() {
         return $this->nombres . ' ' . $this->apellidos;
-    }
-
-    public function add_amigo(\App\Models\Usuario $usuario) {
-        $this->amigos()->attach($usuario->id);
     }
 
     public static function create_user($data) {

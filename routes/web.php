@@ -15,13 +15,19 @@ Route::get('/', function () {
     return view('home');
 });
 
+Auth::routes();
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
+
+// Route::get('/home', 'HomeController@index')->name('home');
+Route::prefix('json')->group(function () {
+    Route::middleware('auth')->get(
+        '/usuario/{id}/solicitar-amistad/',
+        '\App\Http\Controllers\SolicitudAmistadController@enviar_solicitud_amistad'
+    )->name('usuario.solicitar-amistad');
+});
+Route::prefix('/usuario')->group(function() {
+    Route::get('/profile', 'UsuarioController@profile')->name('profile');
+});
 Route::resource('usuario', 'UsuarioController');
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-
-Route::get(
-    '/usuarios/{id}/solicitar-amistad/',
-    '\App\Http\Controllers\SolicitudAmistadController@enviar_solicitud_amistad'
-);

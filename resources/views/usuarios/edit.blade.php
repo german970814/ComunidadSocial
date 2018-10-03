@@ -6,11 +6,8 @@
         <h3 class="panel-title">Editar usuario</h3>
     </div>
     <div class="panel-body">
-        @foreach ($errors->all() as $erros)
-            <li>{{ $erros }}</li>
-        @endforeach
         <div class="row">
-            <form action="/usuario/{{ $usuario->id }}/" method="POST">
+            <form action="{{ route('usuario.update', $usuario->id) }}" method="POST">
                 @csrf
                 @method('put')
                 @include('layouts.form')

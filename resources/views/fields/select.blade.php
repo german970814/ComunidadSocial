@@ -1,4 +1,4 @@
-<select name="{{ $name }}" class="form-control border-color-5">
+<select name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"">
     <option>{{ isset($label) ? $label : '' }}</option>
     @foreach($options as $option => $lab)
         @if ($option == old( $name, isset($value) ? $value : '' ))
@@ -10,6 +10,8 @@
 </select>
 @if($errors->has($name))
 @foreach ($errors->get($name) as $error)
-    <div>{{ $error }}</div>
+    <span class="invalid-feedback color-3" role="alert">
+        <strong>{{ $error }}</strong>
+    </span>
 @endforeach
 @endif

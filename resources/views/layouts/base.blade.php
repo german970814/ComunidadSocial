@@ -23,6 +23,7 @@
 
   <div class="main-wrapper">
     @include('layouts/header')
+    @include('layouts/errors')
 
     @yield('content')
 	

@@ -14,3 +14,21 @@
         </div>
     </section>
 @endsection
+
+@section('custom_script')
+<script>
+    $(document).ready(function () {
+        $('a.solicitud-amistad').on('click', function () {
+            $.ajax({
+                method: 'GET',
+                url: "{{ route('usuario.solicitar-amistad', $usuario->id) }}",
+                success: (data) => {
+                    if (data.code === 200) {
+                        $.notify({message: data.message}, {type: 'success'})
+                    }
+                }
+            })
+        })
+    })
+</script>
+@endsection

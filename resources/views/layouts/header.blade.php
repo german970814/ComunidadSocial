@@ -19,18 +19,24 @@
     <div class="top-info-bar bg-color-7 hidden-xs">
         <div class="container">
             <div class="row">
-                <div class="col-sm-7">
+                {{-- <div class="col-sm-7">
                     <ul class="list-inline topList">
                     <li><i class="fa fa-envelope bg-color-1" aria-hidden="true"></i> <a href="mailto:info@yourdomain.com">info@yourdomain.com</a></li>
                     <li><i class="fa fa-phone bg-color-2" aria-hidden="true"></i> +1 234 567 8900</li>
                     <li><i class="fa fa-clock-o bg-color-6" aria-hidden="true"></i> Open: 9am - 6pm</li>
                     </ul>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-5"> --}}
+                <div class="col-sm-offset-9 col-sm-3">
                     <ul class="list-inline functionList">
-                        <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href='#loginModal' data-toggle="modal" >Login</a></li>
+                        @auth
+                            <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href="/logout">Salir</a></li>
+                        @else
+                            <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href='#loginModal' data-toggle="modal" >Entrar</a> or <a href="{{ route('usuario.create') }}">Crear una cuenta</a></li>
+                        @endauth
                     </ul>
                 </div>
+                {{-- </div> --}}
             </div>
         </div>
     </div>

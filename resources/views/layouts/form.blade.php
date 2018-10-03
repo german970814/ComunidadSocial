@@ -1,5 +1,5 @@
-@foreach($form as $name => $field)
-    <div class="col-xs-12 col-sm-6">
+@foreach($form->get_form() as $name => $field)
+    <div class="{{ $field['xs'] }} {{ $field['sm'] }}">
         <div class="form-group">
             @include(sprintf('fields.%s', isset($field['type']) ? $field['type'] : 'text'), array_merge(['name' => $name], $field))
         </div>

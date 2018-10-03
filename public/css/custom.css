@@ -36,10 +36,20 @@
 }
 
 .actions {
-    display: flex;
-    justify-content: space-around;
+    /* display: flex;
+    justify-content: space-around; */
+    text-align: center;
+}
+
+.actions>a.link-circle {
+    margin: 0 auto;
+    display: inline-block;
 }
 
 .panel-body .form-group {
     display: block;
+}
+
+.teamInfo.teamTeacher {
+    margin-bottom: 20px;
 }

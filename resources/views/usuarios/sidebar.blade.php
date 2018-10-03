@@ -15,19 +15,21 @@
                     <p>Estudiante</p>
                 </div>
                 <div class="actions">
-                    <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="/usuario/{{ $usuario->id }}/edit">
+                    <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('usuario.edit', $usuario->id) }}">
                         <i class="fa fa-edit"></i>
                     </a>
-                    <a data-original-title="Agregar Amigos" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-2">
-                        <i class="fa fa-edit"></i>
+                    @if (!(Auth::user()->usuario->id == $usuario->id))
+                    <a data-original-title="Agregar Amigos" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-2 solicitud-amistad">
+                        <i class="fa fa-user-plus"></i>
                     </a>
+                    @endif
                     <a class="link-circle bg-color-1" data-original-title="Otra opción" data-placement="bottom" data-toggle="tooltip">
                         <i class="fa fa-edit"></i>
                     </a>
                 </div>
                 <ul class="list-unstyled categoryItem">
                     <li>
-                        <a href="/usuario/{{ $usuario->id }}/">Muro</a>
+                        <a href="{{ route('usuario.show', $usuario->id) }}">Muro</a>
                     </li>
                     <li>
                         <a href="#">Información</a>

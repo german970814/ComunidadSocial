@@ -14,6 +14,7 @@
 <script src="{{ asset('assets/plugins/velocity/velocity.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/smoothscroll/SmoothScroll.js') }}"></script>
 <script src="{{ asset('assets/plugins/wow/wow.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/notify/bootstrap.notify.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 
 @yield('custom_script')

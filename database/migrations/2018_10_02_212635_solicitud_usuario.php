@@ -16,9 +16,6 @@ class SolicitudUsuario extends Migration
         Schema::create('solicitudes_usuario', function (Blueprint $table) {
             $table->integer('usuario_id')->unsigned()->index();
             $table->integer('solicitud_id')->unsigned()->index();
-
-            // $table->foreign('usuario_id')->references('id')->on('usuarios');
-            // $table->foreign('solicitud_id')->references('id')->on('usuarios');
             $table->primary(array('usuario_id', 'solicitud_id'));
         });
     }
