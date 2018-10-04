@@ -53,3 +53,12 @@
 .teamInfo.teamTeacher {
     margin-bottom: 20px;
 }
+
+.notificacion-pendiente {
+    background-color: rgb(244, 244, 244);
+}
+
+.notificacion-item {
+    color: black;
+    padding: 5px 0 !important;
+}

@@ -12,17 +12,21 @@
                 </div>
                 <div class="teamInfo teamTeacher">
                     <h3 class="color-3">{{ $usuario->get_full_name() }}</h3>
-                    <p>Estudiante</p>
+                    <p>{{ $usuario->tipo_usuario === 'M' ? 'Maestro' : 'Estudiante' }}</p>
                 </div>
                 <div class="actions">
-                    <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('usuario.edit', $usuario->id) }}">
-                        <i class="fa fa-edit"></i>
-                    </a>
-                    @if (!(Auth::user()->usuario->id == $usuario->id))
-                    <a data-original-title="Agregar Amigos" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-2 solicitud-amistad">
-                        <i class="fa fa-user-plus"></i>
-                    </a>
-                    @endif
+                    @auth
+                        @if (Auth::user()->usuario->id == $usuario->id)
+                        <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('usuario.edit', $usuario->id) }}">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        @endif
+                        @if (!Auth::user()->usuario->is_amigo($usuario) && !(Auth::user()->usuario->id == $usuario->id))
+                        <a data-original-title="Agregar Amigos" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-2 solicitud-amistad">
+                            <i class="fa fa-user-plus"></i>
+                        </a>
+                        @endif
+                    @endauth
                     <a class="link-circle bg-color-1" data-original-title="Otra opción" data-placement="bottom" data-toggle="tooltip">
                         <i class="fa fa-edit"></i>
                     </a>

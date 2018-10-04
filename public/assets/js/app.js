@@ -77,7 +77,7 @@ jQuery(document).ready(function(){
 /*======== 5. CART ========*/
 $('.cart-dropdown a').on('click',function() {
     $('.dropdown-menu').toggleClass('display-block');
-    $('.cart-dropdown a i').toggleClass('fa-close').toggleClass('fa-shopping-basket');
+    $('.cart-dropdown a i').toggleClass('fa-close').toggleClass('fa-bell-o');
     $('.badge').toggleClass('display-none');
 });
 

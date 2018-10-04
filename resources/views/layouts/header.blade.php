@@ -31,6 +31,34 @@
                     <ul class="list-inline functionList">
                         @auth
                             <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href="/logout">Salir</a></li>
+                            <li class="cart-dropdown">
+                                <a href="#" class="bg-color-6 shop-cart">
+                                    <i class="fa fa-bell" aria-hidden="true"></i>
+                                    @if ($notificaciones_pendientes() >= 1)
+                                        <span class="badge bg-color-1">{{ $notificaciones_pendientes() }}</span>
+                                    @endif
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li class="color-3"><i class="fa fa-bell color-3" aria-hidden="true"></i>Notificaciones</li>
+                                    @if (!(count($notificaciones()) >= 1))
+                                        <li>
+                                            <div class="media">
+                                                <div class="media-body color-1">
+                                                    No hay notificaciones para mostrar
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @else
+                                        @foreach ($notificaciones() as $notificacion)
+                                            <li data-id="{{ $notificacion->id }}" class="notificacion-item {{ $notificacion->leida ? '' : 'notificacion-pendiente' }}">
+                                                {!! $notificacion->render() !!}
+                                                <span class="cancel"><i class="fa fa-close" aria-hidden="true"></i></span>
+                                            </li>
+                                        @endforeach
+                                    @endif
+                                    <li></li>
+                                </ul>
+                            </li>
                         @else
                             <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href='#loginModal' data-toggle="modal" >Entrar</a> or <a href="{{ route('usuario.create') }}">Crear una cuenta</a></li>
                         @endauth

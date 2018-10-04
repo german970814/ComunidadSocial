@@ -25,9 +25,22 @@ Route::prefix('json')->group(function () {
         '/usuario/{id}/solicitar-amistad/',
         '\App\Http\Controllers\SolicitudAmistadController@enviar_solicitud_amistad'
     )->name('usuario.solicitar-amistad');
+
+    Route::middleware('auth')->get(
+        '/usuario/{id}/aceptar-solicitud-amistad/',
+        '\App\Http\Controllers\SolicitudAmistadController@aceptar_solicitud_amistad'
+    )->name('usuario.aceptar-solicitud-amistad');
+
+    Route::get(
+        '/notificacion/{id}/leer/',
+        '\App\Http\Controllers\NotificacionController@read_notificacion'
+    )->name('notificacion.leer');
 });
-Route::prefix('/usuario')->group(function() {
-    Route::get('/profile', 'UsuarioController@profile')->name('profile');
+
+Route::middleware('notificacion')->group( function () {
+    Route::prefix('/usuario')->group(function() {
+        Route::get('/profile', 'UsuarioController@profile')->name('usuario.profile');
+    });
+    Route::resource('usuario', 'UsuarioController');
 });
-Route::resource('usuario', 'UsuarioController');
 

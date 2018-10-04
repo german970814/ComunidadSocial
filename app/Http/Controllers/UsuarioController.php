@@ -19,6 +19,7 @@ class UsuarioController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['only' => ['create']]);
+        $this->middleware('auth', ['except' => ['create']]);
     }
 
     public function index() {
@@ -54,6 +55,7 @@ class UsuarioController extends Controller
                 array_merge($validated_data, ['user_id' => $user->id])
             );
             DB::commit();
+            \Auth::login($user);
 
             return redirect()->route('usuario.show', $usuario->id);
         } catch(\PDOException $e) {
