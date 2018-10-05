@@ -9,7 +9,7 @@
 }
 .sbSelector:link, .sbSelector:visited, .sbSelector:hover { color:#00f !important; outline:none; text-decoration:none; 
 }
-.sbToggle { width:14px; height:10px; position:absolute; top:14px; right:15px; display:block; outline:none; background:url(../images/arrow-down-1.png) no-repeat; 
+/* .sbToggle { width:14px; height:10px; position:absolute; top:14px; right:15px; display:block; outline:none; background:url(../images/arrow-down-1.png) no-repeat;  */
 }
 .sbToggle:hover { 
 }
@@ -104,7 +104,7 @@
 	text-transform: capitalize;
 }
 .LanguageList .sbToggle {
-	background: rgba(0, 0, 0, 0) url("images/arrow-down-1.png") no-repeat scroll 0 0;
+	/* background: rgba(0, 0, 0, 0) url("images/arrow-down-1.png") no-repeat scroll 0 0; */
 	height: 5px;
 	right: 0;
 	top: 9px;
@@ -164,7 +164,7 @@
 	text-indent: 20px;
 }
 .lightDrop .sbToggle {
-	background: rgba(0, 0, 0, 0) url("images/arrow-down-2.png") no-repeat scroll 0 0;
+	/* background: rgba(0, 0, 0, 0) url("images/arrow-down-2.png") no-repeat scroll 0 0; */
 	height: 6px;
 	right: 20px;
 	top: 21px;
@@ -267,7 +267,7 @@
 /* DROP DOWN STYLING */
 .dropGeneral .sbHolder, .dropGeneral .sbSelector{
 	width: 100% !important;
-	height: 50px !important;
+	height: 40px !important;
 }
 
 .dropGeneral .sbHolder{
@@ -334,8 +334,8 @@
 	color: #666666;
 	font-weight: 600;
 	font-size: 14px;
-	line-height: 48px;
-	text-indent: 20px;
+	line-height: 38px;
+	text-indent: 10px;
 }
 .dropGeneral.colorBg .sbSelector{
 	color: #ffffff;

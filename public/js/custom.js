@@ -1,4 +1,8 @@
 $(document).ready(function () {
+  Object.keys(window._app_config.messages).forEach(code => {
+    $.notify({ message: window._app_config.messages[code] }, { type: code })
+  });
+
   /**
    * Evento para enviar una solicitud de amistad
    */
@@ -55,6 +59,9 @@ $(document).ready(function () {
     })
   })
 
+  /**
+   * Evento para dar like a post
+   */
   $('[data-post-id]').find('.like').on('click', function (e) {
     $postId = $(this).parents('[data-post-id]').data('post-id')
 
@@ -117,7 +124,37 @@ $(document).ready(function () {
     }
   })
 
+  /**
+   * Evento para subir la foto de perfil del usuario
+   */
   $('form.form-change-profile-photo').on('change', function() {
     $(this).submit();
+  })
+
+  $('textarea').each(function () {
+    this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+  }).on('input', function () {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+
+  $('.post-create-container textarea').on('input', function() {
+    if (!$(this).val()) {
+      $('.post-create-container button[type="submit"]').attr('disabled', true);
+    } else {
+      $('.post-create-container button[type="submit"]').attr('disabled', false);
+    }
+  });
+
+  /**
+   * Evento para previsualizar la imagen del post
+   */
+  $('.post-create-container input[name="photo"]').on('change', function () {
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL($(this)[0].files[0]);
+
+    fileReader.onload = function (event) {
+      $('.post-create-container .img-preview').attr('src', event.target.result).removeClass('hidden');
+    };
   })
 })

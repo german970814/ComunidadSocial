@@ -102,7 +102,7 @@
                             </div>
                             <div class="col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <input name="fecha_nacimiento" type="text" class="form-control border-color-2" placeholder="Fecha de nacimiento" />
+                                    <input name="fecha_nacimiento" type="text" class="datepicker form-control border-color-2" placeholder="Fecha de nacimiento" />
                                     @if($errors->has('fecha_nacimiento'))
                                     @foreach ($errors->get('fecha_nacimiento') as $error)
                                         <div>{{ $error }}</div>

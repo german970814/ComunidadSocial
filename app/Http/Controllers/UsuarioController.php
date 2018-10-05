@@ -35,6 +35,11 @@ class UsuarioController extends Controller
         return view('usuarios.detail', ['usuario' => $usuario]);
     }
 
+    public function detail($id) {
+        $usuario = Usuario::findOrFail($id);
+        return view('usuarios.informacion', ['usuario' => $usuario]);
+    }
+
     public function create() {
         return view('usuarios.create');
     }
@@ -61,7 +66,9 @@ class UsuarioController extends Controller
             DB::commit();
             \Auth::login($user);
 
-            return redirect()->route('usuario.show', $usuario->id);
+            return redirect()
+                ->route('usuario.show', $usuario->id)
+                ->with('success', 'Bienvenido, gracias por registrarte');
         } catch(\PDOException $e) {
             DB::rollback();
             throw $e;
@@ -97,7 +104,9 @@ class UsuarioController extends Controller
             $user = $usuario->user->update($validated_data);
             DB::commit();
 
-            return redirect()->route('usuario.edit', $usuario->id);
+            return redirect()
+                ->route('usuario.edit', $usuario->id)
+                ->with('success', 'Se ha editado la información');
         } catch(\PDOException $e) {
             DB::rollback();
             throw $e;
@@ -120,7 +129,8 @@ class UsuarioController extends Controller
             $usuario->update(['profile_photo' => $filename]);
         }
 
-        return redirect()->route('usuario.edit', $usuario->id);
+        // return redirect()->route('usuario.edit', $usuario->id);
+        return back()->with('success', 'Foto de perfil modificada');;
     }
 
     public function get_user_profile_photo($id) {

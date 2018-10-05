@@ -19,6 +19,13 @@
                 <span {!! isset($alone) && $alone ? 'style="display: block"' : '' !!}>{{ $post->created_at }}</span>
             </div>
         </div>
+        @if ($post->photo && $post->get_photo_url())
+        <div class="row post-media">
+            <div class="media">
+                <img src="{{ $post->get_photo_url() }}" alt="post-photo" class="img-preview img-responsive">
+            </div>
+        </div>
+        @endif
         <div class="row post-content">
             <div class="post">
                 <p>{{ $post->mensaje }}</p>
@@ -29,7 +36,7 @@
                 @if ($post->likes() >= 1)
                 <span>Le gusta a {{ $post->likes() }} persona{{ $post->likes() > 1 ? 's' : '' }}</span>
                 @endif
-                <button class="like btn-social {{ Auth::guard()->user()->usuario->likes_post($post) ? 'btn-liked' : 'btn-like' }} btn-circle"><i class="fa fa-thumbs-up"></i></button>
+                <button data-original-title="Me gusta esta publicación" data-placement="left" data-toggle="tooltip" class="like btn-social {{ Auth::guard()->user()->usuario->likes_post($post) ? 'btn-liked' : 'btn-like' }} btn-circle"><i class="fa fa-thumbs-up"></i></button>
             </div>
         </div>
         <div class="space-25"></div>
@@ -64,7 +71,7 @@
         </div>
         <div class="row row-comment homeContactContent">
             <div class="form-group">
-                <textarea name="mensaje" class="comment form-control border-color-5" placeholder="Escribe un comentario" rows="10" cols="50"></textarea>
+                <textarea name="mensaje" class="comment form-control border-color-4" placeholder="Escribe un comentario" rows="10" cols="50"></textarea>
             </div>
         </div>
     </div>

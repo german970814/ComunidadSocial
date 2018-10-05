@@ -61,6 +61,7 @@ jQuery(document).ready(function(){
 
 /*======== 3. SELECT BOX ========*/
   $('.select-drop').selectbox();
+  $('.datepicker').datepicker();
 
 /*======== 4. MENU DROPDOWN ON HOVER ========*/
   var header_area = $('.header-wrapper');

@@ -1,12 +1,3 @@
-{{-- <form action="/process" enctype="multipart/form-data" method="POST">
-    @csrf
-    <p>
-        <label for="photo">
-            <input type="file" name="photo" id="photo">
-        </label>
-    </p>
-    <button>Upload</button>
-</form> --}}
 <div class="media-profile teamContent teamAdjust">
     <div class="teamImage">
         <img class="img-circle img-responsive" style="height: 100%; width: 100%" src="{{ $usuario->get_profile_photo_url() }}" alt="profile" />

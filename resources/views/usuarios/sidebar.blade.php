@@ -32,7 +32,7 @@
                         <a href="{{ route('usuario.show', $usuario->id) }}">Muro</a>
                     </li>
                     <li>
-                        <a href="#">Información</a>
+                        <a href="{{ route('usuario.detail', $usuario->id) }}">Información</a>
                     </li>
                     <li>
                         <a href="#">Fotos</a>

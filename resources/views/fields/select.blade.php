@@ -1,4 +1,7 @@
-<select name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"">
+@if (isset($with_label) && $with_label)
+<label for="id-{{ $name }}">{{ $label }}</label>
+@endif
+<select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"">
     <option>{{ isset($label) ? $label : '' }}</option>
     @foreach($options as $option => $lab)
         @if ($option == old( $name, isset($value) ? $value : '' ))
