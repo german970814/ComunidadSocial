@@ -17,7 +17,13 @@
 }
 
 .row-comment {
-    margin: 10px 15px;
+    /* margin: 10px 15px; */
+    padding: 10px 15px;
+    border-top: 1px solid #e3e3e3
+}
+
+.row.row-comment h4 {
+    margin-bottom: 10px;
 }
 
 .row-comment .form-control {
@@ -36,10 +42,75 @@
 }
 
 .actions {
-    display: flex;
-    justify-content: space-around;
+    /* display: flex;
+    justify-content: space-around; */
+    text-align: center;
+}
+
+.actions>a.link-circle {
+    margin: 0 auto;
+    display: inline-block;
 }
 
 .panel-body .form-group {
     display: block;
+}
+
+.teamInfo.teamTeacher {
+    margin-bottom: 20px;
+}
+
+.notificacion-pendiente {
+    background-color: rgb(244, 244, 244);
+}
+
+.notificacion-item {
+    color: black;
+    padding: 5px 0 !important;
+}
+
+.post-content {
+    margin: 20px 15px;
+}
+
+.row-comment dd, .row-comment dl {
+    margin: 0;
+}
+
+.comment.row-comment, .comment.row-comment .post-content{
+    padding-bottom: 0;
+    margin: 5px 0 0;
+}
+
+.timeline .media-body {
+    width: auto;
+}
+
+.timeline h5.media-heading {
+    margin-bottom: 0;
+    text-transform: uppercase;
+}
+
+.homeContactContent .form-group textarea.form-control {
+    height: 50px;
+}
+
+.btn-like {
+    background: transparent;
+    border: 2px solid #b5d56a;
+    color: #b5d56a;
+}
+
+.btn-like:hover, .btn-liked {
+    background: #b5d56a;
+    border: 2px solid #b5d56a;
+    color: white;
+}
+
+.post-actions {
+    float: right;
+}
+
+.list-inline.functionList {
+    width: auto;
 }

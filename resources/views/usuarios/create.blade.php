@@ -7,7 +7,7 @@
 
             <div class="row">
                 <div class="col-sm-6 col-xs-12">
-                    <form method="POST" action="/usuario">
+                    <form method="POST" action="{{ route('usuario.store') }}">
                         @csrf
                         <div class="form-group">
                             <input name="nombres" type="text" class="form-control border-color-1" placeholder="Nombres" />
@@ -134,9 +134,7 @@
                             <h3 class="panel-title">Ya estás registrado?</h3>
                         </div>
                         <div class="panel-body">
-                            <form action="">
-    
-                            </form>
+                            @include('layouts.login')
                         </div>
                     </div>
                 </div>
