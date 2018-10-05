@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
     protected $fillable = [
-        'mensaje', 'autor_id', 'usuario_destino_id'
+        'mensaje', 'autor_id', 'usuario_destino_id', 'photo'
     ];
 
     public function usuario_destino() {
@@ -32,6 +33,13 @@ class Post extends Model
 
     public function is_self_post() {
         return $this->autor->id === $this->usuario_destino->id;
+    }
+
+    public function get_photo_url() {
+        if ($this->photo && Storage::disk('local')->has($this->photo)) {
+            return route('post.photo', $this->id);
+        }
+        return null;
     }
 
     public function get_url() {

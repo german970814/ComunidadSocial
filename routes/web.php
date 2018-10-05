@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
-
 Auth::routes();
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
@@ -38,8 +34,13 @@ Route::prefix('json')->group(function () {
 });
 
 Route::middleware('notificacion')->group( function () {
+    Route::get('/', function () {
+        return view('home');
+    });
+
     Route::prefix('/usuario')->group(function() {
         Route::get('/profile', 'UsuarioController@profile')->name('usuario.profile');
+        Route::get('/{id}/informacion', 'UsuarioController@detail')->name('usuario.detail');
         Route::get('/{id}/amigos', 'UsuarioController@amigos')->name('usuario.amigos');
         Route::get('/amigos', 'UsuarioController@amigos')->name('usuario.self-amigos');
         Route::post('/profile/photo', 'UsuarioController@change_profile_photo')->name('usuario.change-profile-photo');
@@ -50,6 +51,7 @@ Route::middleware('notificacion')->group( function () {
 
     Route::prefix('/posts')->group(function() {
         Route::get('/{id}', 'PostController@show')->name('post.show');
+        Route::get('/{id}/photo', 'PostController@post_photo')->name('post.photo');
         Route::post('/create', 'PostController@store')->name('post.store');
 
         Route::post('/{id}/comment/', 'PostController@comment')->name('post.comment');

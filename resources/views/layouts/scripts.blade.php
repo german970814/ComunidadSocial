@@ -9,6 +9,17 @@
             "likePost": "{{ route('post.like', 99) }}",
             "detallePost": "{{ route('post.show', 99) }}",
         },
+        messages: {
+            @if($session_message_success = Session::get('success'))
+            'success': '{{ $session_message_success }}',
+            @endif
+            @if($session_message_error = Session::get('error'))
+            'danger': '{{ $session_message_error }}',
+            @endif
+            @if($session_message_info = Session::get('info'))
+            'info': '{{ $session_message_info }}',
+            @endif
+        },
         server: {
             @auth
                 "loggedUserId": {{ Auth::guard()->user()->usuario->id }},
