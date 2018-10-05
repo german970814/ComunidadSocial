@@ -42,6 +42,8 @@ Route::middleware('notificacion')->group( function () {
         Route::get('/profile', 'UsuarioController@profile')->name('usuario.profile');
         Route::get('/{id}/amigos', 'UsuarioController@amigos')->name('usuario.amigos');
         Route::get('/amigos', 'UsuarioController@amigos')->name('usuario.self-amigos');
+        Route::post('/profile/photo', 'UsuarioController@change_profile_photo')->name('usuario.change-profile-photo');
+        Route::get('/{id}/photo', 'UsuarioController@get_user_profile_photo')->name('usuario.profile-photo');
     });
 
     Route::resource('usuario', 'UsuarioController');

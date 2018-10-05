@@ -88,7 +88,7 @@ class Notificacion extends Model
                 $mensaje = sprintf(
                     Notificacion::$base_with_image,
                     $this->usuario_sender->get_profile_url(),
-                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_photo_url(),
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     $this->mensaje
@@ -111,7 +111,7 @@ class Notificacion extends Model
                 return sprintf(
                     Notificacion::$base_with_image,
                     $this->usuario_sender->get_profile_url(),
-                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_photo_url(),
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     $this->mensaje
@@ -120,7 +120,7 @@ class Notificacion extends Model
                 return sprintf(
                     Notificacion::$base_with_image,
                     $this->usuario_sender->get_profile_url(),
-                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_photo_url(),
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     sprintf($this->mensaje, $this->link)
@@ -129,7 +129,7 @@ class Notificacion extends Model
                 return sprintf(
                     Notificacion::$base_with_image,
                     $this->usuario_sender->get_profile_url(),
-                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_photo_url(),
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     sprintf($this->mensaje, $this->link, $this->link)
@@ -138,7 +138,7 @@ class Notificacion extends Model
                 return sprintf(
                     Notificacion::$base_with_image,
                     $this->usuario_sender->get_profile_url(),
-                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_photo_url(),
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     $this->mensaje

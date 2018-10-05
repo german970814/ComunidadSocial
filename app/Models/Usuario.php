@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use App\User;
 
 class Usuario extends Model
 {
     protected $fillable = [
         'nombres', 'apellidos', 'sexo', 'user_id', 'tipo_documento',
-        'numero_documento', 'tipo_usuario', 'grupo_etnico'
+        'numero_documento', 'tipo_usuario', 'grupo_etnico', 'fecha_nacimiento',
+        'profile_photo'
     ];
 
     static $form_schema = [
@@ -139,6 +141,13 @@ class Usuario extends Model
 
     public function get_profile_url() {
         return route('usuario.show', $this->id);
+    }
+
+    public function get_profile_photo_url() {
+        if (Storage::disk('local')->has($this->profile_photo)) {
+            return route('usuario.profile-photo', $this->id);
+        }
+        return asset('assets/img/user.png');
     }
 
     public function get_full_name() {

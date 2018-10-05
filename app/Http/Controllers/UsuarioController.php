@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\User;
@@ -19,7 +22,7 @@ class UsuarioController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['only' => ['create', 'store']]);
-        $this->middleware('auth', ['except' => ['create', 'store']]);
+        $this->middleware('auth', ['except' => ['create', 'store', 'get_user_profile_photo']]);
     }
 
     public function index() {
@@ -98,6 +101,34 @@ class UsuarioController extends Controller
         } catch(\PDOException $e) {
             DB::rollback();
             throw $e;
+        }
+    }
+
+    public function change_profile_photo(Request $request) {
+        $validation = $request->validate([
+            'photo' => 'required|file|image|mimes:jpeg,png,gif,webp|max:2048'
+        ]);
+
+        $usuario = \Auth::guard()->user()->usuario;
+        $file = $validation['photo'];
+        $filename = sprintf(
+            'profiles/usuario-%s.%s', $usuario->id, $file->getClientOriginalExtension()
+        );
+
+        if ($file) {
+            Storage::disk('local')->put($filename, File::get($file));
+            $usuario->update(['profile_photo' => $filename]);
+        }
+
+        return redirect()->route('usuario.edit', $usuario->id);
+    }
+
+    public function get_user_profile_photo($id) {
+        $usuario = Usuario::findOrFail($id);
+
+        if (Storage::disk('local')->has($usuario->profile_photo)) {
+            $file = Storage::disk('local')->get($usuario->profile_photo);
+            return new Response($file, 200);
         }
     }
 
