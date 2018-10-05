@@ -1,14 +1,21 @@
 <script>
     window._app_config = {
         routes: {
+            "mostrarUsuario": "{{ route('usuario.show', 99) }}",
             "aceptarSolicitudAmistad": "{{ route('usuario.aceptar-solicitud-amistad', 99) }}",
             "solicitarAmistad": "{{ route('usuario.solicitar-amistad', 99) }}",
             "leerNotificacion": "{{ route('notificacion.leer', 99) }}",
+            "comentarPost": "{{ route('post.comment', 99) }}",
+            "likePost": "{{ route('post.like', 99) }}",
+            "detallePost": "{{ route('post.show', 99) }}",
         },
         server: {
             @auth
-                @if ($usuario->id)
-                "usuarioId": "{{ $usuario->id }}"
+                "loggedUserId": {{ Auth::guard()->user()->usuario->id }},
+                "loggedUserFullName": "{{ Auth::guard()->user()->usuario->get_full_name() }}",
+                @if (isset($usuario) && $usuario->id)
+                    "usuarioId": "{{ $usuario->id }}",
+                    "usuarioFullName": "{{ $usuario->get_full_name() }}",
                 @endif
             @endauth
         }

@@ -40,7 +40,18 @@ Route::prefix('json')->group(function () {
 Route::middleware('notificacion')->group( function () {
     Route::prefix('/usuario')->group(function() {
         Route::get('/profile', 'UsuarioController@profile')->name('usuario.profile');
+        Route::get('/{id}/amigos', 'UsuarioController@amigos')->name('usuario.amigos');
+        Route::get('/amigos', 'UsuarioController@amigos')->name('usuario.self-amigos');
     });
+
     Route::resource('usuario', 'UsuarioController');
+
+    Route::prefix('/posts')->group(function() {
+        Route::get('/{id}', 'PostController@show')->name('post.show');
+        Route::post('/create', 'PostController@store')->name('post.store');
+
+        Route::post('/{id}/comment/', 'PostController@comment')->name('post.comment');
+        Route::get('/{id}/like/', 'PostController@like_post')->name('post.like');
+    });
 });
 

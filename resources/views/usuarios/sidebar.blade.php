@@ -48,7 +48,7 @@
                         <a href="#">Mis redes temáticas</a>
                     </li>
                     <li>
-                        <a href="#">Mis amigos</a>
+                        <a href="{{ route('usuario.amigos', $usuario->id) }}">Mis amigos</a>
                     </li>
                 </ul>
             </div>

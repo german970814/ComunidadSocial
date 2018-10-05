@@ -23,7 +23,8 @@ class UsuarioController extends Controller
     }
 
     public function index() {
-        return view('usuarios.index');
+        $usuario = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
+        return view('usuarios.detail', ['usuario' => $usuario]);
     }
 
     public function profile() {
@@ -98,5 +99,14 @@ class UsuarioController extends Controller
             DB::rollback();
             throw $e;
         }
+    }
+
+    public function amigos($id=null) {
+        if ($id) {
+            $usuario = Usuario::find($id);
+        } else {
+            $usuario = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
+        }
+        return view('usuarios.amigos', ['usuario' => $usuario]);
     }
 }

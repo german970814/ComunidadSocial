@@ -11,8 +11,14 @@ class Notificacion extends Model
 
     static $solicitud_amistad_tipo = 'solicitud-amistad';
     static $solicitud_amistad_aceptada_tipo = 'solicitud-amistad-aceptada';
+    static $like_post_tipo = 'like-own-post';
+    static $publicacion_post_tipo = 'publicacion-post';
+    static $comentario_post_tipo = 'comentario-post';
     static $solicitud_amistad_message = 'Te ha enviado una solicitud de amistad';
     static $solicitud_amistad_aceptada_message = 'Ha aceptado tu solicitud de amistad';
+    static $like_post_message = 'Le ha gustado tu <a href="%s">publicación</a>';
+    static $publicacion_post_message = 'Ha realizado una <a href="%s">publicación</a> en tu <a href="%s">muro</a>';
+    static $comentario_post_message = 'Ha realizado un <a href="%s">comentario</a> a una <a href="%s">publicación</a>';
 
     static $base_with_image = '
         <div class="media">
@@ -41,6 +47,37 @@ class Notificacion extends Model
         $data['usuario_sender_id'] = $usuario->id;
         $data['link'] = $usuario->get_profile_url();
         $data['tipo'] = Notificacion::$solicitud_amistad_aceptada_tipo;
+        return Notificacion::create($data);
+    }
+
+    public static function create_like_post(\App\Models\Post $post, \App\Models\Usuario $usuario, $data) {
+        $data['leida'] = false;
+        $data['mensaje'] = Notificacion::$like_post_message;
+        $data['usuario_sender_id'] = $usuario->id;
+        $data['link'] = $post->get_url();
+        $data['tipo'] = Notificacion::$like_post_tipo;
+        return Notificacion::create($data);
+    }
+
+    public static function create_publicacion_post(\App\Models\Post $post, \App\Models\Usuario $usuario, $data) {
+        $data['leida'] = false;
+        $data['mensaje'] = Notificacion::$publicacion_post_message;
+        $data['usuario_sender_id'] = $usuario->id;
+        $data['link'] = $post->get_url();
+        $data['tipo'] = Notificacion::$publicacion_post_tipo;
+        return Notificacion::create($data);
+    }
+
+    public static function create_comentario_post(\App\Models\ComentarioPost $comentario, $data) {
+        $data['leida'] = false;
+        $data['link'] = $comentario->get_url();
+        $data['usuario_sender_id'] = $comentario->usuario->id;
+        $data['tipo'] = Notificacion::$comentario_post_tipo;
+        $data['mensaje'] = sprintf(
+            Notificacion::$comentario_post_message,
+            $comentario->get_url(),
+            $comentario->post->get_url()
+        );
         return Notificacion::create($data);
     }
 
@@ -79,8 +116,33 @@ class Notificacion extends Model
                     $this->usuario_sender->get_full_name(),
                     $this->mensaje
                 );
+            case Notificacion::$like_post_tipo:
+                return sprintf(
+                    Notificacion::$base_with_image,
+                    $this->usuario_sender->get_profile_url(),
+                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_full_name(),
+                    sprintf($this->mensaje, $this->link)
+                );
+            case Notificacion::$publicacion_post_tipo:
+                return sprintf(
+                    Notificacion::$base_with_image,
+                    $this->usuario_sender->get_profile_url(),
+                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_full_name(),
+                    sprintf($this->mensaje, $this->link, $this->link)
+                );
             default:
-                return '';
+                return sprintf(
+                    Notificacion::$base_with_image,
+                    $this->usuario_sender->get_profile_url(),
+                    asset('assets/img/user.png'),
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_full_name(),
+                    $this->mensaje
+                );
         }
     }
 

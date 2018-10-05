@@ -75,11 +75,29 @@ jQuery(document).ready(function(){
   }
 
 /*======== 5. CART ========*/
-$('.cart-dropdown a').on('click',function() {
-    $('.dropdown-menu').toggleClass('display-block');
+  $('.dropdown-menu').attr('should-focus', '1');
+
+  $('.cart-dropdown a').on('click', function(e) {
+    if ($('.dropdown-menu').attr('should-focus')) {
+      $('.dropdown-menu').toggleClass('display-block');
+
+      $('.dropdown-menu').focus();
+
+      $('.cart-dropdown a i').toggleClass('fa-close').toggleClass('fa-bell-o');
+      $('.badge').toggleClass('display-none');
+    }
+    $('.dropdown-menu').attr('should-focus', '1');
+  });
+
+  $('.cart-dropdown .dropdown-menu').on('blur', function (e) {
+    $(this).removeClass('display-block');
     $('.cart-dropdown a i').toggleClass('fa-close').toggleClass('fa-bell-o');
     $('.badge').toggleClass('display-none');
-});
+
+    if ($('.cart-dropdown a')[0] === e.relatedTarget) {
+      $(this).attr('should-focus', '');
+    }
+  });
 
 /*======== 6. RS-SLIDER ========*/
   jQuery('.bannercontainerV1 .fullscreenbanner').revolution({

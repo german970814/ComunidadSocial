@@ -117,6 +117,22 @@ class Usuario extends Model
         return $query_1 || $query_2;
     }
 
+    public function posts() {
+        return $this->hasMany('\App\Models\Post', 'usuario_destino_id');
+    }
+
+    public function feed() {
+        return $this->posts()->orderBy('created_at', 'desc');
+    }
+
+    public function likes_post(\App\Models\Post $post) {
+        return \DB::table('comentario_posts')
+            ->where('usuario_id', $this->id)
+            ->where('post_id', $post->id)
+            ->where('like', true)
+            ->exists();
+    }
+
     public function agregar_solicitud(\App\Models\SolicitudAmistad $solicitud) {
         $this->solicitudes()->attach($solicitud->id);
     }
