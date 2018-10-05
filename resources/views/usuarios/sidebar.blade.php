@@ -5,11 +5,7 @@
                 <h3 class="panel-title">Información Personal</h3>
             </div>
             <div class="panel-body">
-                <div class="media-profile">
-                    <div class="photo-profile">
-                        <img class="photo-profile-img" width="200" height="200" src="{{ asset('assets/img/user.png') }}" alt="profile" />
-                    </div>
-                </div>
+                @include('usuarios.profile_photo')
                 <div class="teamInfo teamTeacher">
                     <h3 class="color-3">{{ $usuario->get_full_name() }}</h3>
                     <p>{{ $usuario->tipo_usuario === 'M' ? 'Maestro' : 'Estudiante' }}</p>

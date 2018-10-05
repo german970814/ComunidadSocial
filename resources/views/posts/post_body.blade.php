@@ -3,7 +3,7 @@
         <div class="media" {!! (!isset($alone) || !$alone) ? sprintf('style="cursor: pointer;" ondblclick="window.location.href = \'%s\'"', route('post.show', $post->id)) : '' !!}>
             <div class="media-left">
                 <a href="{{ route('usuario.show', $post->autor->id) }}">
-                    <img src="{{ asset('assets/img/user.png') }}" alt="profile" width="32" height="32" class="media-object" />
+                    <img src="{{ $post->autor->get_profile_photo_url() }}" alt="profile" width="32" height="32" class="media-object" />
                 </a>
             </div>
             <div class="media-body">
@@ -42,7 +42,7 @@
                         <div class="media" {!! (!isset($alone) || !$alone) ? sprintf('style="cursor: pointer;" ondblclick="window.location.href = \'%s\'"', $comentario->get_url()) : '' !!}>
                             <div class="media-left">
                                 <a href="{{ route('usuario.show', $comentario->usuario->id) }}">
-                                    <img src="{{ asset('assets/img/user.png') }}" alt="profile" width="32" height="32" class="media-object" />
+                                    <img src="{{ $comentario->usuario->get_profile_photo_url() }}" alt="profile" width="32" height="32" class="media-object" />
                                 </a>
                             </div>
                             <div class="media-body">

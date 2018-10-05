@@ -116,4 +116,8 @@ $(document).ready(function () {
       })
     }
   })
+
+  $('form.form-change-profile-photo').on('change', function() {
+    $(this).submit();
+  })
 })
