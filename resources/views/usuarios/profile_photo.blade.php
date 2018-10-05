@@ -9,7 +9,7 @@
 </form> --}}
 <div class="media-profile teamContent teamAdjust">
     <div class="teamImage">
-        <img class="img-circle img-responsive" width="200" height="200" src="{{ $usuario->get_profile_photo_url() }}" alt="profile" />
+        <img class="img-circle img-responsive" style="height: 100%; width: 100%" src="{{ $usuario->get_profile_photo_url() }}" alt="profile" />
         <div class="maskingContent">
             <ul class="list-inline">
                 @if (Auth::guard()->user()->usuario->id === $usuario->id)
