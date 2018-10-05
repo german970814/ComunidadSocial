@@ -18,8 +18,8 @@ class UsuarioController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest', ['only' => ['create']]);
-        $this->middleware('auth', ['except' => ['create']]);
+        $this->middleware('guest', ['only' => ['create', 'store']]);
+        $this->middleware('auth', ['except' => ['create', 'store']]);
     }
 
     public function index() {
