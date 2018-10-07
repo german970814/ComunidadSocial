@@ -34,18 +34,18 @@ Route::prefix('json')->group(function () {
 
 });
 
-// user_has_new_notificacion
-Route::get(
-    'user/{id}/notificaciones',
-    'NotificacionController@user_has_new_notificacion'
-)->name('notificaciones');
-
 Route::middleware('notificacion')->group( function () {
     Route::get('/', function () {
         return view('home');
     });
 
+    // user_has_new_notificacion
+    
     Route::prefix('/usuario')->group(function() {
+        Route::get(
+            '/{id}/notificaciones',
+            'NotificacionController@user_has_new_notificacion'
+        )->name('notificaciones');
         Route::get('/profile', 'UsuarioController@profile')->name('usuario.profile');
         Route::get('/{id}/informacion', 'UsuarioController@detail')->name('usuario.detail');
         Route::get('/{id}/amigos', 'UsuarioController@amigos')->name('usuario.amigos');

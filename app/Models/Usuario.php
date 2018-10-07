@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Libraries\ModelForm;
 use App\User;
 
-class Usuario extends Model
+class Usuario extends ModelForm
 {
     /**
      * Nombre de la tabla
@@ -24,6 +24,36 @@ class Usuario extends Model
     ];
 
     /**
+     * Opciones de sexo
+     */
+    static $sexo_opciones = [
+        'M' => 'Masculino',
+        'F' => 'Femenino'
+    ];
+
+    /**
+     * Opciones de tipo de documento
+     */
+    static $tipo_documento_opciones = [
+        'CC' => 'Cedula de ciudadanía',
+        'TI' => 'Tarjeta de identidad',
+        'RG' => 'Registro civil',
+        'NES' => 'Número establecido por la secretaría',
+        'NIP' => 'Número de identificación personal',
+        'NUIP' => 'Número único de identificación personal'
+    ];
+
+    /**
+     * Opciones de grupo etnico
+     */
+    static $grupo_etnico_opciones = [
+        'IN' => 'Indigenas',
+        'AF' => 'Afrocolombianos',
+        'RO' => 'ROM',
+        'NI' => 'Ninguno'
+    ];
+
+    /**
      * Schema para \App\Liraries\Form
      */
     static $form_schema = [
@@ -36,42 +66,26 @@ class Usuario extends Model
             'label' => 'Contraseña'
         ],
         'sexo' => [
-            'type' => 'select',
-            'options' => [
-                'M' => 'Masculino',
-                'F' => 'Femenino'
-            ]
+            'label' => 'Género'
         ],
         'tipo_documento' => [
-            'label' => 'Tipo de documento',
-            'type' => 'select',
-            'options' => [
-                'CC' => 'Cedula de ciudadanía',
-                'TI' => 'Tarjeta de identidad',
-                'RG' => 'Registro civil',
-                'NES' => 'Número establecido por la secretaría',
-                'NIP' => 'Número de identificación personal',
-                'NUIP' => 'Número único de identificación personal'
-            ]
+            'label' => 'Tipo de documento'
         ],
         'numero_documento' => [
             'type' => 'number',
-        ],
-        'grupo_etnico' => [
-            'type' => 'select',
-            'options' => [
-                'IN' => 'Indigenas',
-                'AF' => 'Afrocolombianos',
-                'RO' => 'ROM',
-                'NI' => 'Ninguno'
-            ]
         ]
     ];
 
+    /**
+     * Laravel User
+     */
     public function user() {
         return $this->belongsTo('App\User');
     }
 
+    /**
+     * Solicitudes de amistad de usuario
+     */
     public function solicitudes() {
         return $this->belongsToMany(
             '\App\Models\SolicitudAmistad',
@@ -81,10 +95,16 @@ class Usuario extends Model
         );
     }
 
+    /**
+     * Notificaciones del usuario
+     */
     public function notificaciones() {
         return $this->hasMany('App\Models\Notification');
     }
 
+    /**
+     * Amigos del usuario
+     */
     public function amigos() {
         $amigos_enviaron_solicitud_query = \DB::table('usuarios')
             ->join('solicitudes_usuario', 'solicitudes_usuario.usuario_id', 'usuarios.id')
@@ -112,6 +132,9 @@ class Usuario extends Model
         return Usuario::find($amigos_enviaron_solicitud->merge($amigos_self_solicitud)->all());
     }
 
+    /**
+     * Método para saber si un usuario es amigo
+     */
     public function is_amigo(Usuario $usuario) {
         $query_1 = \DB::table('usuarios')
             ->join('solicitudes_usuario', 'solicitudes_usuario.usuario_id', 'usuarios.id')
@@ -130,14 +153,23 @@ class Usuario extends Model
         return $query_1 || $query_2;
     }
 
+    /**
+     * Posts que le han publicado al usuario
+     */
     public function posts() {
         return $this->hasMany('\App\Models\Post', 'usuario_destino_id');
     }
 
+    /**
+     * Feed
+     */
     public function feed() {
         return $this->posts()->orderBy('created_at', 'desc');
     }
 
+    /**
+     * Método para saber si al usuario le gusta un post específico
+     */
     public function likes_post(\App\Models\Post $post) {
         return \DB::table('comentarios_posts')
             ->where('usuario_id', $this->id)
@@ -146,14 +178,46 @@ class Usuario extends Model
             ->exists();
     }
 
+    /**
+     * Relación inversa para guardar solicitudes del usuario
+     */
     public function agregar_solicitud(\App\Models\SolicitudAmistad $solicitud) {
         $this->solicitudes()->attach($solicitud->id);
     }
 
+    /**
+     * Método para saber si un usuario no ha respondido a la solicitud de amistad
+     */
+    public function solicitud_amistad_enviada(Usuario $usuario) {
+        // Solicitudes enviadas por el usuario
+        return \DB::table('solicitudes_usuario')
+            ->join('solicitudes', 'solicitudes_usuario.solicitud_id', 'solicitudes.id')
+            ->where('solicitudes.usuario_id', $this->id)
+            ->where('solicitudes.aceptada', false)
+            ->where('solicitudes_usuario.usuario_id', $usuario->id)
+            ->exists();
+    }
+
+    /**
+     * Método para saber si el usuario no ha respondido a una solicitud de amistad
+     */
+    public function no_confirma_solicitud(Usuario $usuario) {
+        return $this->solicitudes()
+            ->where('solicitudes.usuario_id', $usuario->id)
+            ->where('aceptada', false)
+            ->exists();
+    }
+
+    /**
+     * Método para obtener la url del perfil del usuario
+     */
     public function get_profile_url() {
         return route('usuario.show', $this->id);
     }
 
+    /**
+     * Método para obtener la url de la imagen de perfil del usuario
+     */
     public function get_profile_photo_url() {
         if (Storage::disk('local')->has($this->profile_photo)) {
             return route('usuario.profile-photo', $this->id);
@@ -161,10 +225,16 @@ class Usuario extends Model
         return asset('assets/img/user.png');
     }
 
+    /**
+     * Método para obtener el nombre del usuario
+     */
     public function get_full_name() {
         return $this->nombres . ' ' . $this->apellidos;
     }
 
+    /**
+     * Método estático para crear usuarios de laravel
+     */
     public static function create_user($data) {
         $name = $data['nombres'] . ' ' . $data['apellidos'];
         return User::create([

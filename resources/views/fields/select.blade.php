@@ -2,7 +2,11 @@
 <label for="id-{{ $name }}">{{ $label }}</label>
 @endif
 <select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"">
-    <option>{{ isset($label) ? $label : '' }}</option>
+    @if (!$with_label)
+        <option>{{ isset($label) ? $label : '' }}</option>
+    @else
+        <option>Selecciona una opción</option>
+    @endif
     @foreach($options as $option => $lab)
         @if ($option == old( $name, isset($value) ? $value : '' ))
             <option selected value="{{ $option }}">{{ $lab }}</option>

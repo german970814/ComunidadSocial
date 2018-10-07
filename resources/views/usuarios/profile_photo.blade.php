@@ -7,7 +7,7 @@
                 <li>
                     <form class="form-change-profile-photo" action="{{ route('usuario.change-profile-photo') }}" enctype="multipart/form-data" method="POST">
                         @csrf
-                        <a href="#">
+                        <a href="#" data-original-title="Cambiar foto de perfil" data-placement="bottom" data-toggle="tooltip">
                             <i class="fa fa-upload"></i>
                             <input type="file" name="photo" accept="image/*" />
                         </a>
