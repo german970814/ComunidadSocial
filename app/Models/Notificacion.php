@@ -154,9 +154,25 @@ class Notificacion extends Model
         }
     }
 
+    private static function _notificaciones_usuario($user) {
+        return Notificacion::where('usuario_id', $user->usuario->id);
+    }
+
     public static function notificaciones_pendientes_usuario($user) {
-        return Notificacion::where('usuario_id', $user->usuario->id)
+        return Notificacion::_notificaciones_usuario($user)
             ->where('leida', false)->count(); 
+    }
+
+    public static function notificaciones_usuario($user) {
+        return Notificacion::_notificaciones_usuario($user)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public static function ultima_notificacion_usuario($user) {
+        return Notificacion::_notificaciones_usuario($user)
+            ->orderBy('created_at', 'desc')
+            ->first();
     }
 
     public function usuario()
