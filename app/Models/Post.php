@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+use \App\Models\ComentarioPost;
+
 class Post extends Model
 {
     /**
@@ -31,7 +33,9 @@ class Post extends Model
     }
 
     public function _comentarios() {
-        return $this->hasMany('\App\Models\ComentarioPost')->orderBy('created_at', 'asc');
+        return $this->hasMany('\App\Models\ComentarioPost')
+            ->where('estado', ComentarioPost::$ACTIVO)
+            ->orderBy('created_at', 'asc');
     }
 
     public function comentarios() {

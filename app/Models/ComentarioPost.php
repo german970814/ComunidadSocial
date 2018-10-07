@@ -15,8 +15,11 @@ class ComentarioPost extends Model
      * Campos que se pueden llenar con el metodo create, update
      */
     protected $fillable = [
-        'mensaje', 'post_id', 'usuario_id', 'like'
+        'mensaje', 'post_id', 'usuario_id', 'like', 'estado'
     ];
+
+    static $ACTIVO = 'A';
+    static $INACTIVO = 'I';
 
     public function post() {
         return $this->belongsTo('\App\Models\Post');

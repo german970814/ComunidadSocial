@@ -18,6 +18,14 @@
                 @endif
                 <span {!! isset($alone) && $alone ? 'style="display: block"' : '' !!}>{{ $post->created_at }}</span>
             </div>
+            <div class="well-actions pull-right">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-warning"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-left">
+                  <li class=""><a href="javascript:void(0)" class="reportar-post">Reportar Post</a></li>
+                </ul>
+            </div>
         </div>
         @if ($post->photo && $post->get_photo_url())
         <div class="row post-media">
@@ -45,7 +53,7 @@
             <dl class="comment-list">
                 @foreach($post->comentarios->all() as $comentario)
                 <dd>
-                    <div id="comment-{{ $comentario->id }}" class="comment row-comment">
+                    <div id="comment-{{ $comentario->id }}" data-comment-id="{{ $comentario->id }}" class="comment row-comment">
                         <div class="media" {!! (!isset($alone) || !$alone) ? sprintf('style="cursor: pointer;" ondblclick="window.location.href = \'%s\'"', $comentario->get_url()) : '' !!}>
                             <div class="media-left">
                                 <a href="{{ route('usuario.show', $comentario->usuario->id) }}">
@@ -62,6 +70,14 @@
                                 <div class="post">
                                     <p>{{ $comentario->mensaje }}</p>
                                 </div>
+                            </div>
+                            <div class="well-actions pull-right">
+                                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-warning"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-left">
+                                    <li class=""><a href="javascript:void(0)" class="reportar-comentario">Reportar Comentario</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

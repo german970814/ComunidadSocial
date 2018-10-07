@@ -27,6 +27,11 @@ Route::prefix('json')->group(function () {
         '\App\Http\Controllers\SolicitudAmistadController@aceptar_solicitud_amistad'
     )->name('usuario.aceptar-solicitud-amistad');
 
+    Route::middleware('auth')->get(
+        '/reportes/comentario/{id}',
+        '\App\Http\Controllers\ComentarioPostController@reportar_comentario'
+    )->name('comentario.reportar');
+
     Route::get(
         '/notificacion/{id}/leer/',
         '\App\Http\Controllers\NotificacionController@read_notificacion'
