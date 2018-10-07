@@ -1,4 +1,27 @@
 <script>
+    ;(function() {
+        {{-- let eventSource = new EventSource('{{ route("notificaciones", $usuario->id) }}'); --}}
+
+        eventSource.addEventListener('message', event => {
+            let data = JSON.parse(event.data.replace('\\n\\n\\n<!DOCTYPE html><!--', ''));
+            console.log(data);
+        }, false);
+
+        eventSource.addEventListener('error', event => {
+            if (event.readyState == EventSource.CLOSED) {
+                console.log('Event was closed');
+                console.log(EventSource);
+            }
+        }, false);
+
+        eventSource.onerror = function (e) {
+            if (event.readyState == EventSource.CLOSED) {
+                console.log('Event was closed');
+                console.log(EventSource);
+            }
+        }
+    });
+
     window._app_config = {
         routes: {
             "mostrarUsuario": "{{ route('usuario.show', 99) }}",

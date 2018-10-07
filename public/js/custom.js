@@ -1,4 +1,7 @@
 $(document).ready(function () {
+  /**
+   * Mensajes desde el servidor
+   */
   Object.keys(window._app_config.messages).forEach(code => {
     $.notify({ message: window._app_config.messages[code] }, { type: code })
   });

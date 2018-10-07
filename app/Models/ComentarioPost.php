@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ComentarioPost extends Model
 {
+    /**
+     * Nombre de la tabla
+     */
+    protected $table = 'comentarios_posts';
+
+    /**
+     * Campos que se pueden llenar con el metodo create, update
+     */
     protected $fillable = [
         'mensaje', 'post_id', 'usuario_id', 'like'
     ];

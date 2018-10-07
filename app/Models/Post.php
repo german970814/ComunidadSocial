@@ -7,9 +7,20 @@ use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
+    /**
+     * Nombre de la tabla
+     */
+    protected $table = 'posts';
+
+    /**
+     * Campos que se pueden llenar con el metodo create, update
+     */
     protected $fillable = [
-        'mensaje', 'autor_id', 'usuario_destino_id', 'photo'
+        'mensaje', 'autor_id', 'usuario_destino_id', 'photo', 'tipo'
     ];
+
+    static $post_usuario_tipo = 'usuario';
+    static $post_grupo_tipo = 'grupo';
 
     public function usuario_destino() {
         return $this->belongsTo('\App\Models\Usuario', 'usuario_destino_id');

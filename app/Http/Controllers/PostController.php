@@ -46,6 +46,7 @@ class PostController extends Controller
             $post = Post::create([
                 'autor_id' => $data['autor_id'],
                 'mensaje' => $data['mensaje'],
+                'tipo' => Post::$post_usuario_tipo,
                 'usuario_destino_id' => $usuario_destino_id
             ]);
 

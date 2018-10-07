@@ -172,3 +172,7 @@ textarea {
 .form-control {
     border: 2px solid;
 }
+
+.rightSidebar .actions {
+    padding: 10px 0;
+}

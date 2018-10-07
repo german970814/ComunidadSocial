@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notificacion extends Model
 {
+    /**
+     * Nombre de la tabla
+     */
+    protected $table = 'notificaciones';
+
+    /**
+     * Campos que se pueden llenar con el metodo create, update
+     */
     protected $fillable = ['usuario_id', 'mensaje', 'leida', 'usuario_sender_id', 'link', 'tipo'];
 
     static $solicitud_amistad_tipo = 'solicitud-amistad';
@@ -144,6 +152,11 @@ class Notificacion extends Model
                     $this->mensaje
                 );
         }
+    }
+
+    public static function notificaciones_pendientes_usuario($user) {
+        return Notificacion::where('usuario_id', $user->usuario->id)
+            ->where('leida', false)->count(); 
     }
 
     public function usuario()
