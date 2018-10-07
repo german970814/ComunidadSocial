@@ -1,10 +1,21 @@
 <script>
+    @if (($loggedUser = Auth::guard()->user()) && Auth::check())
     ;(function() {
-        {{-- let eventSource = new EventSource('{{ route("notificaciones", $usuario->id) }}'); --}}
+        let eventSource = new EventSource('{{ route("notificaciones", $loggedUser->usuario->id) }}');
 
         eventSource.addEventListener('message', event => {
             let data = JSON.parse(event.data.replace('\\n\\n\\n<!DOCTYPE html><!--', ''));
-            console.log(data);
+            if (data.notificaciones.new) {
+                let { notificacion } = data.notificaciones;
+                let value = parseInt($('#notificaciones-pendientes').html());
+                $('#notificaciones-pendientes').removeClass('hidden').html(++value);
+                $('#notificacion-dropdown').children().first().after(`
+                    <li data-id="${ notificacion.id }" class="notificacion-item notificacion-pendiente">
+                        ${ notificacion.render }
+                        <span class="cancel"><i class="fa fa-close" aria-hidden="true"></i></span>
+                    </li>
+                `);
+            }
         }, false);
 
         eventSource.addEventListener('error', event => {
@@ -20,7 +31,8 @@
                 console.log(EventSource);
             }
         }
-    });
+    })();
+    @endif
 
     window._app_config = {
         routes: {
