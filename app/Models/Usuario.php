@@ -9,12 +9,23 @@ use App\User;
 
 class Usuario extends Model
 {
+    /**
+     * Nombre de la tabla
+     */
+    protected $table = 'usuarios';
+
+    /**
+     * Campos que se pueden llenar con el metodo create, update
+     */
     protected $fillable = [
         'nombres', 'apellidos', 'sexo', 'user_id', 'tipo_documento',
         'numero_documento', 'tipo_usuario', 'grupo_etnico', 'fecha_nacimiento',
         'profile_photo'
     ];
 
+    /**
+     * Schema para \App\Liraries\Form
+     */
     static $form_schema = [
         'email' => [
             'type' => 'email',
@@ -128,7 +139,7 @@ class Usuario extends Model
     }
 
     public function likes_post(\App\Models\Post $post) {
-        return \DB::table('comentario_posts')
+        return \DB::table('comentarios_posts')
             ->where('usuario_id', $this->id)
             ->where('post_id', $post->id)
             ->where('like', true)

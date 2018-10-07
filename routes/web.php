@@ -31,7 +31,14 @@ Route::prefix('json')->group(function () {
         '/notificacion/{id}/leer/',
         '\App\Http\Controllers\NotificacionController@read_notificacion'
     )->name('notificacion.leer');
+
 });
+
+// user_has_new_notificacion
+Route::get(
+    'user/{id}/notificaciones',
+    'NotificacionController@user_has_new_notificacion'
+)->name('notificaciones');
 
 Route::middleware('notificacion')->group( function () {
     Route::get('/', function () {
