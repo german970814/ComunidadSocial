@@ -17,6 +17,11 @@ Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 // Route::get('/home', 'HomeController@index')->name('home');
 Route::prefix('json')->group(function () {
+    Route::post(
+        '/usuario/remoto/',
+        'UsuarioController@get_remote_usuario_data'
+    )->name('usuario.remoto');
+
     Route::middleware('auth')->get(
         '/usuario/{id}/solicitar-amistad/',
         '\App\Http\Controllers\SolicitudAmistadController@enviar_solicitud_amistad'
@@ -27,11 +32,15 @@ Route::prefix('json')->group(function () {
         '\App\Http\Controllers\SolicitudAmistadController@aceptar_solicitud_amistad'
     )->name('usuario.aceptar-solicitud-amistad');
 
+    Route::middleware('auth')->get(
+        '/reportes/comentario/{id}',
+        '\App\Http\Controllers\ComentarioPostController@reportar_comentario'
+    )->name('comentario.reportar');
+
     Route::get(
         '/notificacion/{id}/leer/',
         '\App\Http\Controllers\NotificacionController@read_notificacion'
     )->name('notificacion.leer');
-
 });
 
 Route::middleware('notificacion')->group( function () {

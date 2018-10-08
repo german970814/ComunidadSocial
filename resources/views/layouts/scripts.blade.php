@@ -1,37 +1,39 @@
 <script>
     @if (($loggedUser = Auth::guard()->user()) && Auth::check())
     ;(function() {
-        let eventSource = new EventSource('{{ route("notificaciones", $loggedUser->usuario->id) }}');
-
-        eventSource.addEventListener('message', event => {
-            let data = JSON.parse(event.data.replace('\\n\\n\\n<!DOCTYPE html><!--', ''));
-            if (data.notificaciones.new) {
-                let { notificacion } = data.notificaciones;
-                let value = parseInt($('#notificaciones-pendientes').html());
-                $('#notificaciones-pendientes').removeClass('hidden').html(++value);
-                $('#notificacion-dropdown').children().first().after(`
-                    <li data-id="${ notificacion.id }" class="notificacion-item notificacion-pendiente">
-                        ${ notificacion.render }
-                        <span class="cancel"><i class="fa fa-close" aria-hidden="true"></i></span>
-                    </li>
-                `);
-            }
-        }, false);
-
-        eventSource.addEventListener('error', event => {
-            if (event.readyState == EventSource.CLOSED) {
-                console.log('Event was closed');
-                console.log(EventSource);
-            }
-        }, false);
-
-        eventSource.onerror = function (e) {
-            if (event.readyState == EventSource.CLOSED) {
-                console.log('Event was closed');
-                console.log(EventSource);
+        if (!!window.EventSource) {
+            let eventSource = new EventSource('{{ route("notificaciones", $loggedUser->usuario->id) }}');
+    
+            eventSource.addEventListener('message', event => {
+                let data = JSON.parse(event.data.replace('\\n\\n\\n<!DOCTYPE html><!--', ''));
+                if (data.notificaciones.new) {
+                    let { notificacion } = data.notificaciones;
+                    let value = parseInt($('#notificaciones-pendientes').html());
+                    $('#notificaciones-pendientes').removeClass('hidden').html(++value);
+                    $('#notificacion-dropdown').children().first().after(`
+                        <li data-id="${ notificacion.id }" class="notificacion-item notificacion-pendiente">
+                            ${ notificacion.render }
+                            <span class="cancel"><i class="fa fa-close" aria-hidden="true"></i></span>
+                        </li>
+                    `);
+                }
+            }, false);
+    
+            eventSource.addEventListener('error', event => {
+                if (event.readyState == EventSource.CLOSED) {
+                    console.log('Event was closed');
+                    console.log(EventSource);
+                }
+            }, false);
+    
+            eventSource.onerror = function (e) {
+                if (event.readyState == EventSource.CLOSED) {
+                    console.log('Event was closed');
+                    console.log(EventSource);
+                }
             }
         }
-    })();
+    });
     @endif
 
     window._app_config = {
@@ -43,6 +45,7 @@
             "comentarPost": "{{ route('post.comment', 99) }}",
             "likePost": "{{ route('post.like', 99) }}",
             "detallePost": "{{ route('post.show', 99) }}",
+            "reportarComentario": "{{ route('comentario.reportar', 99) }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))
@@ -84,7 +87,13 @@
 <script src="{{ asset('assets/plugins/smoothscroll/SmoothScroll.js') }}"></script>
 <script src="{{ asset('assets/plugins/wow/wow.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/notify/bootstrap.notify.js') }}"></script>
+<script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 <script src="{{ asset('/js/custom.js') }}"></script>
+
+@if (Auth::check())
+<script src="{{ asset('/js/io.js') }}"></script>
+<script src="{{ asset('/js/client.js') }}"></script>
+@endif
 
 @yield('custom_script')

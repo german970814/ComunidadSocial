@@ -16,13 +16,15 @@ use App\Libraries\Form;
 class UsuarioController extends Controller
 {
     private $messages = [
-        'required' => 'Este campo es requerido'
+        'required' => 'Este campo es requerido',
+        'numero_documento.unique' => 'Parece que ya existe un usuario con este número de documento',
+        'email.unique' => 'Parece que ya existe un usuario con este email'
     ];
 
     public function __construct()
     {
-        $this->middleware('guest', ['only' => ['create', 'store']]);
-        $this->middleware('auth', ['except' => ['create', 'store', 'get_user_profile_photo']]);
+        $this->middleware('guest', ['only' => ['create', 'store', 'get_remote_usuario_data']]);
+        $this->middleware('auth', ['except' => ['create', 'store', 'get_remote_usuario_data', 'get_user_profile_photo']]);
     }
 
     public function index() {
@@ -52,7 +54,7 @@ class UsuarioController extends Controller
             'apellidos' => 'required',
             'tipo_usuario' => 'required',
             'tipo_documento' => 'required',
-            'numero_documento' => 'required',
+            'numero_documento' => 'required|unique:usuarios',
             'email' => 'required|string|email|max:255|unique:users'
         ], $this->messages);
 
@@ -149,5 +151,36 @@ class UsuarioController extends Controller
             $usuario = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
         }
         return view('usuarios.amigos', ['usuario' => $usuario]);
+    }
+
+    public function get_remote_usuario_data(Request $request) {
+        $validated_data = $request->validate([
+            'tipo_usuario' => 'required',
+            'identificacion' => 'required'
+        ]);
+
+        if ($validated_data['tipo_usuario'] == Usuario::$MAESTRO) {
+            $table = 'ins_docente';
+        } else {
+            $table = 'ins_estudiante';
+        }
+
+        $query = DB::connection('remote')
+            ->table($table)
+            ->where('identificacion', 'LIKE', '%' . $validated_data['identificacion'] .'%')
+            ->first();
+
+        if ($query) {
+            return response()->json([
+                'code' => 200,
+                'message' => 'User found',
+                'object' => $query
+            ]);
+        }
+
+        return response()->json([
+            'code' => 404,
+            'message' => 'User not found'
+        ]);
     }
 }

@@ -176,3 +176,65 @@ textarea {
 .rightSidebar .actions {
     padding: 10px 0;
 }
+
+.timeline .well .media {
+    position: relative;
+    overflow: unset;
+}
+
+.well .media .well-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.well .media .well-actions i {
+    transition: all ease 1s;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 100%;
+    display: block;
+    color: rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+}
+
+.well:hover .media .well-actions i {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.well .media .well-actions:hover i {
+    color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.swal-text {
+    text-align: center;
+}
+
+.amigos_activos {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    z-index: 2;
+    color: white;
+    max-height: 570px;
+}
+
+.chat-panel {
+    padding: 10px 40px;
+}
+
+.amigos_activos .panel-group, .amigos_activos .accordionCommon .panel {
+    margin-bottom: 0;
+}
+
+.amigos_activos .accordionCommon .panel-heading {
+    border-radius: 0;
+}
+
+.amigos_activos .accordionCommon .panel-body {
+    padding: 0;
+}

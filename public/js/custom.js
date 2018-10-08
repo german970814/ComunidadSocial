@@ -1,4 +1,7 @@
 $(document).ready(function () {
+  function get_url(name, id) {
+    return window._app_config.routes[name].replace('99', id);
+  }
   /**
    * Mensajes desde el servidor
    */
@@ -159,5 +162,61 @@ $(document).ready(function () {
     fileReader.onload = function (event) {
       $('.post-create-container .img-preview').attr('src', event.target.result).removeClass('hidden');
     };
+  })
+
+  /**
+   * Evento para reportar un post
+   */
+  $('.reportar-post').on('click', function () {
+    swal({
+      title: "Reportar publicación",
+      text: "¿Seguro que quieres reportar esta publicación?\n\nEscríbenos una razón de por qué reportas esta publicación",
+      content: 'input',
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete !== null) {
+        swal("Se ha envíado el reporte", {
+          icon: "success",
+        });
+      }
+    });
+  })
+
+  /**
+   * Evento para reportar un comentario
+   */
+  $('.reportar-comentario').on('click', function () {
+    swal({
+      title: "Reportar comentario",
+      text: "¿Seguro que quieres reportar éste comentario?\n\nEscríbenos una razón de por qué reportas este comentario",
+      content: 'input',
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete !== null) {
+        const commentId = $(this).parents('[data-comment-id]').data('comment-id');
+
+        $.ajax({
+          url: get_url('reportarComentario', commentId) + `?razon=${willDelete || ''}`,
+          method: 'GET',
+          success: (data) => {
+            if (data.code === 200) {
+              swal("Se ha envíado el reporte", {
+                icon: "success",
+              });
+            } else if (data.code === 204) {
+              $.notify({ message: data.message }, { type: 'info' })
+            } else {
+              $.notify({ message: data.message }, { type: 'danger' })
+            }
+          }
+        });
+      }
+    });
   })
 })

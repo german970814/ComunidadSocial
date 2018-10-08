@@ -29,6 +29,9 @@
     @yield('content')
 	
     @include('layouts/footer')
+    @if (Auth::check())
+      @include('usuarios.amigos_activos')
+    @endif
   </div>
  
   @section('modals')
