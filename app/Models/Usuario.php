@@ -77,6 +77,13 @@ class Usuario extends ModelForm
     ];
 
     /**
+     * Tipo usuario constantes
+     */
+    static $ESTUDIANTE = 'E';
+    static $MAESTRO = 'M';
+    static $ADMINISTRADOR = 'A';
+
+    /**
      * Laravel User
      */
     public function user() {
@@ -130,6 +137,33 @@ class Usuario extends ModelForm
         });
 
         return Usuario::find($amigos_enviaron_solicitud->merge($amigos_self_solicitud)->all());
+    }
+
+    public function amigos_ids() {
+        $amigos_enviaron_solicitud_query = \DB::table('usuarios')
+            ->join('solicitudes_usuario', 'solicitudes_usuario.usuario_id', 'usuarios.id')
+            ->join('solicitudes', 'solicitudes.id', 'solicitudes_usuario.solicitud_id')
+            ->where('solicitudes.aceptada', true)
+            ->where('usuarios.id', $this->id)
+            ->select('solicitudes.usuario_id as id')
+            ->get();
+
+        $amigos_self_solicitud_query = \DB::table('usuarios')
+            ->join('solicitudes_usuario', 'solicitudes_usuario.usuario_id', 'usuarios.id')
+            ->join('solicitudes', 'solicitudes.id', 'solicitudes_usuario.solicitud_id')
+            ->where('solicitudes.aceptada', true)
+            ->where('solicitudes.usuario_id', $this->id)
+            ->select('solicitudes_usuario.usuario_id as id')
+            ->get();
+
+        $amigos_enviaron_solicitud = collect($amigos_enviaron_solicitud_query->all())->map(function ($result) {
+            return $result->id;
+        });
+        $amigos_self_solicitud = collect($amigos_self_solicitud_query->all())->map(function ($result) {
+            return $result->id;
+        });
+
+        return $amigos_enviaron_solicitud->merge($amigos_self_solicitud)->all();
     }
 
     /**

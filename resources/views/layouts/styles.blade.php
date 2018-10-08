@@ -20,4 +20,5 @@
 <!-- Icons -->
 <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
 
+@yield('page_css')
 @yield('custom_css')

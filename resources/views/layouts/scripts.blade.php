@@ -33,7 +33,7 @@
                 }
             }
         }
-    })();
+    });
     @endif
 
     window._app_config = {
@@ -90,5 +90,10 @@
 <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 <script src="{{ asset('/js/custom.js') }}"></script>
+
+@if (Auth::check())
+<script src="{{ asset('/js/io.js') }}"></script>
+<script src="{{ asset('/js/client.js') }}"></script>
+@endif
 
 @yield('custom_script')

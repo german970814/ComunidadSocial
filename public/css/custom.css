@@ -212,3 +212,29 @@ textarea {
 .swal-text {
     text-align: center;
 }
+
+.amigos_activos {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    z-index: 2;
+    color: white;
+    max-height: 570px;
+}
+
+.chat-panel {
+    padding: 10px 40px;
+}
+
+.amigos_activos .panel-group, .amigos_activos .accordionCommon .panel {
+    margin-bottom: 0;
+}
+
+.amigos_activos .accordionCommon .panel-heading {
+    border-radius: 0;
+}
+
+.amigos_activos .accordionCommon .panel-body {
+    padding: 0;
+}
