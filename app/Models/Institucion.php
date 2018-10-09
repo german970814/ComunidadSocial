@@ -36,6 +36,14 @@ class Institucion extends ModelForm
         return $this->belongsTo('\App\Models\Municipio');
     }
 
+    private function _solicitudes() {
+        return \App\Models\SolicitudInstitucion::where('institucion_id', $this->id);
+    }
+
+    public function solicitudes() {
+        return $this->_solicitudes()->where('aceptada', false)->get();
+    }
+
     public function integrantes_ids() {
         $ids = \App\Models\Usuario::join('solicitudes_institucion', 'solicitudes_institucion.usuario_id', 'usuarios.id')
             ->where('solicitudes_institucion.institucion_id', $this->id)

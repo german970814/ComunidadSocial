@@ -242,3 +242,17 @@ textarea {
 .top-info-bar .formField .form-control {
     height: 23px;
 }
+
+.solicitudes-actions .link-circle {
+    display: inline-block;
+}
+
+.notificacion-solicitud-amistad a {
+    display: inline-block;
+    color: #fff !important;
+    padding: 3px 20px !important;
+}
+
+.notificacion-solicitud-amistad {
+    text-align: right;
+}

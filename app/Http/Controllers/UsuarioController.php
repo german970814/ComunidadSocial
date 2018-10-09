@@ -216,6 +216,18 @@ class UsuarioController extends Controller
         return view('usuarios.amigos', ['usuario' => $usuario]);
     }
 
+    public function solicitudes_amistad_usuario($id=null) {
+        $usuario_request = \Auth::guard()->user()->usuario;
+        if ($id && $usuario_request->is_administrador()) {
+            $usuario = Usuario::findOrFail($id);
+        } elseif ($id) {
+            return redirect()->route('usuario.solicitudes-amistad');
+        } elseif ($usuario_request->is_estudiante() || $usuario_request->is_maestro()) {
+            $usuario = $usuario_request;
+        }
+        return view('usuarios.solicitudes_amistad', compact(['usuario']));
+    }
+
     /**
      * Método para buscar amigos de un usuario
      */
@@ -223,7 +235,26 @@ class UsuarioController extends Controller
         $usuario = \Auth::guard()->user()->usuario;
         $validated_data = $request->q;
 
-        $usuarios = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')->get()->all();
+        $maestros = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$MAESTRO)->get()->all();
+        $estudiantes = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$ESTUDIANTE)->get()->all();
+        $instituciones = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$INSTITUCION)->get()->all();
+        $usuarios = [
+            'maestros' => [
+                'title' => 'Maestros',
+                'data' => $maestros
+            ],
+            'estudiantes' => [
+                'title' => 'Estudiantes',
+                'data' => $estudiantes
+            ],
+            'instituciones' => [
+                'title' => 'Instituciones',
+                'data' => $instituciones
+            ]
+        ];
         return view('usuarios.buscar', ['usuario' => $usuario, 'usuarios' => $usuarios]);
     }
 

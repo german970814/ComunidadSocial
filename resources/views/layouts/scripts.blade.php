@@ -47,6 +47,7 @@
             "detallePost": "{{ route('post.show', 99) }}",
             "reportarComentario": "{{ route('comentario.reportar', 99) }}",
             "departamentoMunicipios": "{{ route('departamento.municipios', 99) }}",
+            "solicitarIngresoInstitucion": "{{ route('institucion.solicitud-ingreso-institucion', 99) }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))
@@ -57,6 +58,9 @@
             @endif
             @if($session_message_info = Session::get('info'))
             'info': '{{ $session_message_info }}',
+            @endif
+            @if($session_message_info = Session::get('warning'))
+            'warning': '{{ $session_message_info }}',
             @endif
         },
         server: {

@@ -16,8 +16,8 @@ class SolicitudAmistadController extends Controller
      * @param Integer $id
      * @return JSONResponse
      */
-    public function enviar_solicitud_amistad(Request $request, $id) {
-        $user = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
+    public function solicitud_amistad(Request $request, $id) {
+        $user = \Auth::guard()->user()->usuario;
         $user_id = $user->id;
 
         $query = DB::table('solicitudes_usuario')
@@ -35,21 +35,15 @@ class SolicitudAmistadController extends Controller
                 \App\Models\Notificacion::create_solicitud_amistad($user, ['usuario_id' => $id]);
             });
 
-            return response()->json([
-                'code' => 200,
-                'message' => 'Solicitud de amistad enviada'
-            ]);
+            return back()->with('success', 'Solicitud de amistad enviada');
         }
 
         $query->delete();
-        return response()->json([
-            'code' => 200,
-            'message' => 'Solicitud de amistad cancelada'
-        ]);
+        return back()->with('info', 'Solicitud de amistad cancelada');
     }
 
     public function aceptar_solicitud_amistad(Request $request, $id) {
-        $user = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
+        $user = \Auth::guard()->user()->usuario;
 
         $query = DB::table('solicitudes_usuario')
             ->join('solicitudes', 'solicitudes_usuario.solicitud_id', '=', 'solicitudes.id')
@@ -66,14 +60,16 @@ class SolicitudAmistadController extends Controller
                 \App\Models\Notificacion::create_acepted_solicitud_amistad($user, ['usuario_id' => $id]);
             });
 
-            return response()->json([
-                'code' => 200,
-                'message' => sprintf('Ahora eres amigo de %s', $solicitud_amistad->usuario->get_full_name())
-            ]);
+            // return response()->json([
+            //     'code' => 200,
+            //     'message' => sprintf('Ahora eres amigo de %s', $solicitud_amistad->usuario->get_full_name())
+            // ]);
+            return back()->with('success', sprintf('Ahora eres amigo de %s', $solicitud_amistad->usuario->get_full_name()));
         }
-        return response()->json([
-            'code' => 400,
-            'message' => 'Ha ocurrido un error con la solicitud'
-        ]);
+        // return response()->json([
+        //     'code' => 400,
+        //     'message' => 'Ha ocurrido un error con la solicitud'
+        // ]);
+        return back()->with('error', 'Ha ocurrido un error con la solicitud');
     }
 }

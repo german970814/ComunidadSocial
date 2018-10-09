@@ -103,6 +103,10 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         );
     }
 
+    public function solicitudes_amistad_pendientes() {
+        return $this->solicitudes()->where('aceptada', false)->get()->all();
+    }
+
     /**
      * Notificaciones del usuario
      */
@@ -203,6 +207,9 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         return $this->posts()->orderBy('created_at', 'desc');
     }
 
+    /**
+     * Si es usuario institucion
+     */
     public function institucion() {
         if ($this->tipo_usuario === self::$INSTITUCION) {
             return $this->hasOne('\App\Models\Institucion');
@@ -272,11 +279,19 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
      * Método para obtener el nombre del usuario
      */
     public function get_full_name() {
+        if ($this->is_institucion()) {
+            return $this->nombres;
+        }
         return $this->nombres . ' ' . $this->apellidos;
     }
 
     /**
-     * Método estático para crear usuarios de laravel
+     * Método estático para crear usuarios de laravel a partir
+     * de los datos del usuario
+     * 
+     * @param Array $data
+     * 
+     * @return \App\User
      */
     public static function create_user($data) {
         $name = $data['nombres'] . ' ' . $data['apellidos'];
@@ -287,11 +302,42 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         ]);
     }
 
+    /**
+     * Institución a la que pertenece
+     * 
+     * @return \App\Models\Institución
+     * @return null
+     */
     public function institucion_pertenece() {
         return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
             ->where('solicitudes_institucion.usuario_id', $this->id)
             ->where('aceptada', true)
             ->first();
+    }
+
+    public function espera_respuesta_institucion($institucion) {
+        return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
+            ->where('solicitudes_institucion.usuario_id', $this->id)
+            ->where('solicitudes_institucion.institucion_id', $institucion->id)
+            ->where('aceptada', false)
+            ->exists();
+    }
+
+    public function get_tipo_usuario_display() {
+        if ($this->is_institucion()) {
+            return 'Institución';
+        }
+        switch ($this->tipo_usuario){
+            case self::$MAESTRO:
+                return 'Maestro';
+                break;
+            case self::$ESTUDIANTE:
+                return 'Estudiante';
+                break;
+            case self::$ADMINISTRADOR:
+                return 'Administrador';
+                break;
+        }
     }
 
     public function is_estudiante() {
@@ -307,6 +353,6 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
     }
 
     public function is_institucion() {
-        return $this->tipo_usuario === self::$INSTITUCION;
+        return $this->tipo_usuario === self::$INSTITUCION && $this->institucion;
     }
 }
