@@ -41,6 +41,11 @@ Route::prefix('json')->group(function () {
         '/notificacion/{id}/leer/',
         '\App\Http\Controllers\NotificacionController@read_notificacion'
     )->name('notificacion.leer');
+
+    Route::get(
+        '/departamentos/{id}/municipios/',
+        '\App\Http\Controllers\MunicipioController@municipio_by_departamento'
+    )->name('departamento.municipios');
 });
 
 Route::middleware('notificacion')->group( function () {
@@ -61,9 +66,13 @@ Route::middleware('notificacion')->group( function () {
         Route::get('/amigos', 'UsuarioController@amigos')->name('usuario.self-amigos');
         Route::post('/profile/photo', 'UsuarioController@change_profile_photo')->name('usuario.change-profile-photo');
         Route::get('/{id}/photo', 'UsuarioController@get_user_profile_photo')->name('usuario.profile-photo');
+        Route::get('/buscar', 'UsuarioController@buscar_usuarios')->name('usuario.buscar_usuarios');
     });
 
     Route::resource('usuario', 'UsuarioController');
+    Route::resource('linea-investigacion', 'LineaInvestigacionController');
+    Route::get('/institucion/editar', 'InstitucionController@editar')->name('institucion.editar');
+    Route::resource('institucion', 'InstitucionController');
 
     Route::prefix('/posts')->group(function() {
         Route::get('/{id}', 'PostController@show')->name('post.show');

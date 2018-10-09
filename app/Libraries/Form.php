@@ -36,12 +36,7 @@ class Form
                 ];
             }
 
-            if (isset($this->_config[$field])) {
-                $config = $this->_config[$field];
-            } else {
-                $config = isset($this->_model::$form_schema[$field]) ?
-                    $this->_model::$form_schema[$field] : [];
-            }
+            $config = $this->get_config_for_field($field);
 
             $final_config = array_merge($default_config_for_field, $config);
             $final_config['xs'] = $this->get_css_class('xs', $final_config['xs']);
@@ -54,12 +49,40 @@ class Form
         return $this->fields;
     }
 
+    private function get_config_for_field($field) {
+        $config = [];
+        if (isset($this->_config[$field])) {
+            $config = $this->_config[$field];
+        }
+        return isset($this->_model::$form_schema[$field]) ?
+            array_merge($this->_model::$form_schema[$field], $config) : $config;
+    }
+
     private function field_is_select($field) {
-        return isset($this->_model::${$field . '_opciones'});
+        $config = $this->get_config_for_field($field);
+        return (isset($config['type']) && $config['type'] == 'select') || isset($this->_model::${$field . '_opciones'}) || isset($config['model']);
     }
 
     private function get_field_options($field) {
-        return $this->_model::${$field . '_opciones'};
+        $config = $this->get_config_for_field($field);
+        if (isset($config['opciones'])) {
+            return $config['opciones'];
+        }
+        if (isset($this->_model::${$field . '_opciones'})) {
+            return $this->_model::${$field . '_opciones'};
+        }
+        $opciones = [];
+        if (isset($config['model'])) {
+            $config['model']::all()->map(function ($object) use (&$opciones, $config) {
+                if (isset($object->{$config['param']})) {
+                    $opciones[$object->id] = $object->{$config['param']};
+                } else {
+                    $opciones[$object->id] = $object->nombre;
+                }
+                return null;
+            });
+        }
+        return $opciones;
     }
 
     private function get_label($field) {

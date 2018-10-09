@@ -24,13 +24,6 @@ class ConnectionMiddleware
                 'friends' => $usuario->amigos_ids()
             ]);
 
-            // Redis::publish('user.connection', json_encode([
-            //     'usuario_id' => $usuario->id,
-            //     'full_name' => $usuario->get_full_name(),
-            //     'friends' => $usuario->amigos_ids()
-            // ]));
-
-
             // Get Current Time
             $now = time();
             $min = date('i', $now);
@@ -56,28 +49,6 @@ class ConnectionMiddleware
             $online_ids = Redis::command('sunion', $keys);
 
             Redis::publish('user.connection', json_encode($online_ids));
-            // Redis::command('publish', ['message', json_encode($online_ids)]);
-
-            // /* My Friends Online */
-            // $keys = array('online_users');
-
-            // // Get Current Time
-            // $min = date('i', time());
-            // $count = 0;
-            // $minutes_ago = 5;
-            // while ($count < $minutes_ago) {
-            //     $keys[] = 'online:' . $min;
-            //     $count++;
-            //     $min--;
-            //     if($min < 0) { $min = 59; }
-            // }
-
-            // // SUNIONSTORE online_users online:10 online:9 online:8 online:7 online:6
-            // $scmd = Redis::command('sunionstore', $keys);
-            // $online_friend_ids = Redis::command(
-            //     'sinter', ['online_users', 'user:' . $user_id . '.friend_ids']
-            // );
-
         }
         return $next($request);
     }

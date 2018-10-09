@@ -1,11 +1,11 @@
 @if (isset($with_label) && $with_label)
 <label for="id-{{ $name }}">{{ $label }}</label>
 @endif
-<select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"">
+<select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"" value="{{ old( $name, isset($value) ? $value : '' ) }}">
     @if (!$with_label)
-        <option>{{ isset($label) ? $label : '' }}</option>
+        <option value="">{{ isset($label) ? $label : '' }}</option>
     @else
-        <option>Selecciona una opción</option>
+        <option value="">Selecciona una opción</option>
     @endif
     @foreach($options as $option => $lab)
         @if ($option == old( $name, isset($value) ? $value : '' ))

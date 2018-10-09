@@ -238,3 +238,7 @@ textarea {
 .amigos_activos .accordionCommon .panel-body {
     padding: 0;
 }
+
+.top-info-bar .formField .form-control {
+    height: 23px;
+}

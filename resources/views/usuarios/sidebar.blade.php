@@ -13,11 +13,17 @@
                 <div class="actions">
                     @auth
                         @if (Auth::user()->usuario->id == $usuario->id)
-                        <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('usuario.edit', $usuario->id) }}">
-                            <i class="fa fa-edit"></i>
-                        </a>
+                            @if ($usuario->is_institucion())
+                                <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('institucion.editar') }}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            @else
+                                <a data-original-title="Editar" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3" href="{{ route('usuario.edit', $usuario->id) }}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            @endif
                         @endif
-                        @if (!Auth::user()->usuario->is_amigo($usuario) && !(Auth::user()->usuario->id == $usuario->id))
+                        @if (!Auth::user()->usuario->is_amigo($usuario) && !(Auth::user()->usuario->id == $usuario->id) && !($usuario->is_institucion()))
                             @if (Auth::user()->usuario->solicitud_amistad_enviada($usuario))
                                 <a data-original-title="Esperando respuesta solicitud" data-placement="bottom" data-toggle="tooltip" disabled class="link-circle bg-color-5">
                                     <i class="fa fa-user-plus"></i>
@@ -33,9 +39,6 @@
                             @endif
                         @endif
                     @endauth
-                    <a class="link-circle bg-color-1" data-original-title="Otra opción" data-placement="bottom" data-toggle="tooltip">
-                        <i class="fa fa-edit"></i>
-                    </a>
                 </div>
                 <ul class="list-unstyled categoryItem">
                     <li>
