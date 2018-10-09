@@ -46,6 +46,7 @@
             "likePost": "{{ route('post.like', 99) }}",
             "detallePost": "{{ route('post.show', 99) }}",
             "reportarComentario": "{{ route('comentario.reportar', 99) }}",
+            "departamentoMunicipios": "{{ route('departamento.municipios', 99) }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))

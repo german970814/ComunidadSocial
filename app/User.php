@@ -31,4 +31,20 @@ class User extends Authenticatable
     public function usuario() {
         return $this->hasOne('App\Models\Usuario');
     }
+
+    public function is_estudiante() {
+        return $this->usuario->tipo_usuario === \App\Models\Usuario::$ESTUDIANTE;
+    }
+
+    public function is_maestro() {
+        return $this->usuario->tipo_usuario === \App\Models\Usuario::$MAESTRO;
+    }
+
+    public function is_administrador() {
+        return $this->usuario->tipo_usuario === \App\Models\Usuario::$ADMINISTRADOR;
+    }
+
+    public function is_institucion() {
+        return $this->usuario->tipo_usuario === \App\Models\Usuario::$INSTITUCION;
+    }
 }

@@ -21,6 +21,9 @@ class Post extends Model
         'mensaje', 'autor_id', 'usuario_destino_id', 'photo', 'tipo'
     ];
 
+    static $ACTIVO = 'A';
+    static $INACTIVO = 'I';
+
     static $post_usuario_tipo = 'usuario';
     static $post_grupo_tipo = 'grupo';
 

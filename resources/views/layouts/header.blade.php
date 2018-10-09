@@ -27,7 +27,14 @@
                     </ul>
                 </div>
                 <div class="col-sm-5"> --}}
-                <div class="col-sm-offset-8 col-sm-4">
+                <div class="col-sm-2">
+                    <form action="{{ route('usuario.buscar_usuarios') }}" method="GET">
+                        <div class="form-group formField">
+                            <input type="text" name="q" class="form-control" placeholder="Buscar" />
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-offset-6 col-sm-4">
                     <ul class="list-inline functionList">
                         @auth
                             <li><i class="fa fa-user bg-color-1" aria-hidden="true"></i> <a href="{{ route('usuario.profile') }}">{{ Auth::guard()->user()->usuario->get_full_name() }}</a></li>

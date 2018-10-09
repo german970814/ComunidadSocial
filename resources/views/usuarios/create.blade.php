@@ -15,7 +15,7 @@
                             <form method="POST" id="form-registro" action="{{ route('usuario.store') }}">
                                 @csrf
                                 <div class="form-group formField {{ $errors->has('tipo_usuario') ? ' color-3' : ''}}">
-                                    <select name="tipo_usuario" class="form-control">
+                                    <select name="tipo_usuario" class="form-control" value="{{ old('tipo_usuario', '') }}">
                                         <option value="">Tipo de usuario</option>
                                         <option value="{{ \App\Models\Usuario::$ESTUDIANTE }}">Estudiante</option>
                                         <option value="{{ \App\Models\Usuario::$MAESTRO }}">Maestro</option>
@@ -27,7 +27,7 @@
                                     @endif
                                 </div>
                                 <div class="form-group formField {{ $errors->has('tipo_documento') ? ' color-3' : ''}}">
-                                    <select name="tipo_documento" class="form-control">
+                                    <select name="tipo_documento" class="form-control" value="{{ old('tipo_documento', '') }}">
                                         <option value="">Tipo de documento</option>
                                         @foreach (\App\Models\Usuario::$tipo_documento_opciones as $opcion => $label)
                                             <option value={{ $opcion }}>{{ $label }}</option>
@@ -40,7 +40,7 @@
                                     @endif
                                 </div>
                                 <div class="form-group formField {{ $errors->has('numero_documento') ? ' color-3' : ''}}">
-                                    <input name="numero_documento" type="number" class="form-control" placeholder="Número documento">
+                                    <input name="numero_documento" type="number" value="{{ old('numero_documento', '') }}" class="form-control" placeholder="Número documento">
                                     @if ($errors->has('numero_documento'))
                                         <span class="invalid-feedback" role="alert">
                                             <strong class="color-3">{{ $errors->first('numero_documento') }}</strong>
@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="content-hidden" style="display: none;">
                                     <div class="form-group formField {{ $errors->has('nombres') ? ' color-3' : ''}}">
-                                        <input name="nombres" type="text" class="form-control" placeholder="Nombres">
+                                        <input name="nombres" type="text" value="{{ old('nombres', '') }}" class="form-control" placeholder="Nombres">
                                         @if ($errors->has('nombres'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong class="color-3">{{ $errors->first('nombres') }}</strong>
@@ -57,7 +57,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField {{ $errors->has('apellidos') ? ' color-3' : ''}}">
-                                        <input name="apellidos" type="text" class="form-control" placeholder="Apellidos">
+                                        <input name="apellidos" type="text" value="{{ old('apellidos', '') }}" class="form-control" placeholder="Apellidos">
                                         @if ($errors->has('apellidos'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong class="color-3">{{ $errors->first('apellidos') }}</strong>
@@ -65,7 +65,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField {{ $errors->has('email') ? ' color-3' : ''}}">
-                                        <input name="email" type="email" class="form-control" placeholder="Email">
+                                        <input name="email" type="email" value="{{ old('email', '') }}" class="form-control" placeholder="Email">
                                         @if ($errors->has('email'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong class="color-3">{{ $errors->first('email') }}</strong>
@@ -81,7 +81,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField {{ $errors->has('sexo') ? ' color-3' : ''}}">
-                                        <select name="sexo" class="form-control">
+                                        <select name="sexo" class="form-control" value="{{ old('sexo', '') }}">
                                             <option value="">Género</option>
                                             @foreach (\App\Models\Usuario::$sexo_opciones as $opcion => $label)
                                                 <option value={{ $opcion }}>{{ $label }}</option>
@@ -94,7 +94,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField {{ $errors->has('grupo_etnico') ? ' color-3' : ''}}">
-                                        <select name="grupo_etnico" class="form-control">
+                                        <select name="grupo_etnico" class="form-control" value="{{ old('grupo_etnico', '') }}">
                                             <option value="">Grupo étnico</option>
                                             @foreach (\App\Models\Usuario::$grupo_etnico_opciones as $opcion => $label)
                                                 <option value={{ $opcion }}>{{ $label }}</option>
@@ -107,7 +107,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField {{ $errors->has('fecha_nacimiento') ? ' color-3' : ''}}">
-                                        <input name="fecha_nacimiento" type="text" class="form-control datepicker" placeholder="Fecha Nacimiento">
+                                        <input name="fecha_nacimiento" type="text" value="{{ old('fecha_nacimiento', '') }}" class="form-control datepicker" placeholder="Fecha Nacimiento">
                                         @if ($errors->has('fecha_nacimiento'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong class="color-3">{{ $errors->first('fecha_nacimiento') }}</strong>
@@ -115,7 +115,7 @@
                                         @endif
                                     </div>
                                     <div class="form-group formField">
-                                        <input type="submit" class="btn btn-primary btn-block bg-color-3 border-color-3" value="Log in">
+                                        <input type="submit" class="btn btn-primary btn-block bg-color-3 border-color-3" value="Registrar">
                                     </div>
                                 </div>
                             </form>

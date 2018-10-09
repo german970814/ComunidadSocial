@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Libraries\ModelForm;
+use App\Libraries\{ ModelForm };
 use App\User;
 
-class Usuario extends ModelForm
+class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 {
     /**
      * Nombre de la tabla
@@ -82,6 +82,7 @@ class Usuario extends ModelForm
     static $ESTUDIANTE = 'E';
     static $MAESTRO = 'M';
     static $ADMINISTRADOR = 'A';
+    static $INSTITUCION = 'I';
 
     /**
      * Laravel User
@@ -191,7 +192,8 @@ class Usuario extends ModelForm
      * Posts que le han publicado al usuario
      */
     public function posts() {
-        return $this->hasMany('\App\Models\Post', 'usuario_destino_id');
+        return $this->hasMany('\App\Models\Post', 'usuario_destino_id')
+            ->where('posts.estado', \App\Models\Post::$ACTIVO);
     }
 
     /**
@@ -199,6 +201,13 @@ class Usuario extends ModelForm
      */
     public function feed() {
         return $this->posts()->orderBy('created_at', 'desc');
+    }
+
+    public function institucion() {
+        if ($this->tipo_usuario === self::$INSTITUCION) {
+            return $this->hasOne('\App\Models\Institucion');
+        }
+        return null;
     }
 
     /**
@@ -276,5 +285,28 @@ class Usuario extends ModelForm
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function institucion_pertenece() {
+        return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
+            ->where('solicitudes_institucion.usuario_id', $this->id)
+            ->where('aceptada', true)
+            ->first();
+    }
+
+    public function is_estudiante() {
+        return $this->tipo_usuario === self::$ESTUDIANTE;
+    }
+
+    public function is_maestro() {
+        return $this->tipo_usuario === self::$MAESTRO;
+    }
+
+    public function is_administrador() {
+        return $this->tipo_usuario === self::$ADMINISTRADOR;
+    }
+
+    public function is_institucion() {
+        return $this->tipo_usuario === self::$INSTITUCION;
     }
 }
