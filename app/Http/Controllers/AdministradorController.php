@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\GrupoInvestigacion;
-use App\Libraries\Helper;
+use App\Libraries\{ Helper, Form };
 
 
 class AdministradorController extends Controller
@@ -14,7 +14,8 @@ class AdministradorController extends Controller
     private $messages = [
         'required' => 'Este campo es requerido',
         'numero_documento.unique' => 'Parece que ya existe un usuario con este número de documento',
-        'email.unique' => 'Parece que ya existe un usuario con este email'
+        'email.unique' => 'Parece que ya existe un usuario con este email',
+        'asesor_id.exists' => 'Parece que no existe el asesor'
     ];
 
     public function create_usuario_asesor() {
@@ -129,5 +130,64 @@ class AdministradorController extends Controller
             'code' => 404,
             'message' => 'User not found'
         ]);
+    }
+
+    public function asignar_asesor_grupo($id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+
+        if (\Auth::guard()->user()->is_administrador()) {
+            $opciones = [];
+            Usuario::where('tipo_usuario', Usuario::$ASESOR)->get()->map(function ($usuario) use (&$opciones) {
+                $opciones[$usuario->id] = $usuario->get_full_name();
+            });
+
+            $form = new Form(Usuario::class, ['asesor_id'], [
+                'asesor_id' => [
+                    'type' => 'select',
+                    'label' => 'Asesor',
+                    'opciones' => $opciones
+                ]
+            ]);
+            return view('admin.asignar_asesor_grupo', compact(['form', 'grupo']));
+        }
+        abort(404, 'No tienes permisos de estar aquí');
+    }
+
+    public function guardar_asesor_grupo(Request $request, $id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+
+        if (\Auth::guard()->user()->is_administrador()) {
+            $validated_data = $request->validate([
+                'asesor_id' => 'required|exists:usuarios,id'
+            ]);
+
+            $asesor = Usuario::find($validated_data['asesor_id']);
+
+            if (!$asesor->is_asesor()) {
+                return back()->withInput();
+            }
+
+            $exists = DB::table('coordinadores_grupos_investigacion')
+                ->where('usuario_id', $asesor->id)
+                ->where('linea_investigacion_id', $grupo->id)
+                ->exists();
+
+            if (!$exists) {
+                DB::table('coordinadores_grupos_investigacion')->insert([
+                    'usuario_id' => $asesor->id,
+                    'linea_investigacion_id' => $grupo->id
+                ]);
+            }
+
+            if ($grupo->tipo == GrupoInvestigacion::$TEMATICA) {
+                return redirect()
+                    ->route('grupos.show', $grupo->id)
+                    ->with('success', 'Se ha añadido el asesor a la red');
+            }
+            return redirect()
+                ->route('grupos.show', $grupo->id)
+                ->with('success', 'Se ha añadido el asesor al grupo');
+        }
+        abort(404, 'No tienes permisos de estar aquí');
     }
 }

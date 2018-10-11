@@ -33,6 +33,11 @@
                         <a href="{{ route('grupos.solicitudes', $grupo->id) }}">Solicitudes</a>
                     </li>
                     @endif
+                    @if (\Auth::user()->is_administrador())
+                    <li>
+                        <a href="{{ route('admin.asignar-asesor-grupo', $grupo->id) }}">Asignar asesor</a>
+                    </li>
+                    @endif
                     <li>
                         <a href="{{ route('usuario.show', $grupo->institucion->usuario->id) }}">Institución</a>
                     </li>

@@ -66,6 +66,14 @@ Route::middleware('notificacion')->group( function () {
                 '/asesor/remote-data',
                 'AdministradorController@get_asesor_data'
             )->name('admin.asesor-remote-data');
+            Route::get(
+                '/grupos/{id}/asignar-asesor',
+                'AdministradorController@asignar_asesor_grupo'
+            )->name('admin.asignar-asesor-grupo');
+            Route::post(
+                '/grupos/{id}/asignar-asesor',
+                'AdministradorController@guardar_asesor_grupo'
+            )->name('admin.guardar-asesor-grupo');
         });
 
 

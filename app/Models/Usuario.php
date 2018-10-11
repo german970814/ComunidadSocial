@@ -11,11 +11,15 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 {
     /**
      * Nombre de la tabla
+     * 
+     * @var string
      */
     protected $table = 'usuarios';
 
     /**
      * Campos que se pueden llenar con el metodo create, update
+     * 
+     * @var array
      */
     protected $fillable = [
         'nombres', 'apellidos', 'sexo', 'user_id', 'tipo_documento',
@@ -25,6 +29,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Opciones de sexo
+     * 
+     * @var array
      */
     static $sexo_opciones = [
         'M' => 'Masculino',
@@ -33,6 +39,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Opciones de tipo de documento
+     * 
+     * @var array
      */
     static $tipo_documento_opciones = [
         'CC' => 'Cedula de ciudadanía',
@@ -45,6 +53,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Opciones de grupo etnico
+     * 
+     * @var array
      */
     static $grupo_etnico_opciones = [
         'IN' => 'Indigenas',
@@ -55,6 +65,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Schema para \App\Liraries\Form
+     * 
+     * @var array
      */
     static $form_schema = [
         'email' => [
@@ -203,6 +215,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Feed
+     * 
+     * @return
      */
     public function feed() {
         return $this->posts()->orderBy('created_at', 'desc');
@@ -210,6 +224,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Si es usuario institucion
+     * 
+     * @return
      */
     public function institucion() {
         if ($this->tipo_usuario === self::$INSTITUCION) {
@@ -220,6 +236,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para saber si al usuario le gusta un post específico
+     * 
+     * @return boolean
      */
     public function likes_post(\App\Models\Post $post) {
         return \DB::table('comentarios_posts')
@@ -231,6 +249,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Relación inversa para guardar solicitudes del usuario
+     * 
+     * @return void
      */
     public function agregar_solicitud(\App\Models\SolicitudAmistad $solicitud) {
         $this->solicitudes()->attach($solicitud->id);
@@ -238,6 +258,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para saber si un usuario no ha respondido a la solicitud de amistad
+     * 
+     * @return boolean
      */
     public function solicitud_amistad_enviada(Usuario $usuario) {
         // Solicitudes enviadas por el usuario
@@ -251,6 +273,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para saber si el usuario no ha respondido a una solicitud de amistad
+     * 
+     * @return boolean
      */
     public function no_confirma_solicitud(Usuario $usuario) {
         return $this->solicitudes()
@@ -261,6 +285,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para obtener la url del perfil del usuario
+     * 
+     * @return string
      */
     public function get_profile_url() {
         return route('usuario.show', $this->id);
@@ -268,6 +294,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para obtener la url de la imagen de perfil del usuario
+     * 
+     * @return string
      */
     public function get_profile_photo_url() {
         if (Storage::disk('local')->has($this->profile_photo)) {
@@ -278,6 +306,8 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     /**
      * Método para obtener el nombre del usuario
+     * 
+     * @return string
      */
     public function get_full_name() {
         if ($this->is_institucion()) {
@@ -350,6 +380,9 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         return false;
     }
 
+    /**
+     * Obtiene la representación en texto del tipo de usuario
+     */
     public function get_tipo_usuario_display() {
         if ($this->is_institucion()) {
             return 'Institución';
