@@ -33,18 +33,22 @@ class User extends Authenticatable
     }
 
     public function is_estudiante() {
-        return $this->usuario->tipo_usuario === \App\Models\Usuario::$ESTUDIANTE;
+        return $this->usuario->is_estudiante();
     }
 
     public function is_maestro() {
-        return $this->usuario->tipo_usuario === \App\Models\Usuario::$MAESTRO;
+        return $this->usuario->is_maestro();
     }
 
     public function is_administrador() {
-        return $this->usuario->tipo_usuario === \App\Models\Usuario::$ADMINISTRADOR;
+        return $this->usuario->is_administrador();
+    }
+
+    public function is_asesor() {
+        return $this->usuario->is_asesor();
     }
 
     public function is_institucion() {
-        return $this->usuario->tipo_usuario === \App\Models\Usuario::$INSTITUCION;
+        return $this->usuario->is_institucion();
     }
 }

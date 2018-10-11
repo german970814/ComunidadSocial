@@ -36,6 +36,10 @@ class Institucion extends ModelForm
         return $this->belongsTo('\App\Models\Municipio');
     }
 
+    public function grupos_investigacion() {
+        return $this->hasMany('\App\Models\GrupoInvestigacion', 'institucion_id');
+    }
+
     private function _solicitudes() {
         return \App\Models\SolicitudInstitucion::where('institucion_id', $this->id);
     }
@@ -65,5 +69,17 @@ class Institucion extends ModelForm
         return \App\Models\Usuario::find($this->integrantes_ids()->all())
             ->where('tipo_usuario', \App\Models\Usuario::$MAESTRO)
             ->all();
+    }
+
+    public function get_redes_tematicas() {
+        return $this->grupos_investigacion()
+            ->where('tipo', \App\Models\GrupoInvestigacion::$TEMATICA)
+            ->get()->all();
+    }
+
+    public function get_grupos_investigacion() {
+        return $this->grupos_investigacion()
+            ->where('tipo', \App\Models\GrupoInvestigacion::$INVESTIGACION)
+            ->get()->all();
     }
 }

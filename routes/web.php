@@ -53,6 +53,21 @@ Route::middleware('notificacion')->group( function () {
         // Lineas investigación
         Route::resource('linea-investigacion', 'LineaInvestigacionController');
 
+        Route::prefix('/admin')->group(function () {
+            Route::get(
+                '/create/asesor',
+                'AdministradorController@create_usuario_asesor'
+            )->name('admin.create-usuario-asesor');
+            Route::post(
+                '/create/asesor',
+                'AdministradorController@store_usuario_asesor'
+            )->name('admin.store-usuario-asesor');
+            Route::post(
+                '/asesor/remote-data',
+                'AdministradorController@get_asesor_data'
+            )->name('admin.asesor-remote-data');
+        });
+
 
         // Instituciones
         Route::prefix('/institucion')->group(function () {
@@ -77,10 +92,29 @@ Route::middleware('notificacion')->group( function () {
         Route::prefix('/posts')->group(function() {
             Route::get('/{id}', 'PostController@show')->name('post.show');
             Route::get('/{id}/photo', 'PostController@post_photo')->name('post.photo');
-            Route::post('/create', 'PostController@store')->name('post.store');
+            Route::post('/create/{tipo}', 'PostController@store')->name('post.store');
 
             Route::post('/{id}/comment/', 'PostController@comment')->name('post.comment');
             Route::get('/{id}/like/', 'PostController@like_post')->name('post.like');
+        });
+
+        Route::prefix('/grupos')->group(function() {
+            Route::get('/{id}', 'GrupoInvestigacionController@show')->name('grupos.show');
+            Route::get('/{id}/solicitudes', 'GrupoInvestigacionController@solicitudes_ingreso')->name('grupos.solicitudes');
+            Route::get('/{id}/solicitar', 'GrupoInvestigacionController@solicitar_unirse_grupo')->name('grupos.solicitar');
+            Route::get('/{id}/integrantes', 'GrupoInvestigacionController@integrantes')->name('grupos.integrantes');
+            Route::get('/solicitud/{id}/aceptar', 'GrupoInvestigacionController@aceptar_solicitud')->name('grupos.solicitud-aceptar');
+            Route::get('/solicitud/{id}/rechazar', 'GrupoInvestigacionController@rechazar_solicitud')->name('grupos.solicitud-rechazar');
+            Route::get('/create/{tipo}/{institucion_id}', 'GrupoInvestigacionController@create')->name('grupos.create');
+            Route::post('/store/{tipo}/{institucion_id}', 'GrupoInvestigacionController@store')->name('grupos.store');
+            Route::get(
+                '/{tipo}/usuario/{usuario_id}',
+                'GrupoInvestigacionController@grupos_investigacion_usuario'
+            )->name('grupos.grupos-investigacion-usuario');
+            Route::get(
+                '/{tipo}/institucion/{usuario_id}',
+                'GrupoInvestigacionController@grupos_investigacion_institucion'
+            )->name('grupos.grupos-investigacion-institucion');
         });
     });
 
@@ -102,10 +136,14 @@ Route::middleware('notificacion')->group( function () {
             '/{id}/solicitud-amistad/',
             'SolicitudAmistadController@solicitud_amistad'
         )->name('usuario.solicitar-amistad');
-         Route::middleware('auth')->get(
+        Route::middleware('auth')->get(
             '/{id}/aceptar-solicitud-amistad/',
             '\App\Http\Controllers\SolicitudAmistadController@aceptar_solicitud_amistad'
         )->name('usuario.aceptar-solicitud-amistad');
+        Route::middleware('auth')->get(
+            '/{id}/rechazar-solicitud-amistad/',
+            '\App\Http\Controllers\SolicitudAmistadController@rechazar_solicitud_amistad'
+        )->name('usuario.rechazar-solicitud-amistad');
     });
     Route::resource('usuario', 'UsuarioController');
 });

@@ -17,4 +17,8 @@ class LineaInvestigacion extends ModelForm
         'T' => 'Temática',
         'I' => 'Investigación'
     ];
+
+    public function get_nombre() {
+        return $this->nombre;
+    }
 }

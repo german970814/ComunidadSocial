@@ -29,8 +29,11 @@
                                     <i class="fa fa-user-times"></i>
                                 </a>
                             @elseif (Auth::user()->usuario->no_confirma_solicitud($usuario))
-                                <a data-original-title="Aún no confirmas la solicitud, deseas aceptar?" data-placement="bottom" data-toggle="tooltip" disabled class="link-circle bg-color-6">
-                                    <i class="fa fa-user-plus"></i>
+                                <a href="{{ route('usuario.aceptar-solicitud-amistad', $usuario->id) }}" data-original-title="Aceptar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-1">
+                                    <i class="fa fa-check"></i>
+                                </a>
+                                <a href="{{ route('usuario.rechazar-solicitud-amistad', $usuario->id) }}" data-original-title="Eliminar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3">
+                                    <i class="fa fa-times"></i>
                                 </a>
                             @else
                                 <a href="{{ route('usuario.solicitar-amistad', $usuario->id) }}" data-original-title="Agregar Amigos" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-2">
@@ -60,12 +63,22 @@
                     <li>
                         <a href="#">Fotos</a>
                     </li>
+                    @if ($usuario->is_estudiante() || $usuario->is_maestro() || $usuario->is_institucion())
                     <li>
-                        <a href="#">Grupos de investigación</a>
+                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        @elseif ($usuario->is_institucion())
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        @endif
                     </li>
                     <li>
-                        <a href="#">Redes temáticas</a>
+                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        @elseif ($usuario->is_institucion())
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        @endif
                     </li>
+                    @endif
                     <li>
                         @if ((\Auth::guard()->user()->is_administrador() && $usuario->is_institucion()) || (\Auth::guard()->user()->is_institucion() && \Auth::guard()->user()->usuario->id == $usuario->id))
                             <a href="{{ route('institucion.solicitudes-ingreso-institucion', $usuario->institucion->id) }}">Solicitudes Ingreso Institución</a>

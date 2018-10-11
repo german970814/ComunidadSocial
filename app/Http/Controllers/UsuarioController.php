@@ -65,7 +65,6 @@ class UsuarioController extends Controller
         try {
             DB::beginTransaction();
             $user = Usuario::create_user($validated_data);
-            // echo var_dump(array_merge($validated_data, ['user_id' => $user->id]));
             $usuario = Usuario::create(
                 array_merge($validated_data, ['user_id' => $user->id])
             );
@@ -73,9 +72,36 @@ class UsuarioController extends Controller
             \Auth::login($user);
 
             if ($validated_data['tipo_usuario'] == Usuario::$MAESTRO) {
-                // $table = 'ins_docente';
-                // DB::connection('remote')
-                // ->table('ins_estumatricula');
+                $docente_remoto = DB::connection('remote')
+                    ->table('ins_docente')
+                    ->where('identificacion', 'ILIKE', '%' . $validated_data['numero_documento'] . '%')
+                    ->first();
+
+                if ($docente_remoto) {
+                    $matricula = DB::connection('remote')
+                        ->table('ins_gradodocente')
+                        ->where('identificacion', $docente_remoto->identificacion)
+                        ->where('codanio', 2)->first();
+
+                    if (!$matricula) {
+                        $matricula = DB::connection('remote')
+                            ->table('ins_gradodocente')
+                            ->where('identificacion', $docente_remoto->identificacion)
+                            ->where('codanio', 1)->first();
+                    }
+
+                    if ($matricula) {
+                        $institucion = \App\Models\Institucion::where(
+                            'codigo', $matricula->codsede
+                        )->first();
+
+                        if ($institucion) \App\Models\SolicitudInstitucion::create([
+                            'usuario_id' => $usuario->id,
+                            'institucion_id' => $institucion->id,
+                            'aceptada' => true
+                        ]);
+                    }
+                }
             } else {
                 $usuario_remoto = DB::connection('remote')
                     ->table('ins_estudiante')
@@ -100,7 +126,7 @@ class UsuarioController extends Controller
                             'codigo', $matricula->codsede
                         )->first();
 
-                        \App\Models\SolicitudInstitucion::create([
+                        if ($institucion) \App\Models\SolicitudInstitucion::create([
                             'usuario_id' => $usuario->id,
                             'institucion_id' => $institucion->id,
                             'aceptada' => true

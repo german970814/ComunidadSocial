@@ -79,10 +79,11 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
     /**
      * Tipo usuario constantes
      */
-    static $ESTUDIANTE = 'E';
+    static $ASESOR = 'S';
     static $MAESTRO = 'M';
-    static $ADMINISTRADOR = 'A';
+    static $ESTUDIANTE = 'E';
     static $INSTITUCION = 'I';
+    static $ADMINISTRADOR = 'A';
 
     /**
      * Laravel User
@@ -309,18 +310,44 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
      * @return null
      */
     public function institucion_pertenece() {
-        return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
-            ->where('solicitudes_institucion.usuario_id', $this->id)
-            ->where('aceptada', true)
-            ->first();
+        if ($this->is_maestro() || $this->is_estudiante()) {
+            $solicitud = SolicitudInstitucion::where('usuario_id', $this->id)
+                ->where('aceptada', true)
+                ->first();
+            if ($solicitud) {
+                return $solicitud->institucion;
+            }
+        }
+        return null;
     }
 
-    public function espera_respuesta_institucion($institucion) {
-        return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
-            ->where('solicitudes_institucion.usuario_id', $this->id)
-            ->where('solicitudes_institucion.institucion_id', $institucion->id)
-            ->where('aceptada', false)
-            ->exists();
+    /**
+     * Método para saber si un usuario espera respuesta de unirse a una institución
+     * 
+     * @return bool
+     */
+    public function espera_respuesta_institucion($institucion) {  // TODO: Cambiar a consultar el modelo SolicitudInsitucion
+        if ($this->is_maestro() || $this->is_estudiante()) {
+            return Institucion::join('solicitudes_institucion', 'instituciones.id', 'solicitudes_institucion.institucion_id')
+                ->where('solicitudes_institucion.usuario_id', $this->id)
+                ->where('solicitudes_institucion.institucion_id', $institucion->id)
+                ->where('aceptada', false)
+                ->exists();
+        }
+        return false;
+    }
+
+    /**
+     * Método para saber si un usuario espera respuesta de unirse a un grupo de investigación
+     */
+    public function espera_respuesta_grupo($grupo) {
+        if ($this->is_maestro() || $this->is_estudiante()) {
+            return SolicitudGrupoInvestigacion::where('grupo_investigacion_id', $grupo->id)
+                ->where('usuario_id', $this->id)
+                ->where('aceptada', false)
+                ->exists();
+        }
+        return false;
     }
 
     public function get_tipo_usuario_display() {
@@ -334,10 +361,68 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
             case self::$ESTUDIANTE:
                 return 'Estudiante';
                 break;
+            case self::$ASESOR:
+                return 'Asesor';
+                break;
             case self::$ADMINISTRADOR:
                 return 'Administrador';
                 break;
         }
+    }
+
+    /**
+     * Método para obtener los grupos de investigacion a los que
+     * pertenece el usuario
+     */
+    public function get_grupos_investigacion_pertenece() {
+        $grupos_ids = \DB::table('solicitudes_grupo_investigacion')
+            ->where('usuario_id', $this->id)
+            ->where('aceptada', true)
+            ->select('grupo_investigacion_id as id')
+            ->get()->map(function ($grupo) {
+                return $grupo->id;
+            });
+        return \App\Models\GrupoInvestigacion::find($grupos_ids->all())
+            ->where('tipo', \App\Models\GrupoInvestigacion::$INVESTIGACION);
+    }
+
+    /**
+     * Método para obtener las redes temáticas a los que
+     * pertenece el usuario
+     */
+    public function get_redes_tematicas_pertenece() {
+        $grupos_ids = \DB::table('solicitudes_grupo_investigacion')
+            ->where('usuario_id', $this->id)
+            ->where('aceptada', true)
+            ->select('grupo_investigacion_id as id')
+            ->get()->map(function ($grupo) {
+                return $grupo->id;
+            });
+        return \App\Models\GrupoInvestigacion::find($grupos_ids->all())
+            ->where('tipo', \App\Models\GrupoInvestigacion::$TEMATICA);
+    }
+
+    /**
+     * Método para saber si un usuario pertenece a un grupo
+     * de investigación
+     */
+    public function pertenece_grupo($grupo) {
+        return \DB::table('solicitudes_grupo_investigacion')
+            ->where('usuario_id', $this->id)
+            ->where('grupo_investigacion_id', $grupo->id)
+            ->where('aceptada', true)
+            ->exists();
+    }
+
+    /**
+     * Método para saber si un usuario puede unirse a un grupo
+     * de investigación
+     */
+    public function puede_unirse_grupo($grupo) {
+        if (!$this->institucion_pertenece() || $this->pertenece_grupo($grupo)) {
+            return false;
+        }
+        return $grupo->institucion->id == $this->institucion_pertenece()->id;
     }
 
     public function is_estudiante() {
@@ -350,6 +435,10 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 
     public function is_administrador() {
         return $this->tipo_usuario === self::$ADMINISTRADOR;
+    }
+
+    public function is_asesor() {
+        return $this->tipo_usuario === self::$ASESOR;
     }
 
     public function is_institucion() {

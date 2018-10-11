@@ -25,29 +25,38 @@ class PostController extends Controller
         return view('posts.post', ['post' => $post]);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request, $tipo) {
         $usuario = \Auth::guard()->user()->usuario;
 
-        $validated_data = $request->validate([
-            'mensaje' => 'required',
-            'usuario_destino_id' => 'required',
-            'photo' => 'file|image|mimes:jpeg,png,gif,webp|max:2048'
-        ], $this->messages);
+        if (!($tipo == Post::$post_usuario_tipo || $tipo == Post::$post_grupo_tipo)) {
+            return back()->with('error', 'Petición incorrecta');
+        }
+
+        if ($tipo == Post::$post_usuario_tipo) {
+            $validated_data = $request->validate([
+                'mensaje' => 'required',
+                'usuario_destino_id' => 'required|exists:usuarios,id',
+                'photo' => 'file|image|mimes:jpeg,png,gif,webp|max:2048'
+            ], $this->messages);
+        } else {
+            $validated_data = $request->validate([
+                'mensaje' => 'required',
+                'grupo_destino_id' => 'required|exists:grupos_investigacion,id',
+                'photo' => 'file|image|mimes:jpeg,png,gif,webp|max:2048'
+            ], $this->messages);
+        }
 
         $data = array_merge($validated_data, [
             'autor_id' => $usuario->id
         ]);
 
-        $usuario_destino_id = $data['usuario_destino_id'];
-        $usuario_destino = \App\Models\Usuario::find($usuario_destino_id)->exists();
-
-        if ($usuario_destino) {
+        if ($tipo == Post::$post_usuario_tipo) {
             $file = isset($validated_data['photo']) ? $validated_data['photo'] : null;
             $post = Post::create([
                 'autor_id' => $data['autor_id'],
                 'mensaje' => $data['mensaje'],
                 'tipo' => Post::$post_usuario_tipo,
-                'usuario_destino_id' => $usuario_destino_id
+                'usuario_destino_id' => $data['usuario_destino_id']
             ]);
 
             if ($file) {
@@ -58,19 +67,34 @@ class PostController extends Controller
                 $post->update(['photo' => $filename]);
             }
 
-            if ($usuario_destino_id != $usuario->id) {
-                Notificacion::create_publicacion_post($post, $usuario, ['usuario_id' => $usuario_destino_id]);
+            if ($data['usuario_destino_id'] != $usuario->id) {
+                Notificacion::create_publicacion_post($post, $usuario, ['usuario_id' => $data['usuario_destino_id']]);
+                return redirect()->route('usuario.show', $data['usuario_destino_id']);
             }
-            return redirect()->route('usuario.show', $usuario_destino_id);
+            return redirect()->route('usuario.profile');
         }
+
+        $file = isset($validated_data['photo']) ? $validated_data['photo'] : null;
+        $grupo = \App\Models\GrupoInvestigacion::find($data['grupo_destino_id']);
 
         $post = Post::create([
             'autor_id' => $data['autor_id'],
             'mensaje' => $data['mensaje'],
-            'usuario_destino_id' => $data['autor_id']
+            'tipo' => Post::$post_grupo_tipo,
+            'grupo_destino_id' => $grupo->id
         ]);
 
-        return redirect()->route('usuario.profile');
+        if ($file) {
+            $filename = sprintf(
+                'posts/post-%s.%s', $post->id, $file->getClientOriginalExtension()
+            );
+            Storage::disk('local')->put($filename, File::get($file));
+            $post->update(['photo' => $filename]);
+        }
+
+        // Notificación
+        // Notificacion::create_publicacion_post($post, $usuario, ['usuario_id' => $grupo->id]);
+        return redirect()->route('grupos.show', $grupo->id);
     }
 
     public function comment(Request $request, $id) {

@@ -1,10 +1,10 @@
-@extends('usuarios.base_profile')
+@extends('grupos.base')
 
 @section('section')
 <section>
-    @include('layouts.title_page', ['title_page' => 'Solicitudes de Amistad'])
+    @include('layouts.title_page', ['title_page' => 'Solicitudes de ingreso a grupo'])
     <div class="row">
-        @foreach ($usuario->solicitudes_amistad_pendientes() as $solicitud)
+        @foreach ($grupo->get_solicitudes_ingreso() as $solicitud)
         <div class="col-sm-3 col-xs-12">
             <div class="teamContent teamAdjust">
                 <div class="teamImage">
@@ -22,10 +22,10 @@
                     <p>{{ $solicitud->usuario->get_tipo_usuario_display() }}</p>
                 </div>
                 <div class="row solicitudes-actions" style="text-align: center;">
-                    <a href="{{ route('usuario.aceptar-solicitud-amistad', $solicitud->usuario->id) }}" data-original-title="Aceptar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-1">
+                    <a href="{{ route('grupos.solicitud-aceptar', $solicitud->id) }}" data-original-title="Aceptar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-1">
                         <i class="fa fa-check"></i>
                     </a>
-                    <a href="{{ route('usuario.rechazar-solicitud-amistad', $solicitud->usuario->id) }}" data-original-title="Eliminar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3">
+                    <a href="{{ route('grupos.solicitud-rechazar', $solicitud->id) }}" data-original-title="Eliminar solicitud" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3">
                         <i class="fa fa-times"></i>
                     </a>
                 </div>
