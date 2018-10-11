@@ -11,4 +11,12 @@ class SolicitudInstitucion extends Model
     protected $fillable = [
         'usuario_id', 'aceptada', 'institucion_id'
     ];
+
+    public function usuario() {
+        return $this->belongsTo('App\Models\Usuario');
+    }
+
+    public function institucion() {
+        return $this->belongsTo('App\Models\Institucion');
+    }
 }

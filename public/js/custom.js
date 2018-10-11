@@ -27,6 +27,24 @@ $(document).ready(function () {
   })
 
   /**
+   * Evento para enviar una solicitud de ingreso a institucion
+   */
+  $('a.solicitud-institucion').on('click', function (e) {
+    e.preventDefault();
+    var institucionId = $(this).data('institucion-id');
+
+    $.ajax({
+      method: 'GET',
+      url: window._app_config.routes.solicitarIngresoInstitucion.replace('99', institucionId),
+      success: (data) => {
+        if (data.code === 200) {
+          $.notify({ message: data.message }, { type: 'success' })
+        }
+      }
+    })
+  })
+
+  /**
    * Evento para aceptar una solicitud de amistad
    */
   $('button.aceptar-solicitud').on('click', function (e) {

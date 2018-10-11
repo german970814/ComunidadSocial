@@ -120,7 +120,7 @@ class CreateInitialTables extends Migration
         /**
          * Tabla de departamentos
          * 
-         * @model null
+         * @model \App\Models\Departamento
          */
         Schema::create('departamentos', function (Blueprint $table) {
             $table->increments('id');
@@ -132,7 +132,7 @@ class CreateInitialTables extends Migration
         /**
          * Tabla de municipios
          * 
-         * @model null
+         * @model \App\Models\Municipio
          */
         Schema::create('municipios', function (Blueprint $table) {
             $table->increments('id');
@@ -219,7 +219,7 @@ class CreateInitialTables extends Migration
         /**
          * Tabla de solicitudes de ingreso de los grupos de investigación
          * 
-         * @model null
+         * @model \App\Models\SolicitudGrupoInvestigacion
          */
         Schema::create('solicitudes_grupo_investigacion', function (Blueprint $table) {
             $table->increments('id');

@@ -65,7 +65,6 @@ class UsuarioController extends Controller
         try {
             DB::beginTransaction();
             $user = Usuario::create_user($validated_data);
-            // echo var_dump(array_merge($validated_data, ['user_id' => $user->id]));
             $usuario = Usuario::create(
                 array_merge($validated_data, ['user_id' => $user->id])
             );
@@ -73,9 +72,36 @@ class UsuarioController extends Controller
             \Auth::login($user);
 
             if ($validated_data['tipo_usuario'] == Usuario::$MAESTRO) {
-                // $table = 'ins_docente';
-                // DB::connection('remote')
-                // ->table('ins_estumatricula');
+                $docente_remoto = DB::connection('remote')
+                    ->table('ins_docente')
+                    ->where('identificacion', 'ILIKE', '%' . $validated_data['numero_documento'] . '%')
+                    ->first();
+
+                if ($docente_remoto) {
+                    $matricula = DB::connection('remote')
+                        ->table('ins_gradodocente')
+                        ->where('identificacion', $docente_remoto->identificacion)
+                        ->where('codanio', 2)->first();
+
+                    if (!$matricula) {
+                        $matricula = DB::connection('remote')
+                            ->table('ins_gradodocente')
+                            ->where('identificacion', $docente_remoto->identificacion)
+                            ->where('codanio', 1)->first();
+                    }
+
+                    if ($matricula) {
+                        $institucion = \App\Models\Institucion::where(
+                            'codigo', $matricula->codsede
+                        )->first();
+
+                        if ($institucion) \App\Models\SolicitudInstitucion::create([
+                            'usuario_id' => $usuario->id,
+                            'institucion_id' => $institucion->id,
+                            'aceptada' => true
+                        ]);
+                    }
+                }
             } else {
                 $usuario_remoto = DB::connection('remote')
                     ->table('ins_estudiante')
@@ -100,7 +126,7 @@ class UsuarioController extends Controller
                             'codigo', $matricula->codsede
                         )->first();
 
-                        \App\Models\SolicitudInstitucion::create([
+                        if ($institucion) \App\Models\SolicitudInstitucion::create([
                             'usuario_id' => $usuario->id,
                             'institucion_id' => $institucion->id,
                             'aceptada' => true
@@ -216,6 +242,18 @@ class UsuarioController extends Controller
         return view('usuarios.amigos', ['usuario' => $usuario]);
     }
 
+    public function solicitudes_amistad_usuario($id=null) {
+        $usuario_request = \Auth::guard()->user()->usuario;
+        if ($id && $usuario_request->is_administrador()) {
+            $usuario = Usuario::findOrFail($id);
+        } elseif ($id) {
+            return redirect()->route('usuario.solicitudes-amistad');
+        } elseif ($usuario_request->is_estudiante() || $usuario_request->is_maestro()) {
+            $usuario = $usuario_request;
+        }
+        return view('usuarios.solicitudes_amistad', compact(['usuario']));
+    }
+
     /**
      * Método para buscar amigos de un usuario
      */
@@ -223,7 +261,26 @@ class UsuarioController extends Controller
         $usuario = \Auth::guard()->user()->usuario;
         $validated_data = $request->q;
 
-        $usuarios = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')->get()->all();
+        $maestros = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$MAESTRO)->get()->all();
+        $estudiantes = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$ESTUDIANTE)->get()->all();
+        $instituciones = Usuario::where('nombres', 'ILIKE', '%' . $validated_data . '%')
+            ->where('tipo_usuario', Usuario::$INSTITUCION)->get()->all();
+        $usuarios = [
+            'maestros' => [
+                'title' => 'Maestros',
+                'data' => $maestros
+            ],
+            'estudiantes' => [
+                'title' => 'Estudiantes',
+                'data' => $estudiantes
+            ],
+            'instituciones' => [
+                'title' => 'Instituciones',
+                'data' => $instituciones
+            ]
+        ];
         return view('usuarios.buscar', ['usuario' => $usuario, 'usuarios' => $usuarios]);
     }
 

@@ -18,7 +18,8 @@ class Post extends Model
      * Campos que se pueden llenar con el metodo create, update
      */
     protected $fillable = [
-        'mensaje', 'autor_id', 'usuario_destino_id', 'photo', 'tipo'
+        'mensaje', 'autor_id', 'usuario_destino_id',
+        'photo', 'tipo', 'estado', 'grupo_destino_id'
     ];
 
     static $ACTIVO = 'A';

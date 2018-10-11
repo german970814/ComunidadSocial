@@ -1,4 +1,4 @@
-<div class="col-sm-6 col-xs-12">
+<div class="col-xs-12">
     <div class="pagerArea text-center">
         <ul class="pager">
         <li class="prev"><a href="#"><i class="fa fa-arrow-left" aria-hidden="true"></i>Prev</a></li>

@@ -110,9 +110,14 @@ class Notificacion extends Model
 
                 if ($solicitud_amistad && !$solicitud_amistad->aceptada) {
                     $sufix = sprintf('
-                        <button data-user-id="%s" class="aceptar-solicitud btn">ACEPTAR</button>
-                        <button data-user-id="%s" class="no-aceptar-solicitud btn">NO ACEPTAR</button>
-                    ', $this->usuario_sender->id, $this->usuario_sender->id);
+                        <div class="notificacion-solicitud-amistad">
+                            <a href="%s" class="btn bg-color-1">ACEPTAR</a>
+                            <a href="%s" class="btn bg-color-3">NO ACEPTAR</a>
+                        </div>
+                        ',
+                        route('usuario.aceptar-solicitud-amistad', $this->usuario_sender->id),
+                        route('usuario.rechazar-solicitud-amistad', $this->usuario_sender->id)
+                    );
                 }
                 return $mensaje . $sufix;
             case Notificacion::$solicitud_amistad_aceptada_tipo:
