@@ -42,7 +42,7 @@
                             <li class="cart-dropdown">
                                 <a href="#" class="bg-color-3 shop-cart" tabindex="2">
                                     <i class="fa fa-bell" aria-hidden="true"></i>
-                                    <span id="notificaciones-pendientes" class="badge bg-color-1 {{ $notificaciones_pendientes() >= 1 ? '' : 'hidden' }}">{{ $notificaciones_pendientes() }}</span>
+                                    <span id="notificaciones-pendientes" class="badge bg-color-2 {{ $notificaciones_pendientes() >= 1 ? '' : 'hidden' }}">{{ $notificaciones_pendientes() }}</span>
                                 </a>
                                 <ul tabindex="1" id="notificacion-dropdown" class="dropdown-menu dropdown-menu-right">
                                     <li class="color-3"><i class="fa fa-bell color-3" aria-hidden="true"></i>Notificaciones</li>

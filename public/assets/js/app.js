@@ -64,6 +64,7 @@ jQuery(document).ready(function(){
   $('.datepicker').datepicker({
     changeYear: true,
     changeMonth: true,
+    defaultDate: new Date(1980, 0, 1),
     monthNames: [
       'Enero', 'Febrero', 'Marzo',
       'Abril', 'Mayo', 'Junio',
