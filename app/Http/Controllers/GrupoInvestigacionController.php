@@ -140,7 +140,7 @@ class GrupoInvestigacionController extends Controller
                 $grupos = $usuario->institucion->get_grupos_investigacion();
                 $title = 'Grupos de investigación de la institución';
             }
-            return view('grupos.grupo_investigacion_usuario', compact(['grupos', 'usuario', 'title']));
+            return view('grupos.grupo_investigacion_usuario', compact(['grupos', 'usuario', 'title', 'tipo']));
         }
         abort(403, 'No tienes permisos de estar aquí');
     }

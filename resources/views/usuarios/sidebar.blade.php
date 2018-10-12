@@ -86,6 +86,11 @@
                             <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">Ver solicitudes de amistad</a>
                         @endif
                     </li>
+                    @if (($usuario->is_estudiante() || $usuario->is_maestro()) && $usuario->institucion_pertenece())
+                        <li>
+                            <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">Institución a la que pertenece</a>
+                        </li>
+                    @endif
                     @if (!$usuario->is_institucion())
                         <li>
                             <a href="{{ route('usuario.amigos', $usuario->id) }}">Amigos</a>

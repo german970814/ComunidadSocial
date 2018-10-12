@@ -61,7 +61,29 @@ jQuery(document).ready(function(){
 
 /*======== 3. SELECT BOX ========*/
   $('.select-drop').selectbox();
-  $('.datepicker').datepicker();
+  $('.datepicker').datepicker({
+    changeYear: true,
+    changeMonth: true,
+    monthNames: [
+      'Enero', 'Febrero', 'Marzo',
+      'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre',
+      'Octubre', 'Noviembre', 'Diciembre'
+    ],
+    monthNamesShort: [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May',
+      'Jun', 'Jul', 'Ago', 'Sep', 'Oct',
+      'Nov', 'Dic'
+    ],
+    dayNames: [
+      'Domingo', 'Lunes', 'Martes', 'Miercoles',
+      'Jueves', 'Viernes', 'Sábado'
+    ],
+    dayNamesShort: [
+      'Dom', 'Lun', 'Mar', 'Mie', 'Jue',
+      'Vie', 'Sab'
+    ]
+  });
 
 /*======== 4. MENU DROPDOWN ON HOVER ========*/
   var header_area = $('.header-wrapper');

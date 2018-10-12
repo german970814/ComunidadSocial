@@ -159,10 +159,13 @@ class UsuarioController extends Controller
      */
     public function edit($id) {
         $usuario = Usuario::findOrFail($id);
-        $form_fields = ['nombres', 'apellidos', 'sexo', 'tipo_documento', 'numero_documento', 'grupo_etnico'];
-        // $form = new Form('\App\Models\Usuario', $form);
-        $form = new Form($usuario, $form_fields);
-        return view('usuarios.edit', ['usuario' => $usuario, 'form' => $form]);
+        if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->usuario->id == $id) {
+            $form_fields = ['nombres', 'apellidos', 'sexo', 'tipo_documento', 'numero_documento', 'grupo_etnico'];
+            // $form = new Form('\App\Models\Usuario', $form);
+            $form = new Form($usuario, $form_fields);
+            return view('usuarios.edit', ['usuario' => $usuario, 'form' => $form]);
+        }
+        abort(404, 'La página que solicita no existe');
     }
 
     /**
@@ -171,39 +174,44 @@ class UsuarioController extends Controller
      * @post
      */
     public function update(Request $request, $id) {
-        $validated_data = $request->validate([
-            'sexo' => 'required',
-            'nombres' => 'required',
-            'apellidos' => 'required',
-            'tipo_documento' => 'required',
-            'numero_documento' => 'required',
-        ], $this->messages);
+        $usuario = Usuario::findOrFail($id);
 
-        try {
-            DB::beginTransaction();
-            $usuario = Usuario::find($id);
-            $usuario->update(array_merge($validated_data));
-            $user = $usuario->user->update($validated_data);
-            DB::commit();
-
-            return redirect()
-                ->route('usuario.edit', $usuario->id)
-                ->with('success', 'Se ha editado la información');
-        } catch(\PDOException $e) {
-            DB::rollback();
-            throw $e;
+        if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->usuario->id == $id) {
+            $validated_data = $request->validate([
+                'sexo' => 'required',
+                'nombres' => 'required',
+                'apellidos' => 'required',
+                'tipo_documento' => 'required',
+                'numero_documento' => 'required',
+            ], $this->messages);
+    
+            try {
+                DB::beginTransaction();
+                $usuario->update(array_merge($validated_data));
+                $user = $usuario->user->update($validated_data);
+                DB::commit();
+    
+                return redirect()
+                    ->route('usuario.edit', $usuario->id)
+                    ->with('success', 'Se ha editado la información');
+            } catch(\PDOException $e) {
+                DB::rollback();
+                throw $e;
+            }
         }
+        abort(404, 'La página que solicita no existe');
     }
 
     /**
      * Método para cambiar la foto de perfil de un usuario
      */
     public function change_profile_photo(Request $request) {
+        $usuario = \Auth::guard()->user()->usuario;
+
         $validation = $request->validate([
             'photo' => 'required|file|image|mimes:jpeg,png,gif,webp|max:2048'
         ]);
 
-        $usuario = \Auth::guard()->user()->usuario;
         $file = $validation['photo'];
         $filename = sprintf(
             'profiles/usuario-%s.%s', $usuario->id, $file->getClientOriginalExtension()
@@ -235,7 +243,7 @@ class UsuarioController extends Controller
      */
     public function amigos($id=null) {
         if ($id) {
-            $usuario = Usuario::find($id);
+            $usuario = Usuario::findOrFail($id);
         } else {
             $usuario = \App\User::findOrFail(\Auth::guard()->user()->id)->usuario;
         }
