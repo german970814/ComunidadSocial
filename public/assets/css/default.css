@@ -1,7 +1,7 @@
 /*================= $color1 ==================*/
 .color-1,
 .courseList .media-body .list-inline.btnPart.btn-yellow > li a.btn-link:hover {
-  color: #f0c24b !important;
+  color: #004B96 !important;
 }
 
 .navbar-default.lightHeader .navbar-nav > li.active.color-1 > a,
@@ -15,31 +15,31 @@
 .block .list-inline.btn-yellow .btn-link:hover,
 .teamContent:hover .teamInfo h3 a,
 .eventContent .list-inline.btn-yellow .btn-primary:hover {
-  color: #f0c24b;
+  color: #004B96;
 }
 
 .bg-color-1,
 .courseList .media-body .list-inline.btnPart.btn-yellow > li a.btn-primary:hover {
-  background-color: #f0c24b !important;
+  background-color: #004B96 !important;
 }
 
 .navbar-nav > li.color-1.singleDrop > .dropdown-menu li a:hover,
 .navbar-nav > li.color-1.singleDrop > .dropdown-menu li.active a:hover,
 .block .list-inline.btn-yellow .btn-primary:hover {
-  background-color: #f0c24b;
+  background-color: #004B96;
 }
 
 .border-color-1 {
-  border-color: #f0c24b !important;
+  border-color: #004B96 !important;
 }
 
 .table-curved > thead:first-child > tr > th:first-child,
 .cartInfo .table-responsive .table thead tr {
-  border-color: #f0c24b;
+  border-color: #004B96;
 }
 
 .navbar-nav > li.color-1.dropdown a:after {
-  border-bottom-color: #f0c24b;
+  border-bottom-color: #004B96;
 }
 
 @media (min-width: 768px) {
@@ -47,7 +47,7 @@
   .navbar-nav > li.color-1.singleDrop > .dropdown-menu,
   .navbar-nav > li.color-1.singleDrop > .dropdown-menu li .dropdown-menu,
   .navbar-nav > li.color-1 > a > span {
-    border-color: #f0c24b;
+    border-color: #004B96;
   }
 }
 

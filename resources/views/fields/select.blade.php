@@ -1,7 +1,7 @@
 @if (isset($with_label) && $with_label)
 <label for="id-{{ $name }}">{{ $label }}</label>
 @endif
-<select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-5' }}"" value="{{ old( $name, isset($value) ? $value : '' ) }}">
+<select id="id-{{ $name }}" name="{{ $name }}" class="form-control {{ $errors->has($name) ? ' border-color-3' : ' border-color-1' }}"" value="{{ old( $name, isset($value) ? $value : '' ) }}">
     @if (!$with_label)
         <option value="">{{ isset($label) ? $label : '' }}</option>
     @else

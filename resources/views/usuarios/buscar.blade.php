@@ -12,13 +12,13 @@
                     <div class="teamContent teamAdjust">
                         <div class="teamImage">
                             <img src="{{ $usuario_busqueda->get_profile_photo_url() }}" alt="img-friend" class="img-circle img-responsive">
-                            <div class="maskingContent">
+                            {{-- <div class="maskingContent">
                                 <ul class="list-inline">
                                     <li><a href="#"><i class="fa fa-facebook"></i></a></li>
                                     <li><a href="#"><i class="fa fa-facebook"></i></a></li>
                                     <li><a href="#"><i class="fa fa-facebook"></i></a></li>
                                 </ul>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="teamInfo teamTeacher">
                             <h3><a href="{{ route('usuario.show', $usuario_busqueda->id) }}">{{ $usuario_busqueda->get_full_name() }}</a></h3>

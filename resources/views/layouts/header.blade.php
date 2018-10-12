@@ -1,22 +1,22 @@
 <header id="pageTop" class="header-wrapper">
     <div class="container-fluid color-bar top-fixed clearfix">
         <div class="row">
-            <div class="col-sm-1 col-xs-2 bg-color-1">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-2">fix bar</div>
             <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-4">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-5">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-6">fix bar</div>
-            <div class="col-sm-1 bg-color-1 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-2 hidden-xs">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
             <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-4 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-5 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-6 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
         </div>
     </div>
 
-    <div class="top-info-bar bg-color-7 hidden-xs">
+    <div class="top-info-bar bg-color-primary hidden-xs">
         <div class="container">
             <div class="row">
                 {{-- <div class="col-sm-7">
@@ -37,10 +37,10 @@
                 <div class="col-sm-offset-6 col-sm-4">
                     <ul class="list-inline functionList">
                         @auth
-                            <li><i class="fa fa-user bg-color-1" aria-hidden="true"></i> <a href="{{ route('usuario.profile') }}">{{ Auth::guard()->user()->usuario->get_full_name() }}</a></li>
+                            <li><i class="fa fa-user bg-color-2" aria-hidden="true"></i> <a href="{{ route('usuario.profile') }}">{{ Auth::guard()->user()->usuario->get_full_name() }}</a></li>
                             <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href="/logout">Salir</a></li>
                             <li class="cart-dropdown">
-                                <a href="#" class="bg-color-6 shop-cart" tabindex="2">
+                                <a href="#" class="bg-color-3 shop-cart" tabindex="2">
                                     <i class="fa fa-bell" aria-hidden="true"></i>
                                     <span id="notificaciones-pendientes" class="badge bg-color-1 {{ $notificaciones_pendientes() >= 1 ? '' : 'hidden' }}">{{ $notificaciones_pendientes() }}</span>
                                 </a>
@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <nav id="menuBar" class="navbar navbar-default lightHeader" role="navigation">
+    {{-- <nav id="menuBar" class="navbar navbar-default lightHeader" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -124,5 +124,5 @@
                 </ul>
             </div>
         </div>
-    </nav>
+    </nav> --}}
 </header>

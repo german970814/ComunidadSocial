@@ -311,9 +311,9 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
      */
     public function get_full_name() {
         if ($this->is_institucion()) {
-            return $this->nombres;
+            return strtoupper($this->nombres);
         }
-        return $this->nombres . ' ' . $this->apellidos;
+        return strtoupper($this->nombres . ' ' . $this->apellidos);
     }
 
     /**

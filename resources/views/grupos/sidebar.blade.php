@@ -25,9 +25,9 @@
                     <li>
                         <a href="{{ route('grupos.show', $grupo->id) }}">Muro</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="#">Información</a>
-                    </li>
+                    </li> --}}
                     @if (\Auth::user()->usuario->pertenece_grupo($grupo) || \Auth::user()->is_asesor() || \Auth::user()->is_administrador())
                     <li>
                         <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">Tareas</a>
@@ -46,9 +46,9 @@
                     <li>
                         <a href="{{ route('usuario.show', $grupo->institucion->usuario->id) }}">Institución</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="#">Fotos</a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route('grupos.integrantes', $grupo->id) }}">Integrantes</a>
                     </li>
