@@ -106,6 +106,9 @@
                         <li>
                             <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>
                         </li>
+                        <li>
+                            <a href="{{ route('institucion.create') }}">Crear Institución</a>
+                        </li>
                     @endif
                 </ul>
             </div>
