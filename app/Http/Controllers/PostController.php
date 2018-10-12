@@ -112,11 +112,13 @@ class PostController extends Controller
             'like' => false
         ]);
 
-        if ($usuario->id != $post->usuario_destino->id) {
-            Notificacion::create_comentario_post($comentario, ['usuario_id' => $post->usuario_destino->id]);
-        }
-        if ($usuario->id != $post->autor->id) {
-            Notificacion::create_comentario_post($comentario, ['usuario_id' => $post->autor->id]);
+        if ($post->tipo == Post::$post_usuario_tipo) {
+            if ($usuario->id != $post->usuario_destino->id) {
+                Notificacion::create_comentario_post($comentario, ['usuario_id' => $post->usuario_destino->id]);
+            }
+            if ($usuario->id != $post->autor->id) {
+                Notificacion::create_comentario_post($comentario, ['usuario_id' => $post->autor->id]);
+            }
         }
 
         return response()->json([
@@ -146,44 +148,7 @@ class PostController extends Controller
             ]);
 
             if ($should_notify) {
-                if ($post->usuario_destino->id != $usuario->id) {
-                    Notificacion::create_like_post(
-                        $post,
-                        $usuario,
-                        ['usuario_id' => $post->usuario_destino->id]
-                    );
-                }
-                if (($post->autor->id != $usuario->id) && !$post->is_self_post()) {
-                    Notificacion::create_like_post(
-                        $post,
-                        $usuario,
-                        ['usuario_id' => $post->autor->id]
-                    );
-                }
-            }
-        } else {
-            $like->update(['like' => !$like->like]);
-            if (!$like->like) {
-                // TODO: Verify
-                $exists_for_destino = Notificacion::where('tipo', Notificacion::$like_post_tipo)
-                    ->where('usuario_sender_id', $usuario->id)
-                    ->where('usuario_id', $post->usuario_destino->id)
-                    ->where('leida', false)
-                    ->first();
-                $exists_for_autor = Notificacion::where('tipo', Notificacion::$like_post_tipo)
-                    ->where('usuario_sender_id', $usuario->id)
-                    ->where('usuario_id', $post->autor->id)
-                    ->where('leida', false)
-                    ->first();
-
-                if ($exists_for_destino) {
-                    $exists_for_destino->delete();
-                }
-                if ($exists_for_autor) {
-                    $exists_for_autor->delete();
-                }
-            } else {
-                if ($should_notify) {
+                if ($post->tipo == Post::$post_usuario_tipo) {
                     if ($post->usuario_destino->id != $usuario->id) {
                         Notificacion::create_like_post(
                             $post,
@@ -197,6 +162,49 @@ class PostController extends Controller
                             $usuario,
                             ['usuario_id' => $post->autor->id]
                         );
+                    }
+                }
+            }
+        } else {
+            $like->update(['like' => !$like->like]);
+            if (!$like->like) {
+                // TODO: Verify
+                if ($post->tipo == Post::$post_usuario_tipo) {
+                    $exists_for_destino = Notificacion::where('tipo', Notificacion::$like_post_tipo)
+                        ->where('usuario_sender_id', $usuario->id)
+                        ->where('usuario_id', $post->usuario_destino->id)
+                        ->where('leida', false)
+                        ->first();
+                    $exists_for_autor = Notificacion::where('tipo', Notificacion::$like_post_tipo)
+                        ->where('usuario_sender_id', $usuario->id)
+                        ->where('usuario_id', $post->autor->id)
+                        ->where('leida', false)
+                        ->first();
+
+                    if ($exists_for_destino) {
+                        $exists_for_destino->delete();
+                    }
+                    if ($exists_for_autor) {
+                        $exists_for_autor->delete();
+                    }
+                }
+            } else {
+                if ($should_notify) {
+                    if ($post->tipo == Post::$post_usuario_tipo) {
+                        if ($post->usuario_destino->id != $usuario->id) {
+                            Notificacion::create_like_post(
+                                $post,
+                                $usuario,
+                                ['usuario_id' => $post->usuario_destino->id]
+                            );
+                        }
+                        if (($post->autor->id != $usuario->id) && !$post->is_self_post()) {
+                            Notificacion::create_like_post(
+                                $post,
+                                $usuario,
+                                ['usuario_id' => $post->autor->id]
+                            );
+                        }
                     }
                 }
             }
