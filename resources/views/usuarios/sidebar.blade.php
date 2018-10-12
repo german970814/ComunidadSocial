@@ -57,9 +57,11 @@
                     <li>
                         <a href="{{ route('usuario.show', $usuario->id) }}">Muro</a>
                     </li>
+                    @if (!$usuario->is_institucion())
                     <li>
                         <a href="{{ route('usuario.detail', $usuario->id) }}">Información</a>
                     </li>
+                    @endif
                     {{-- <li>
                         <a href="#">Fotos</a>
                     </li> --}}
@@ -98,6 +100,11 @@
                     @else
                         <li>
                             <a href="{{ route('institucion.integrantes', $usuario->institucion->id) }}">Integrantes</a>
+                        </li>
+                    @endif
+                    @if ($usuario->is_administrador() && \Auth::guard()->user()->is_administrador())
+                        <li>
+                            <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>
                         </li>
                     @endif
                 </ul>

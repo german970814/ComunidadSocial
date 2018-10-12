@@ -3,10 +3,10 @@
 @section('content')
     <section class="mainContent">
         <div class="container">
-            @include('layouts/title_page', ['title_page' => 'Registro'])
+            @include('layouts/title_page', ['title_page' => 'Registro Asesor'])
 
             <div class="row">
-                <div class="col-sm-6 col-xs-12">
+                <div class="col-sm-12 col-xs-12">
                     <div class="panel panel-default formPanel">
                         <div class="panel-heading bg-color-1 border-color-1">
                             <h3 class="panel-title">Crear usuario asesor</h3>
@@ -119,17 +119,6 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xs-12">
-                    <div class="panel panel-default formPanel">
-                        <div class="panel-heading bg-color-1 border-color-1">
-                            <h3 class="panel-title">Ya estás registrado?</h3>
-                        </div>
-                        <div class="panel-body">
-                            @include('layouts.login')
                         </div>
                     </div>
                 </div>
