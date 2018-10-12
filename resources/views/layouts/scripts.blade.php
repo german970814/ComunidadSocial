@@ -101,4 +101,16 @@
 <script src="{{ asset('/js/client.js') }}"></script>
 @endif
 
+@if (!Auth::check())
+    @if(!(Request::is('login')) && !(Request::is('usuario/create')))
+        @if ($errors->has('email'))
+        <script>
+            $(document).ready(function () {
+                $('#modalLogin').click();
+            })
+        </script>
+        @endif
+    @endif
+@endif
+
 @yield('custom_script')

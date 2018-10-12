@@ -66,7 +66,7 @@
                                 </ul>
                             </li>
                         @else
-                            <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href='#loginModal' data-toggle="modal" >Entrar</a> or <a href="{{ route('usuario.create') }}">Crear una cuenta</a></li>
+                            <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a id="modalLogin" href='#loginModal' data-toggle="modal" >Entrar</a> or <a href="{{ route('usuario.create') }}">Crear una cuenta</a></li>
                         @endauth
                     </ul>
                 </div>
