@@ -32,7 +32,23 @@ class GrupoInvestigacion extends ModelForm
 
     public function get_nombre() {
         if ($this->tipo == self::$TEMATICA) {
-            return $this->linea_investigacion->nombre;
+            $grupos = GrupoInvestigacion::where('institucion_id', $this->institucion_id)
+            ->where('linea_investigacion_id', $this->linea_investigacion_id)
+            ->where('tipo', self::$TEMATICA)
+            ->get()->all();
+            $counter = 0;
+
+            if (count($grupos) - 1) {
+                foreach ($grupos as $key => $grupo) {
+                    if ($grupo->id == $this->id) {
+                        $counter = $key;
+                        break;
+                    }
+                }
+            } else {
+                return $this->linea_investigacion->nombre;
+            }
+            return $this->linea_investigacion->nombre . ' (' . ($counter + 1) . ')';
         }
         return $this->nombre;
     }
