@@ -2,18 +2,18 @@
     <!-- COLOR BAR -->
     <div class="container-fluid color-bar clearfix">
         <div class="row">
-            <div class="col-sm-1 col-xs-2 bg-color-1">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-2">fix bar</div>
             <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-4">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-5">fix bar</div>
-            <div class="col-sm-1 col-xs-2 bg-color-6">fix bar</div>
-            <div class="col-sm-1 bg-color-1 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-2 hidden-xs">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
+            <div class="col-sm-1 col-xs-2 bg-color-3">fix bar</div>
             <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-4 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-5 hidden-xs">fix bar</div>
-            <div class="col-sm-1 bg-color-6 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
+            <div class="col-sm-1 bg-color-3 hidden-xs">fix bar</div>
         </div>
     </div>
     <!-- FOOTER INFO AREA -->
@@ -127,11 +127,11 @@
             <div class="row">
                 <div class="col-sm-5 col-sm-push-7 col-xs-12">
                     <ul class="list-inline">
-                        <li><a href="#" class="bg-color-1"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                        {{-- <li><a href="#" class="bg-color-1"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
                         <li><a href="#" class="bg-color-2"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
                         <li><a href="#" class="bg-color-3"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
                         <li><a href="#" class="bg-color-4"><i class="fa fa-pinterest-p" aria-hidden="true"></i></a></li>
-                        <li><a href="#" class="bg-color-5"><i class="fa fa-vimeo" aria-hidden="true"></i></a></li>
+                        <li><a href="#" class="bg-color-5"><i class="fa fa-vimeo" aria-hidden="true"></i></a></li> --}}
                     </ul>
                 </div>
                 <div class="col-sm-7 col-sm-pull-5 col-xs-12">

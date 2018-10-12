@@ -288,6 +288,14 @@ textarea {
     color: #0095D9 !important;
 }
 
+.bg-color-accent-2 {
+    background-color: #e5de4d !important;
+}
+
+.color-accent-2 {
+    color: #e5de4d !important;
+}
+
 .bg-color-secondary {
     background-color: #FF0000;
 }
