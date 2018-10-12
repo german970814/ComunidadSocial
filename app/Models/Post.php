@@ -51,7 +51,10 @@ class Post extends Model
     }
 
     public function is_self_post() {
-        return $this->autor->id === $this->usuario_destino->id;
+        if ($this->tipo == self::$post_usuario_tipo) {
+            return $this->autor->id === $this->usuario_destino->id;
+        }
+        return false;
     }
 
     public function get_photo_url() {
