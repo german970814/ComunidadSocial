@@ -22,8 +22,8 @@
 
 <style>
 .ui-widget-header {
-    border: 1px solid #f0c24b;
-    background: #f0c24b;
+    border: 1px solid #004B96;
+    background: #004B96;
 }
 
 .ui-widget-content {

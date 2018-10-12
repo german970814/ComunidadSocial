@@ -17,7 +17,7 @@
         </div>
     </div>
     <!-- FOOTER INFO AREA -->
-    <div class="footerInfoArea full-width clearfix" style="background-image: url({{ asset('assets/img/footer/footer-bg-1.png') }});">
+    {{-- <div class="footerInfoArea full-width clearfix" style="background-image: url({{ asset('assets/img/footer/footer-bg-1.png') }});">
         <div class="container">
             <div class="row">
                 <div class="col-sm-3 col-xs-12">
@@ -120,7 +120,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- COPY RIGHT -->
     <div class="copyRight clearfix">
         <div class="container">

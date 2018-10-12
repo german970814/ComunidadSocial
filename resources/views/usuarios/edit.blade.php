@@ -2,7 +2,7 @@
 
 @section('section')
 <div class="panel panel-default formPanel">
-    <div class="panel-heading bg-color-2 border-color-2">
+    <div class="panel-heading bg-color-1 border-color-1">
         <h3 class="panel-title">Editar usuario</h3>
     </div>
     <div class="panel-body">

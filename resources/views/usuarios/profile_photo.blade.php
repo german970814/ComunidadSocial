@@ -1,9 +1,9 @@
 <div class="media-profile teamContent teamAdjust">
     <div class="teamImage">
         <img class="img-circle img-responsive" style="height: 100%; width: 100%" src="{{ $usuario->get_profile_photo_url() }}" alt="profile" />
+        @if (Auth::guard()->user()->usuario->id === $usuario->id)
         <div class="maskingContent">
             <ul class="list-inline">
-                @if (Auth::guard()->user()->usuario->id === $usuario->id)
                 <li>
                     <form class="form-change-profile-photo" action="{{ route('usuario.change-profile-photo') }}" enctype="multipart/form-data" method="POST">
                         @csrf
@@ -13,11 +13,11 @@
                         </a>
                     </form>
                 </li>
-                @else
-                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                @endif
             </ul>
         </div>
+        @else
+        {{-- <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+        <li><a href="#"><i class="fa fa-facebook"></i></a></li> --}}
+        @endif
     </div>
 </div>

@@ -109,6 +109,6 @@ class GrupoInvestigacion extends ModelForm
     }
 
     public function get_imagen_url() {
-        return asset('assets/img/grupo-none.png');
+        return asset('assets/img/group-none.png');
     }
 }

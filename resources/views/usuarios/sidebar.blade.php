@@ -60,9 +60,9 @@
                     <li>
                         <a href="{{ route('usuario.detail', $usuario->id) }}">Información</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="#">Fotos</a>
-                    </li>
+                    </li> --}}
                     @if ($usuario->is_estudiante() || $usuario->is_maestro() || $usuario->is_institucion())
                     <li>
                         @if ($usuario->is_estudiante() || $usuario->is_maestro())
