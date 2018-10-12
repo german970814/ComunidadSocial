@@ -262,7 +262,7 @@ textarea {
 }
 
 .sectionTitle .page-action-content {
-    position: absolute;
+    /* position: absolute; */
     top: 0;
     right: 0;
 }
