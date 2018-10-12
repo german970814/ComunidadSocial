@@ -68,6 +68,10 @@ class GrupoInvestigacion extends ModelForm
         return $this->posts()->orderBy('created_at', 'desc');
     }
 
+    public function tareas() {  // TODO: retornar solo las activas
+        return $this->hasMany('\App\Models\TareaGrupoInvestigacion', 'grupo_investigacion_id');
+    }
+
     public function maestros() {
         $integrantes = $this->solicitudes_ingreso()
             ->where('aceptada', true)

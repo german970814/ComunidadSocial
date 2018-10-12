@@ -124,6 +124,37 @@ Route::middleware('notificacion')->group( function () {
                 'GrupoInvestigacionController@grupos_investigacion_institucion'
             )->name('grupos.grupos-investigacion-institucion');
         });
+
+        Route::prefix('/aula')->group(function() {
+            Route::get(
+                '/tareas/grupo/{id}',
+                'AulaVirtualController@listar_tareas_grupo'
+            )->name('aula.tareas-grupo');
+            Route::get(
+                '/tareas/grupo/{id}/crear',
+                'AulaVirtualController@crear_tarea'
+            )->name('aula.crear-tarea-grupo');
+            Route::post(
+                '/tareas/grupo/{id}/crear',
+                'AulaVirtualController@guardar_tarea'
+            )->name('aula.guardar-tarea-grupo');
+            Route::post(
+                '/tareas/{id}/entrega',
+                'AulaVirtualController@agregar_entrega'
+            )->name('aula.agregar-entrega');
+            Route::get(
+                '/tareas/{id}',
+                'AulaVirtualController@ver_tarea'
+            )->name('aula.ver-tarea');
+            Route::get(
+                '/tareas/{id}/entregas',
+                'AulaVirtualController@ver_entregas_tarea'
+            )->name('aula.ver-entregas-tarea');
+            Route::get(
+                '/tareas/entregas/{id}',
+                'AulaVirtualController@ver_entrega_tarea'
+            )->name('aula.ver-entrega');
+        });
     });
 
     // Usuarios

@@ -256,3 +256,25 @@ textarea {
 .notificacion-solicitud-amistad {
     text-align: right;
 }
+
+.sectionTitle {
+    position: relative;
+}
+
+.sectionTitle .page-action-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.drop-files .dz-preview.dz-image-preview {
+    display: inline-block;
+}
+
+.dz-image {
+    display: inline-block;
+}
+
+.dz-progress, .dz-success-mark, .dz-error-mark {
+    display: none;
+}
