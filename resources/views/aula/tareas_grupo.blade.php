@@ -8,7 +8,10 @@
             @include('layouts.title_page', ['title_page' => 'Tareas'])
         @endif
         <div class="row">
-            @foreach($grupo->tareas->all() as $tarea)
+            @php
+                $_tareas = \Auth::guard()->user()->is_estudiante() ? $grupo->tareas_activas : $grupo->tareas;
+            @endphp
+            @foreach($_tareas->all() as $tarea)
             <div class="col-md-6 col-xs-12">
                 <a href="{{ $tarea->get_url() }}">
                     <div class="well">

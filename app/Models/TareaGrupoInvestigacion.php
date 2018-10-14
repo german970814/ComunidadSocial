@@ -42,6 +42,10 @@ class TareaGrupoInvestigacion extends ModelForm
         return $this->belongsTo('\App\Models\GrupoInvestigacion', 'grupo_investigacion_id');
     }
 
+    public function documentos() {
+        return $this->hasMany('\App\Models\DocumentoTareaGrupoInvestigacion', 'tarea_id');
+    }
+
     public function entregas() {
         return $this->hasMany('\App\Models\EntregaTareaEstudiante', 'tarea_id');
     }
@@ -52,6 +56,10 @@ class TareaGrupoInvestigacion extends ModelForm
 
     public function get_url() {
         return route('aula.ver-tarea', $this->id);
+    }
+
+    public function has_documentos() {
+        return $this->documentos()->exists();
     }
 
     public function get_tiempo_restante() {

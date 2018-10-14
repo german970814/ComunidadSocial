@@ -147,6 +147,14 @@ Route::middleware('notificacion')->group( function () {
                 'AulaVirtualController@ver_tarea'
             )->name('aula.ver-tarea');
             Route::get(
+                '/tareas/{id}/editar',
+                'AulaVirtualController@editar_tarea'
+            )->name('aula.editar-tarea');
+            Route::post(
+                '/tareas/{id}/actualizar',
+                'AulaVirtualController@actualizar_tarea'
+            )->name('aula.actualizar-tarea');
+            Route::get(
                 '/tareas/{id}/entregas',
                 'AulaVirtualController@ver_entregas_tarea'
             )->name('aula.ver-entregas-tarea');
@@ -154,6 +162,18 @@ Route::middleware('notificacion')->group( function () {
                 '/tareas/entregas/{id}',
                 'AulaVirtualController@ver_entrega_tarea'
             )->name('aula.ver-entrega');
+            Route::get(
+                '/documentos/{id}',
+                'AulaVirtualController@get_documento'
+            )->name('aula.ver-documento');
+            Route::get(
+                '/documentos/entrega/{id}',
+                'AulaVirtualController@get_documento_entrega'
+            )->name('aula.ver-documento-entrega');
+            Route::get(
+                '/documentos/{id}/eliminar',
+                'AulaVirtualController@eliminar_documento'
+            )->name('aula.eliminar-documento');
         });
     });
 

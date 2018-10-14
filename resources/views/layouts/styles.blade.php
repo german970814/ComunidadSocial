@@ -7,6 +7,7 @@
 <link href="{{ asset('assets/plugins/fancybox/jquery.fancybox.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/isotope/isotope.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/animate/animate.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/datetimepicker/datetimepicker.css') }}" rel="stylesheet">
 
 <!-- GOOGLE FONT -->
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>

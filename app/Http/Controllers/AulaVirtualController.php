@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Models\GrupoInvestigacion;
@@ -12,6 +13,10 @@ use App\Libraries\{ Form, Helper };
 
 class AulaVirtualController extends Controller  // TODO: Validar el asesor sea el asesor del grupo
 {
+    private $messages = [
+        'required' => 'Este campo es requerido'
+    ];
+
     private function _usuario_puede_ver_tarea($grupo) {
         $user = \Auth::guard()->user();
         if (
@@ -78,6 +83,67 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         abort(404, 'Página no encontrada');
     }
 
+    public function editar_tarea($id) {
+        $tarea = TareaGrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+        $grupo = $tarea->grupo;
+
+        if (
+            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
+            $usuario->is_administrador() ||
+            $usuario->is_asesor()
+        ) {
+            $form = new Form($tarea, [
+                'titulo', 'fecha_inicio', 'fecha_fin', 'descripcion'
+            ]);
+            return view('aula.crear_tarea_grupo', compact(['grupo', 'form', 'tarea']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function actualizar_tarea(Request $request, $id) {
+        $tarea = TareaGrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+        $grupo = $tarea->grupo;
+
+        if (
+            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
+            $usuario->is_administrador() ||
+            $usuario->is_asesor()
+        ) {
+            $validated_data = $request->validate([
+                'descripcion' => '',
+                'titulo' => 'required',
+                'fecha_fin' => 'required|date|after:fecha_inicio',
+                'fecha_inicio' => 'required|date|before:fecha_fin',
+                'files.*' => 'file|mimes:doc,pdf,docx,zip,png,jpeg,jpg,ppt,pptx'
+            ], $this->messages);
+
+            $tarea->update([
+                'titulo' => $validated_data['titulo'],
+                'fecha_fin' => $validated_data['fecha_fin'],
+                'descripcion' => $validated_data['descripcion'],
+                'fecha_inicio' => $validated_data['fecha_inicio'],
+            ]);
+
+            $files = isset($validated_data['files']) ? $validated_data['files'] : [];
+            foreach ($files as $file) {
+                $filename = 'tareas/' . $tarea->id . '/' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+                if ($file) {
+                    Storage::disk('local')->put($filename, File::get($file));
+                    \App\Models\DocumentoTareaGrupoInvestigacion::create([
+                        'archivo' => $filename,
+                        'tarea_id' => $tarea->id
+                    ]);
+                }
+            }
+            return redirect()
+                ->route('aula.editar-tarea', $tarea->id)
+                ->with('success', 'Se ha editado la tarea');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
     public function guardar_tarea(Request $request, $id) {
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
@@ -88,8 +154,8 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
                 'titulo' => 'required',
                 'fecha_fin' => 'required|date|after:fecha_inicio',
                 'fecha_inicio' => 'required|date|before:fecha_fin',
-                'files.*' => 'file|image|mimes:doc,pdf,docx,zip,png,jpeg,jpg'
-            ]);
+                'files.*' => 'file|mimes:doc,pdf,docx,zip,png,jpeg,jpg,ppt,pptx'
+            ], $this->messages);
 
             $tarea = TareaGrupoInvestigacion::create([
                 'maestro_id' => $usuario->id,
@@ -100,7 +166,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
                 'fecha_inicio' => $validated_data['fecha_inicio'],
             ]);
 
-            $files = $validated_data['files'];
+            $files = isset($validated_data['files']) ? $validated_data['files'] : [];
             foreach ($files as $file) {
                 $filename = 'tareas/' . $tarea->id . '/' . $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
                 if ($file) {
@@ -149,6 +215,51 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         }
     }
 
+    public function get_documento($id) {
+        $documento = \App\Models\DocumentoTareaGrupoInvestigacion::findOrFail($id);
+
+        if (Storage::disk('local')->has($documento->archivo)) {
+            $file = Storage::disk('local')->get($documento->archivo);
+            $content_type = Helper::get_content_type($documento->archivo);
+
+            return response($file, 200)
+                ->header('Content-Type', $content_type)
+                ->header('Content-Disposition', 'attachment; filename="' . $documento->get_nombre() . '"');
+        }
+        abort(404, 'Página no econtrada');
+    }
+
+    public function eliminar_documento($id) {
+        $documento = \App\Models\DocumentoTareaGrupoInvestigacion::findOrFail($id);
+        $tarea = $documento->tarea;
+        $grupo = $tarea->grupo;
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if (
+            ($usuario->pertenece_grupo($grupo) && $usuario->is_asesor()) ||
+            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
+            $usuario->is_administrador()
+        ) {
+            $documento->delete();
+            return back()->with('info', 'Ha eliminado el documento');
+        }
+        return back()->with('warning', 'No tiene permisos de eliminar este documento');
+    }
+
+    public function get_documento_entrega($id) {
+        $entrega = EntregaTareaEstudiante::findOrFail($id);
+
+        if (Storage::disk('local')->has($entrega->archivo)) {
+            $file = Storage::disk('local')->get($entrega->archivo);
+            $content_type = Helper::get_content_type($entrega->archivo);
+
+            return response($file, 200)
+                ->header('Content-Type', $content_type)
+                ->header('Content-Disposition', 'attachment; filename="entrega_' . $entrega->usuario->get_full_name() . '"');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
     public function agregar_entrega(Request $request, $id) {
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
@@ -156,7 +267,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         if ($usuario->is_estudiante() && $usuario->pertenece_grupo($tarea->grupo)) {
             $validated_data = $request->validate([
                 'descripcion' => 'required_if:file,',
-                'file' => 'file|image|mimes:doc,pdf,docx,zip,png,jpeg,jpg'
+                'file' => 'file|mimes:doc,pdf,docx,zip,png,jpeg,jpg,ppt,pptx'
             ]);
 
             $entrega = EntregaTareaEstudiante::where('usuario_id', $usuario->id)
@@ -175,7 +286,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
                     if ($file) {
                         $filename = 'tareas/' . $tarea->id . '/entregas/' . $usuario->id . '/documento' . '.' . $file->getClientOriginalExtension();
                         Storage::disk('local')->put($filename, File::get($file));
-                        $entrega::update([ 'archivo' => $filename ]);
+                        $entrega->update([ 'archivo' => $filename ]);
                     }
                 });
             } else {
@@ -185,7 +296,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
                 if ($file) {
                     $filename = 'tareas/' . $tarea->id . '/entregas/' . $usuario->id . '/documento' . '.' . $file->getClientOriginalExtension();
                     Storage::disk('local')->put($filename, File::get($file));
-                    $entrega::update([ 'archivo' => $filename ]);
+                    $entrega->update([ 'archivo' => $filename ]);
                 }
             }
             return redirect()

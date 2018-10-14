@@ -16,6 +16,9 @@
         <div class="row">
             <h3>Entrega</h3>
             <div class="well">
+                @if ($entrega->archivo)
+                    @include('aula.documento_entrega')
+                @endif
                 <div>
                     <p>{{ $entrega->descripcion }}</p>
                 </div>
