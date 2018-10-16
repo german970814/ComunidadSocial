@@ -1,7 +1,7 @@
-@extends('layouts.base')
+@extends('usuarios.base_profile')
 
 
-@section('content')
+@section('section')
 <section class="mainContent">
     @include('layouts.title_page', ['title_page' => 'Crear instituciones'])
     <div class="row">

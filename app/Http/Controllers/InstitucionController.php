@@ -18,12 +18,16 @@ class InstitucionController extends Controller {
     }
 
     public function create() {
-        $form = new Form(Institucion::class, [
-            'dane', 'nombre', 'codigo', 'director',
-            'telefono', 'fax', 'email',
-            'departamento', 'municipio_id'
-        ]);
-        return view('instituciones.create', compact(['form']));
+        if (\Auth::guard()->user()->is_administrador()) {
+            $usuario = \Auth::guard()->user()->usuario;
+            $form = new Form(Institucion::class, [
+                'dane', 'nombre', 'codigo', 'director',
+                'telefono', 'fax', 'email',
+                'departamento', 'municipio_id'
+            ]);
+            return view('instituciones.create', compact(['form', 'usuario']));
+        }
+        abort(404, 'Página no encontrada');
     }
 
     public function editar() {
@@ -167,44 +171,47 @@ class InstitucionController extends Controller {
     }
 
     public function store(Request $request) {
-        $validated_data = $request->validate([
-            'dane' => 'required',
-            'nombre' => 'required',
-            'codigo' => 'required',
-            'director' => 'required',
-            'telefono' => '',
-            'fax' => '',
-            'email' => '',
-            'municipio_id' => 'required|exists:municipios,id',
-        ], $this->messages);
-        $institucion = null;
-
-        Helper::atomic_transaction(function () use ($request, $validated_data, &$institucion) {
-            $user = \App\Models\Usuario::create_user([
-                'apellidos' => '',
-                'nombres' => $validated_data['nombre'],
-                'email' => $validated_data['dane'],
-                'username' => $validated_data['dane'],
-                'password' => $validated_data['dane']
-            ]);
-
-            $usuario = \App\Models\Usuario::create([
-                'sexo' => 'M',
-                'apellidos' => '',
-                'user_id' => $user->id,
-                'tipo_documento' => 'NES',
-                'nombres' => $validated_data['nombre'],
-                'numero_documento' => $validated_data['dane'],
-                'tipo_usuario' => \App\Models\Usuario::$INSTITUCION
-            ]);
-
-            $institucion = Institucion::create(array_merge($validated_data, [
-                'usuario_id' => $usuario->id
-            ]));
-        });
-
-        return redirect()
-            ->route('institucion.index')
-            ->with('success', 'Institución creada exitosamente');
+        if (\Auth::guard()->user()->is_administrador()) {
+            $validated_data = $request->validate([
+                'dane' => 'required',
+                'nombre' => 'required',
+                'codigo' => 'required',
+                'director' => 'required',
+                'telefono' => '',
+                'fax' => '',
+                'email' => '',
+                'municipio_id' => 'required|exists:municipios,id',
+            ], $this->messages);
+            $institucion = null;
+    
+            Helper::atomic_transaction(function () use ($request, $validated_data, &$institucion) {
+                $user = \App\Models\Usuario::create_user([
+                    'apellidos' => '',
+                    'nombres' => $validated_data['nombre'],
+                    'email' => $validated_data['dane'],
+                    'username' => $validated_data['dane'],
+                    'password' => $validated_data['dane']
+                ]);
+    
+                $usuario = \App\Models\Usuario::create([
+                    'sexo' => 'M',
+                    'apellidos' => '',
+                    'user_id' => $user->id,
+                    'tipo_documento' => 'NES',
+                    'nombres' => $validated_data['nombre'],
+                    'numero_documento' => $validated_data['dane'],
+                    'tipo_usuario' => \App\Models\Usuario::$INSTITUCION
+                ]);
+    
+                $institucion = Institucion::create(array_merge($validated_data, [
+                    'usuario_id' => $usuario->id
+                ]));
+            });
+    
+            return redirect()
+                ->route('institucion.index')
+                ->with('success', 'Institución creada exitosamente');
+        }
+        abort(404, 'Página no encontrada');
     }
 }
