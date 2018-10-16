@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Libraries\{ ModelForm };
+use App\Libraries\{ ModelForm, CacheMethods };
 use App\User;
 
 class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
 {
+    use CacheMethods;
+
     /**
      * Nombre de la tabla
      * 
@@ -448,6 +450,17 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
     }
 
     /**
+     * Método para saber si un usuario es asesor de un
+     * grupo de investigación
+     */
+    public function is_asesor_grupo($grupo) {
+        return $this->tipo_usuario === self::$ASESOR && \DB::table('coordinadores_grupos_investigacion')
+            ->where('usuario_id', $this->id)
+            ->where('linea_investigacion_id', $grupo->id)
+            ->exists();
+    }
+
+    /**
      * Método para saber si un usuario puede unirse a un grupo
      * de investigación
      */
@@ -470,11 +483,25 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         return $this->tipo_usuario === self::$ADMINISTRADOR;
     }
 
-    public function is_asesor() {
+    public function is_asesor($grupo=null) {
+        if ($grupo) {
+            return $this->is_asesor_grupo($grupo);
+        }
         return $this->tipo_usuario === self::$ASESOR;
     }
 
-    public function is_institucion() {
+    public function is_institucion($institucion=null) {
+        if ($institucion && $this->institucion) {
+            return $this->tipo_usuario === self::$INSTITUCION && $this->institucion->id == $institucion->id;
+        }
         return $this->tipo_usuario === self::$INSTITUCION && $this->institucion;
+    }
+
+    public function has_perm($perm, $args=[]) {
+        return \App\Libraries\Permissions::has_perm($perm, $this, $args);
+    }
+
+    public function has_perms($perms, $args=[]) {
+        return \App\Libraries\Permissions::has_perms($perms, $this, $args);
     }
 }

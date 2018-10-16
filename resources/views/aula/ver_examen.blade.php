@@ -3,9 +3,9 @@
 @section('section')
     <section>
         <div class="row">
-            @if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->is_asesor() || \Auth::guard()->user()->usuario->id == $examen->maestro->id)
+            @if (\App\Libraries\Permissions::has_perm('editar_examen', ['examen' => $examen]))
                 @include('layouts.title_page', ['title_page' => 'examens', 'button' => ['type' => 'link', 'href' => route('aula.entregas-examen', $examen->id), 'text' => 'Ver entregas']])
-            @elseif (\Auth::guard()->user()->is_estudiante() && $examen->is_activo())
+            @elseif (\App\Libraries\Permissions::has_perm('estudiante') && $examen->is_activo())
                 @include('layouts.title_page', ['title_page' => 'examens', 'button' => ['type' => 'link', 'href' => route('aula.examen-estudiante', $examen->id), 'text' => 'Tomar prueba']])
             @else
                 @include('layouts.title_page', ['title_page' => $examen->get_titulo()])
@@ -13,7 +13,7 @@
         </div>
         <div class="row">
             <div class="well">
-                @if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->is_asesor() || \Auth::guard()->user()->usuario->id == $examen->maestro->id)
+                @if (\App\Libraries\Permissions::has_perm('editar_examen', ['examen' => $examen]))
                 <div class="well-actions pull-right" style="position: relative;">
                     <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-warning"></i>

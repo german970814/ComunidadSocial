@@ -2,7 +2,7 @@
 
 @section('section')
     <section>
-        @if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->is_asesor() || (\Auth::guard()->user()->is_maestro() && \Auth::guard()->user()->usuario->pertenece_grupo($grupo)))
+        @if (\App\Libraries\Permissions::has_perm('crear_tarea', ['grupo' => $grupo]))
             @include('layouts.title_page', ['title_page' => 'Tareas', 'button' => ['type' => 'link', 'href' => route('aula.crear-tarea-grupo', $grupo->id), 'text' => 'Crear Tarea']])
         @else
             @include('layouts.title_page', ['title_page' => 'Tareas'])

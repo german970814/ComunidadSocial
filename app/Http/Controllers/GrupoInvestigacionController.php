@@ -230,4 +230,44 @@ class GrupoInvestigacionController extends Controller
         }
         return back()->with('error', 'No tienes permisos de realizar esta acción');
     }
+
+    /**
+     * Vista para crear foros
+     */
+    public function crear_foro($id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if ($usuario->is_administrador() || $usuario->is_asesor() || $usuario->grupo_pertenece($grupo)) {
+            $form = new Form(\App\Models\ForoGrupo::class, ['tema']);
+            return view('grupos.crear_foro', compact(['form', 'grupo', 'usuario']));
+        }
+        abort(404, 'Página no econtrada');
+    }
+
+    public function guardar_foro(Request $request, $id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if ($usuario->is_administrador() || $usuario->is_asesor() || $usuario->grupo_pertenece($grupo)) {
+            $validated_data = $request->validate([
+                'tema' => 'required'
+            ], $this->messages);
+
+            $foro = \App\Models\ForoGrupo::create([
+                'tema' => $validated_data['tema']
+            ]);
+
+            return redirect()
+                ->route('grupo.ver-foro', $foro->id)
+                ->with('success', 'Has creado un nuevo tema en el foro');
+        }
+        abort(404, 'Página no econtrada');
+    }
+
+    // public function ver_foro($id) {
+    //     $foro = \App\Models\ForoGrupo::findOrFail($id);
+    //     $usuario = \Auth::guard()->user()->usuario;
+    //     // $usuario->grupo_pertenece($grupo)
+    // }
 }
