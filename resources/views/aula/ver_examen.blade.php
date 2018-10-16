@@ -4,9 +4,9 @@
     <section>
         <div class="row">
             @if (\App\Libraries\Permissions::has_perm('editar_examen', ['examen' => $examen]))
-                @include('layouts.title_page', ['title_page' => 'examens', 'button' => ['type' => 'link', 'href' => route('aula.entregas-examen', $examen->id), 'text' => 'Ver entregas']])
+                @include('layouts.title_page', ['title_page' => 'examen', 'button' => ['type' => 'link', 'href' => route('aula.entregas-examen', $examen->id), 'text' => 'Ver entregas']])
             @elseif (\App\Libraries\Permissions::has_perm('estudiante') && $examen->is_activo())
-                @include('layouts.title_page', ['title_page' => 'examens', 'button' => ['type' => 'link', 'href' => route('aula.examen-estudiante', $examen->id), 'text' => 'Tomar prueba']])
+                @include('layouts.title_page', ['title_page' => 'examen', 'button' => ['type' => 'link', 'href' => route('aula.examen-estudiante', $examen->id), 'text' => 'Tomar prueba']])
             @else
                 @include('layouts.title_page', ['title_page' => $examen->get_titulo()])
             @endif
