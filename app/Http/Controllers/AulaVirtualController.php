@@ -10,7 +10,7 @@ use App\Models\GrupoInvestigacion;
 use App\Models\TareaGrupoInvestigacion;
 use App\Models\ExamenGrupoInvestigacion;
 use App\Models\EntregaTareaEstudiante;
-use App\Libraries\{ Form, Helper };
+use App\Libraries\{ Form, Helper, Permissions };
 
 class AulaVirtualController extends Controller  // TODO: Validar el asesor sea el asesor del grupo
 {
@@ -18,71 +18,13 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         'required' => 'Este campo es requerido'
     ];
 
-    private function _usuario_puede_ver_tarea($grupo) {
-        $user = \Auth::guard()->user();
-        if (
-            $user->usuario->pertenece_grupo($grupo) ||
-            $user->is_administrador() ||
-            $user->is_asesor()
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private function _usuario_puede_ver_examen($grupo) {
-        $user = \Auth::guard()->user();
-        if (
-            $user->usuario->pertenece_grupo($grupo) ||
-            $user->is_administrador() ||
-            $user->is_asesor()
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private function _usuario_puede_crear_tarea($args) {
-        $user = \Auth::guard()->user()->usuario;
-        $tarea = isset($args['tarea']) ? $args['tarea'] : null;
-        $grupo = isset($args['grupo']) ? $args['grupo'] : null;
-
-        if ($tarea && $tarea->maestro->id == $user->id) {
-            return true;
-        } else if (
-            ($user->pertenece_grupo($grupo ? $grupo : $tarea->grupo) && $user->is_maestro()) ||
-            $user->is_administrador() ||
-            $user->is_asesor()
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    public function _usuario_puede_crear_examen($args) {
-        $user = \Auth::guard()->user()->usuario;
-        $examen = isset($args['examen']) ? $args['examen'] : null;
-        $grupo = isset($args['grupo']) ? $args['grupo'] : null;
-
-        if ($examen && $examen->maestro->id == $user->id) {
-            return true;
-        } else if (
-            ($user->pertenece_grupo($grupo ? $grupo : $examen->grupo) && $user->is_maestro()) ||
-            $user->is_administrador() ||
-            $user->is_asesor()
-        ) {
-            return true;
-        }
-        return false;
-    }
-
     public function ver_tarea($id) {
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $user = \Auth::guard()->user();
         $grupo = $tarea->grupo;
         $entrega = null;
 
-        if ($this->_usuario_puede_ver_tarea($grupo)) {
+        if (Permissions::has_perm('ver_tarea', ['tarea' => $tarea])) {
             $form = new Form(EntregaTareaEstudiante::class, ['descripcion'], [
                 'descripcion' => [
                     'type' => 'textarea',
@@ -111,7 +53,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $user = \Auth::guard()->user();
 
-        if ($this->_usuario_puede_ver_tarea($grupo)) {
+        if (Permissions::has_perm('ver_tareas', ['grupo' => $grupo])) {
             return view('aula.tareas_grupo', compact(['grupo']));
         }
         abort(404, 'Página no encontrada');
@@ -121,7 +63,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $user = \Auth::guard()->user();
 
-        if ($this->_usuario_puede_crear_tarea(['grupo' => $grupo])) {
+        if (Permissions::has_perm('crear_tarea', ['grupo' => $grupo])) {
             $form = new Form(TareaGrupoInvestigacion::class, [
                 'titulo', 'fecha_inicio', 'fecha_fin', 'descripcion'
             ]);
@@ -135,7 +77,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $usuario = \Auth::guard()->user()->usuario;
         $grupo = $tarea->grupo;
 
-        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
+        if (Permissions::has_perm('editar_tarea', ['tarea' => $tarea])) {
             $form = new Form($tarea, [
                 'titulo', 'fecha_inicio', 'fecha_fin', 'descripcion'
             ]);
@@ -149,7 +91,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $usuario = \Auth::guard()->user()->usuario;
         $grupo = $tarea->grupo;
 
-        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
+        if (Permissions::has_perm('editar_tarea', ['tarea' => $tarea])) {
             $validated_data = $request->validate([
                 'descripcion' => '',
                 'titulo' => 'required',
@@ -187,7 +129,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_crear_tarea(['grupo' => $grupo])) {
+        if (Permissions::has_perm('crear_tarea', ['grupo' => $grupo])) {
             $validated_data = $request->validate([
                 'descripcion' => '',
                 'titulo' => 'required',
@@ -228,7 +170,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
+        if (Permissions::has_perm('editar_tarea', ['tarea' => $tarea])) {
             $grupo = $tarea->grupo;
             return view('aula.entregas_tarea', compact(['grupo', 'tarea']));
         }
@@ -241,7 +183,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = $entrega->tarea;
         $grupo = $tarea->grupo;
 
-        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
+        if (Permissions::has_perm('editar_tarea', ['tarea' => $tarea])) {
             return view('aula.entrega_tarea', compact(['grupo', 'tarea', 'entrega']));
         }
     }
@@ -266,7 +208,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = $tarea->grupo;
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
+        if (Permissions::has_perm('editar_tarea', ['tarea' => $tarea])) {
             $documento->delete();
             return back()->with('info', 'Ha eliminado el documento');
         }
@@ -291,7 +233,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_ver_tarea($tarea->grupo)) {
+        if (Permissions::has_perm('ver_tarea', ['tarea' => $tarea])) {
             $validated_data = $request->validate([
                 'descripcion' => 'required_if:file,',
                 'file' => 'file|mimes:doc,pdf,docx,zip,png,jpeg,jpg,ppt,pptx'
@@ -335,7 +277,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
 
     public function crear_examen($id) {
         $grupo = GrupoInvestigacion::findOrFail($id);
-        if ($this->_usuario_puede_crear_examen(['grupo' => $grupo])) {
+        if (Permissions::has_perm('crear_examen', ['grupo' => $grupo])) {
             $form = new Form(ExamenGrupoInvestigacion::class, [
                 'titulo', 'fecha_inicio', 'fecha_fin',
                 'descripcion', 'duracion', 'preguntas'
@@ -348,7 +290,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
     public function listar_examenes_grupo($id) {
         $grupo = GrupoInvestigacion::findOrFail($id);
 
-        if ($this->_usuario_puede_ver_examen($grupo)) {
+        if (Permissions::has_perm('ver_examenes', ['grupo' => $grupo])) {
             return view('aula.examenes_grupo', compact(['grupo']));
         }
         abort(404, 'Página no encontrada');
@@ -358,7 +300,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $examen = ExamenGrupoInvestigacion::findOrFail($id);
         $grupo = $examen->grupo;
 
-        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+        if (Permissions::has_perm('editar_examen', ['examen' => $examen])) {
             $form = new Form($examen, [
                 'titulo', 'fecha_inicio', 'fecha_fin',
                 'descripcion', 'duracion', 'preguntas'
@@ -371,7 +313,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
     public function actualizar_examen(Request $request, $id) {
         $examen = ExamenGrupoInvestigacion::findOrFail($id);
 
-        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+        if (Permissions::has_perm('editar_examen', ['examen' => $examen])) {
             $grupo = $examen->grupo;
             $validation_data = $request->validate([
                 'descripcion' => '',
@@ -401,7 +343,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_crear_examen(['grupo' => $grupo])) {
+        if (Permissions::has_perm('crear_examen', ['grupo' => $grupo])) {
             $validation_data = $request->validate([
                 'descripcion' => '',
                 'titulo' => 'required',
@@ -433,17 +375,20 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $examen = ExamenGrupoInvestigacion::findOrFail($id);
         $grupo = $examen->grupo;
 
-        if ($this->_usuario_puede_ver_examen($grupo)) {
+        if (Permissions::has_perm('ver_examen', ['examen' => $examen])) {
             return view('aula.ver_examen', compact(['grupo', 'examen']));
         }
         abort(404, 'Página no econtrada');
     }
 
+    /**
+     * Vista en la que el estudiante hace la prueba del examen
+     */
     public function examen_estudiante($id) {
         $examen = ExamenGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($this->_usuario_puede_ver_examen($examen->grupo)) {
+        if (Permissions::has_perm('ver_examen', ['examen' => $examen])) {
             if ($examen->is_activo()) {
                 $entrega = \App\Models\EntregaExamenEstudiante::firstOrCreate([
                     'usuario_id' => $usuario->id,
@@ -471,7 +416,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $examen = ExamenGrupoInvestigacion::findOrFail($id);
         $grupo = $examen->grupo;
 
-        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+        if (Permissions::has_perm('editar_examen', ['examen' => $examen])) {
             $preguntas = json_decode($examen->preguntas);
             return view('aula.entregas_examen', compact(['examen', 'entregas', 'grupo', 'preguntas']));
         }
@@ -481,7 +426,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
     public function entrega_examen($id) {
         $entrega = \App\Models\EntregaExamenEstudiante::findOrFail($id);
         
-        if ($this->_usuario_puede_crear_examen(['examen' => $entrega->examen])) {
+        if (Permissions::has_perm('editar_examen', ['examen' => $entrega->examen])) {
             $examen = $entrega->examen;
             $grupo = $examen->grupo;
             $preguntas = json_decode($examen->preguntas);

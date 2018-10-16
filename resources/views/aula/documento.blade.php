@@ -1,7 +1,7 @@
 <div class="col-sm-12 col-md-3 text-center">
     <div style="position: relative;">
         <img class="icon-file" src="{{ $documento->get_icon() }}" />
-        @if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->is_asesor() || \Auth::guard()->user()->usuario->id == $tarea->maestro->id)
+        @if (\App\Libraries\Permissions::has_perm('editar_tarea', ['tarea' => $tarea]))
             <span data-original-title="Eliminar documento" data-placement="bottom" data-toggle="tooltip" class="document-remove badge bg-color-3"><a style="color: white;" href="{{ $documento->get_eliminar_url() }}"><i class="fa fa-times"></i></a></span>
         @endif
     </div>
