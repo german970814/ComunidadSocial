@@ -93,6 +93,7 @@
 <script src="{{ asset('assets/plugins/wow/wow.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/notify/bootstrap.notify.js') }}"></script>
 <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/datetimepicker/datetimepicker.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 <script src="{{ asset('/js/custom.js') }}"></script>
 

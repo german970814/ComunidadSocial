@@ -66,6 +66,7 @@ class AulaVirtual extends Migration
             $table->timestamps();
             $table->string('titulo');
             $table->text('preguntas');
+            $table->integer('duracion');
             $table->datetime('fecha_fin');
             $table->datetime('fecha_inicio');
             $table->text('descripcion')->nullable();

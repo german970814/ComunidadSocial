@@ -41,6 +41,11 @@ Route::prefix('json')->group(function () {
         '/institucion/{id}/enviar_solicitud',
         '\App\Http\Controllers\InstitucionController@solicitud_ingreso_institucion'
     )->name('institucion.solicitud-ingreso-institucion');
+
+    Route::middleware('auth')->post(
+        '/aula/examen/{id}/respuesta',
+        '\App\Http\Controllers\AulaVirtualController@guardar_respuesta_estudiante'
+    )->name('aula.guardar-respuesta-estudiante');
 });
 
 Route::middleware('notificacion')->group( function () {
@@ -147,6 +152,14 @@ Route::middleware('notificacion')->group( function () {
                 'AulaVirtualController@ver_tarea'
             )->name('aula.ver-tarea');
             Route::get(
+                '/tareas/{id}/editar',
+                'AulaVirtualController@editar_tarea'
+            )->name('aula.editar-tarea');
+            Route::post(
+                '/tareas/{id}/actualizar',
+                'AulaVirtualController@actualizar_tarea'
+            )->name('aula.actualizar-tarea');
+            Route::get(
                 '/tareas/{id}/entregas',
                 'AulaVirtualController@ver_entregas_tarea'
             )->name('aula.ver-entregas-tarea');
@@ -154,6 +167,54 @@ Route::middleware('notificacion')->group( function () {
                 '/tareas/entregas/{id}',
                 'AulaVirtualController@ver_entrega_tarea'
             )->name('aula.ver-entrega');
+            Route::get(
+                '/tareas/documentos/{id}',
+                'AulaVirtualController@get_documento'
+            )->name('aula.ver-documento');
+            Route::get(
+                '/tareas/documentos/entrega/{id}',
+                'AulaVirtualController@get_documento_entrega'
+            )->name('aula.ver-documento-entrega');
+            Route::get(
+                '/tareas/documentos/{id}/eliminar',
+                'AulaVirtualController@eliminar_documento'
+            )->name('aula.eliminar-documento');
+            Route::get(
+                '/examenes/grupo/{id}/crear',
+                'AulaVirtualController@crear_examen'
+            )->name('aula.crear-examen');
+            Route::post(
+                '/examenes/grupo/{id}/crear',
+                'AulaVirtualController@guardar_examen'
+            )->name('aula.guardar-examen');
+            Route::get(
+                '/examenes/{id}',
+                'AulaVirtualController@ver_examen'
+            )->name('aula.ver-examen');
+            Route::get(
+                '/examenes/{id}/editar',
+                'AulaVirtualController@editar_examen'
+            )->name('aula.editar-examen');
+            Route::post(
+                '/examenes/{id}/editar',
+                'AulaVirtualController@actualizar_examen'
+            )->name('aula.actualizar-examen');
+            Route::get(
+                '/examenes/grupo/{id}',
+                'AulaVirtualController@listar_examenes_grupo'
+            )->name('aula.examenes-grupo');
+            Route::get(
+                '/examenes/{id}/prueba',
+                'AulaVirtualController@examen_estudiante'
+            )->name('aula.examen-estudiante');
+            Route::get(
+                '/examenes/{id}/entregas',
+                'AulaVirtualController@entregas_examen'
+            )->name('aula.entregas-examen');
+            Route::get(
+                '/examenes/entrega/{id}',
+                'AulaVirtualController@entrega_examen'
+            )->name('aula.entrega-examen');
         });
     });
 

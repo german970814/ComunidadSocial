@@ -2,24 +2,28 @@
 
 namespace App\Models;
 
-use App\Libraries\{ ModelForm, CacheMethods };
+use App\Libraries\{ ModelForm, CacheMethods, Helper };
 
 
-class TareaGrupoInvestigacion extends ModelForm
+class ExamenGrupoInvestigacion extends ModelForm
 {
     use CacheMethods;
 
-    protected $table = 'tareas_grupo_investigacion';
+    protected $table = 'examen_grupo_investigacion';
 
     protected $fillable = [
-        'titulo', 'fecha_fin', 'fecha_inicio',
-        'descripcion', 'maestro_id', 'grupo_investigacion_id'
+        'titulo', 'preguntas', 'duracion',
+        'fecha_fin', 'fecha_inicio', 'descripcion',
+        'maestro_id', 'grupo_investigacion_id'
     ];
 
     static $form_schema = [
         'descripcion' => [
             'type' => 'textarea',
             'label' => 'Descripción'
+        ],
+        'preguntas' => [
+            'type' => 'hidden'
         ],
         'fecha_fin' => [
             'type' => 'date',
@@ -31,6 +35,10 @@ class TareaGrupoInvestigacion extends ModelForm
         ],
         'titulo' => [
             'label' => 'Título'
+        ],
+        'duracion' => [
+            'type' => 'number',
+            'label' => 'Duración (min)'
         ]
     ];
 
@@ -42,12 +50,13 @@ class TareaGrupoInvestigacion extends ModelForm
         return $this->belongsTo('\App\Models\GrupoInvestigacion', 'grupo_investigacion_id');
     }
 
-    public function documentos() {
-        return $this->hasMany('\App\Models\DocumentoTareaGrupoInvestigacion', 'tarea_id');
+    public function entregas() {
+        return $this->hasMany('\App\Models\EntregaExamenEstudiante', 'examen_id');
     }
 
-    public function entregas() {
-        return $this->hasMany('\App\Models\EntregaTareaEstudiante', 'tarea_id');
+    public function is_activo() {
+        $now = new \DateTime();
+        return $now >= (new \DateTime($this->fecha_inicio)) && $now <= (new \DateTime($this->fecha_fin));
     }
 
     public function get_titulo() {
@@ -55,11 +64,7 @@ class TareaGrupoInvestigacion extends ModelForm
     }
 
     public function get_url() {
-        return route('aula.ver-tarea', $this->id);
-    }
-
-    public function has_documentos() {
-        return $this->documentos()->exists();
+        return route('aula.ver-examen', $this->id);
     }
 
     public function get_tiempo_restante() {

@@ -84,8 +84,26 @@ class GrupoInvestigacion extends ModelForm
         return $this->posts()->orderBy('created_at', 'desc');
     }
 
-    public function tareas() {  // TODO: retornar solo las activas
-        return $this->hasMany('\App\Models\TareaGrupoInvestigacion', 'grupo_investigacion_id');
+    public function tareas() {
+        return $this->hasMany('\App\Models\TareaGrupoInvestigacion', 'grupo_investigacion_id')
+            ->orderBy('fecha_inicio', 'asc');
+    }
+
+    public function tareas_activas() {
+        $now = new \DateTime();
+        return $this->tareas()->where('fecha_inicio', '<=', $now)
+            ->where('fecha_fin', '>=', $now);
+    }
+
+    public function examenes() {
+        return $this->hasMany('\App\Models\ExamenGrupoInvestigacion', 'grupo_investigacion_id')
+            ->orderBy('fecha_inicio', 'asc');
+    }
+
+    public function examenes_activos() {
+        $now = new \DateTime();
+        return $this->examenes()->where('fecha_inicio', '<=', $now)
+            ->where('fecha_fin', '>=', $now);
     }
 
     public function maestros() {

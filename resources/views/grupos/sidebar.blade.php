@@ -28,11 +28,14 @@
                     {{-- <li>
                         <a href="#">Información</a>
                     </li> --}}
-                    {{-- @if (\Auth::user()->usuario->pertenece_grupo($grupo) || \Auth::user()->is_asesor() || \Auth::user()->is_administrador())
+                    @if (\Auth::user()->usuario->pertenece_grupo($grupo) || \Auth::user()->is_asesor() || \Auth::user()->is_administrador())
                     <li>
                         <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">Tareas</a>
                     </li>
-                    @endif --}}
+                    <li>
+                        <a href="{{ route('aula.examenes-grupo', $grupo->id) }}">Exámenes</a>
+                    </li>
+                    @endif
                     @if (\Auth::user()->is_asesor() || \Auth::user()->is_administrador())
                     <li>
                         <a href="{{ route('grupos.solicitudes', $grupo->id) }}">Solicitudes</a>

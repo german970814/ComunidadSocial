@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Libraries\{ ModelForm, CacheMethods };
+use App\Libraries\{ ModelForm, CacheMethods, Helper };
 
 
 class EntregaTareaEstudiante extends ModelForm
@@ -26,7 +26,23 @@ class EntregaTareaEstudiante extends ModelForm
 
     public function is_editable() {
         $now = new \DateTime('NOW');
-        $fecha_fin = new \DateTime($this->fecha_fin);
+        $fecha_fin = new \DateTime($this->tarea->fecha_fin);
         return $now < $fecha_fin;
+    }
+
+    public function get_extension() {
+        $extension = explode('.', $this->archivo);
+        return end($extension);
+    }
+
+    public function get_documento_url() {
+        return route('aula.ver-documento-entrega', $this->id);
+    }
+
+    public function get_icon() {
+        if ($this->archivo) {
+            return Helper::get_file_icon($this->get_extension());
+        }
+        return '';
     }
 }
