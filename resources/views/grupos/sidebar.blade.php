@@ -32,6 +32,9 @@
                     <li>
                         <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">Tareas</a>
                     </li>
+                    <li>
+                        <a href="{{ route('aula.examenes-grupo', $grupo->id) }}">Exámenes</a>
+                    </li>
                     @endif
                     @if (\Auth::user()->is_asesor() || \Auth::user()->is_administrador())
                     <li>

@@ -11,17 +11,21 @@
             @php
                 $_tareas = \Auth::guard()->user()->is_estudiante() ? $grupo->tareas_activas : $grupo->tareas;
             @endphp
-            @foreach($_tareas->all() as $tarea)
-            <div class="col-md-6 col-xs-12">
-                <a href="{{ $tarea->get_url() }}">
-                    <div class="well">
-                        <h3>{{ $tarea->get_titulo() }}</h3>
-                        <span>{{ $tarea->get_tiempo_restante() }}</span>
-                    </div>
-                </a>
-                <div class="space-25"></div>
-            </div>
-            @endforeach
+            @if ($_tareas->all())
+                @foreach($_tareas->all() as $tarea)
+                <div class="col-md-6 col-xs-12">
+                    <a href="{{ $tarea->get_url() }}">
+                        <div class="well">
+                            <h3>{{ $tarea->get_titulo() }}</h3>
+                            <span>{{ $tarea->get_tiempo_restante() }}</span>
+                        </div>
+                    </a>
+                    <div class="space-25"></div>
+                </div>
+                @endforeach
+            @else
+                @include('layouts.vacio', ['text' => 'No hay tareas para mostrar'])
+            @endif
         </div>
     </section>
 @endsection

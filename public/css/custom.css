@@ -1,7 +1,22 @@
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+.main-wrapper {
+    position: initial;
+}
+
 .media-profile {
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
+}
+
+footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
 }
 
 .media-profile .photo-profile {
@@ -337,6 +352,73 @@ textarea {
     position: absolute;
     top: 0;
     left: 30px;
+}
+
+.aula-preguntas input {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+}
+
+input.examen-opcion {
+    display: block;
+    width: 100%;
+}
+
+.pregunta-container {
+    margin-bottom: 25px;
+}
+
+.pregunta-container ol li {
+    padding: 25px;
+}
+
+.pregunta-container .btn.btn-sm {
+    padding-left: 13px !important;
+    padding-right: 13px !important;
+}
+
+.pregunta-container .btn.btn-sm i.fa {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.respuestas-container {
+    padding: 50px 25px;
+}
+
+.respuestas-container li {
+    padding: 10px 0;
+}
+
+.coursesCounter {
+    height: 230px;
+}
+
+.preguntas-opciones {
+    padding-left: 50px;
+    padding-top: 20px;
+}
+
+.preguntas-opciones li {
+    padding: 15px 0;
+}
+
+.preguntas-opciones .border-respuesta {
+    width: fit-content;
+    border: 2px solid #0095D9;
+    /* padding: 10px; */
+    border-radius: 5px;
+}
+
+.preguntas-opciones .border-respuesta p {
+    margin: 0;
+    padding: 10px;
+}
+
+.block h3 {
+    overflow: inherit;
 }
 
 /* a, .sectionTitle h2, .formField .help-block a:hover, .tabCommon .media-body .media-heading, .pagerArea > .pager li a:hover, .pagerArea > .pager li.active a, .navbar-default.lightHeader .navbar-nav > li.active.color-3 > a, .navbar-nav > li.color-3 > a:hover span, .navbar-nav > li.color-3.singleDrop > .dropdown-menu li.active > a, .navbar-nav > li.color-3.singleDrop > .dropdown-menu li.active li.active a, .navbar-nav > li.color-3.singleDrop.open a > span, .copyRightText p a:hover, .tp-caption.rs-caption-1 span, .sectionLink:hover .border-color-3, .schoolInfo h2, .teamInfo h3 a:hover, .teamContent.teamAdjust .teamInfo h3 a, .teamContent.teamAdjust .teamInfo h3 a:hover, .teamStyle .media-body h4 a:hover, .teachersInfo h3, .eventContent .list-inline.btn-red .btn-primary:hover, .isotopeSelector:hover h4, .homeContactContent h2, .footer-2 .copyRightText p a, .blogComments h3, .count-down #simple_timer .table-cell.minute .tab-val, .priceBtn h5 span, .progress-wizard > .progress-wizard-step > .progress-wizard-dot i, .checkoutInfo .checkbox a:hover, .lowerPartTitle h4, .product-review .tab-content h3 {

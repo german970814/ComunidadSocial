@@ -356,13 +356,13 @@ jQuery(document).ready(function(){
 
   /*======== 17. COUNDOWN ========*/
     jQuery(document).ready(function() {
-     $('#courseTimer').syotimer({
-        year: 2018,
-        month: 11,
-        day: 9,
-        hour: 20,
-        minute: 30,
-        });
+    //  $('#courseTimer').syotimer({
+    //     year: 2018,
+    //     month: 11,
+    //     day: 9,
+    //     hour: 20,
+    //     minute: 30,
+    //     });
     });
 
 });

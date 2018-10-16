@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Models\GrupoInvestigacion;
 use App\Models\TareaGrupoInvestigacion;
+use App\Models\ExamenGrupoInvestigacion;
 use App\Models\EntregaTareaEstudiante;
 use App\Libraries\{ Form, Helper };
 
@@ -21,6 +22,52 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $user = \Auth::guard()->user();
         if (
             $user->usuario->pertenece_grupo($grupo) ||
+            $user->is_administrador() ||
+            $user->is_asesor()
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private function _usuario_puede_ver_examen($grupo) {
+        $user = \Auth::guard()->user();
+        if (
+            $user->usuario->pertenece_grupo($grupo) ||
+            $user->is_administrador() ||
+            $user->is_asesor()
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private function _usuario_puede_crear_tarea($args) {
+        $user = \Auth::guard()->user()->usuario;
+        $tarea = isset($args['tarea']) ? $args['tarea'] : null;
+        $grupo = isset($args['grupo']) ? $args['grupo'] : null;
+
+        if ($tarea && $tarea->maestro->id == $user->id) {
+            return true;
+        } else if (
+            ($user->pertenece_grupo($grupo ? $grupo : $tarea->grupo) && $user->is_maestro()) ||
+            $user->is_administrador() ||
+            $user->is_asesor()
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    public function _usuario_puede_crear_examen($args) {
+        $user = \Auth::guard()->user()->usuario;
+        $examen = isset($args['examen']) ? $args['examen'] : null;
+        $grupo = isset($args['grupo']) ? $args['grupo'] : null;
+
+        if ($examen && $examen->maestro->id == $user->id) {
+            return true;
+        } else if (
+            ($user->pertenece_grupo($grupo ? $grupo : $examen->grupo) && $user->is_maestro()) ||
             $user->is_administrador() ||
             $user->is_asesor()
         ) {
@@ -74,7 +121,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $user = \Auth::guard()->user();
 
-        if (($user->usuario->pertenece_grupo($grupo) && $user->is_maestro()) || $user->is_administrador() || $user->is_asesor()) {
+        if ($this->_usuario_puede_crear_tarea(['grupo' => $grupo])) {
             $form = new Form(TareaGrupoInvestigacion::class, [
                 'titulo', 'fecha_inicio', 'fecha_fin', 'descripcion'
             ]);
@@ -88,11 +135,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $usuario = \Auth::guard()->user()->usuario;
         $grupo = $tarea->grupo;
 
-        if (
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
-            $usuario->is_administrador() ||
-            $usuario->is_asesor()
-        ) {
+        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
             $form = new Form($tarea, [
                 'titulo', 'fecha_inicio', 'fecha_fin', 'descripcion'
             ]);
@@ -106,11 +149,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $usuario = \Auth::guard()->user()->usuario;
         $grupo = $tarea->grupo;
 
-        if (
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
-            $usuario->is_administrador() ||
-            $usuario->is_asesor()
-        ) {
+        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
             $validated_data = $request->validate([
                 'descripcion' => '',
                 'titulo' => 'required',
@@ -148,7 +187,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if (($usuario->pertenece_grupo($grupo) && $usuario->is_maestro()) || $usuario->is_administrador() || $usuario->is_asesor()) {
+        if ($this->_usuario_puede_crear_tarea(['grupo' => $grupo])) {
             $validated_data = $request->validate([
                 'descripcion' => '',
                 'titulo' => 'required',
@@ -189,11 +228,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if (
-            ($usuario->pertenece_grupo($tarea->grupo) && $usuario->is_asesor()) ||
-            ($usuario->pertenece_grupo($tarea->grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
-            $usuario->is_administrador()
-        ) {
+        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
             $grupo = $tarea->grupo;
             return view('aula.entregas_tarea', compact(['grupo', 'tarea']));
         }
@@ -206,11 +241,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = $entrega->tarea;
         $grupo = $tarea->grupo;
 
-        if (
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_asesor()) ||
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
-            $usuario->is_administrador()
-        ) {
+        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
             return view('aula.entrega_tarea', compact(['grupo', 'tarea', 'entrega']));
         }
     }
@@ -235,11 +266,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $grupo = $tarea->grupo;
         $usuario = \Auth::guard()->user()->usuario;
 
-        if (
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_asesor()) ||
-            ($usuario->pertenece_grupo($grupo) && $usuario->is_maestro() && $usuario->id == $tarea->maestro->id) ||
-            $usuario->is_administrador()
-        ) {
+        if ($this->_usuario_puede_crear_tarea(['tarea' => $tarea])) {
             $documento->delete();
             return back()->with('info', 'Ha eliminado el documento');
         }
@@ -264,7 +291,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         $tarea = TareaGrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($usuario->is_estudiante() && $usuario->pertenece_grupo($tarea->grupo)) {
+        if ($this->_usuario_puede_ver_tarea($tarea->grupo)) {
             $validated_data = $request->validate([
                 'descripcion' => 'required_if:file,',
                 'file' => 'file|mimes:doc,pdf,docx,zip,png,jpeg,jpg,ppt,pptx'
@@ -302,6 +329,185 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
             return redirect()
                 ->route('aula.ver-tarea', $tarea->id)
                 ->with('success', 'Se ha agregado la entrega a la tarea');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function crear_examen($id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+        if ($this->_usuario_puede_crear_examen(['grupo' => $grupo])) {
+            $form = new Form(ExamenGrupoInvestigacion::class, [
+                'titulo', 'fecha_inicio', 'fecha_fin',
+                'descripcion', 'duracion', 'preguntas'
+            ]);
+            return view('aula.crear_examen_grupo', compact(['grupo', 'form']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function listar_examenes_grupo($id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+
+        if ($this->_usuario_puede_ver_examen($grupo)) {
+            return view('aula.examenes_grupo', compact(['grupo']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function editar_examen($id) {
+        $examen = ExamenGrupoInvestigacion::findOrFail($id);
+        $grupo = $examen->grupo;
+
+        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+            $form = new Form($examen, [
+                'titulo', 'fecha_inicio', 'fecha_fin',
+                'descripcion', 'duracion', 'preguntas'
+            ]);
+            return view('aula.crear_examen_grupo', compact(['grupo', 'form', 'examen']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function actualizar_examen(Request $request, $id) {
+        $examen = ExamenGrupoInvestigacion::findOrFail($id);
+
+        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+            $grupo = $examen->grupo;
+            $validation_data = $request->validate([
+                'descripcion' => '',
+                'titulo' => 'required',
+                'duracion' => 'required',
+                'preguntas' => 'required',
+                'fecha_fin' => 'required|date|after:fecha_inicio',
+                'fecha_inicio' => 'required|date|before:fecha_fin',
+            ], $this->messages);
+
+            $examen->update([
+                'titulo' => $validation_data['titulo'],
+                'duracion' => $validation_data['duracion'],
+                'preguntas' => $validation_data['preguntas'],
+                'fecha_fin' => $validation_data['fecha_fin'],
+                'descripcion' => $validation_data['descripcion'],
+                'fecha_inicio' => $validation_data['fecha_inicio'],
+            ]);
+            return redirect()
+                ->route('aula.editar-examen', $examen->id)
+                ->with('success', 'Examen editado exitosamente');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function guardar_examen(Request $request, $id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if ($this->_usuario_puede_crear_examen(['grupo' => $grupo])) {
+            $validation_data = $request->validate([
+                'descripcion' => '',
+                'titulo' => 'required',
+                'duracion' => 'required',
+                'preguntas' => 'required',
+                'fecha_fin' => 'required|date|after:fecha_inicio',
+                'fecha_inicio' => 'required|date|before:fecha_fin',
+            ], $this->messages);
+
+            $examen = ExamenGrupoInvestigacion::create([
+                'maestro_id' => $usuario->id,
+                'titulo' => $validation_data['titulo'],
+                'grupo_investigacion_id' => $grupo->id,
+                'duracion' => $validation_data['duracion'],
+                'preguntas' => $validation_data['preguntas'],
+                'fecha_fin' => $validation_data['fecha_fin'],
+                'descripcion' => $validation_data['descripcion'],
+                'fecha_inicio' => $validation_data['fecha_inicio'],
+            ]);
+
+            return redirect()
+                ->route('aula.ver-examen', $examen->id)
+                ->with('success', 'Ha creado el examen con exito');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function ver_examen($id) {
+        $examen = ExamenGrupoInvestigacion::findOrFail($id);
+        $grupo = $examen->grupo;
+
+        if ($this->_usuario_puede_ver_examen($grupo)) {
+            return view('aula.ver_examen', compact(['grupo', 'examen']));
+        }
+        abort(404, 'Página no econtrada');
+    }
+
+    public function examen_estudiante($id) {
+        $examen = ExamenGrupoInvestigacion::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if ($this->_usuario_puede_ver_examen($examen->grupo)) {
+            if ($examen->is_activo()) {
+                $entrega = \App\Models\EntregaExamenEstudiante::firstOrCreate([
+                    'usuario_id' => $usuario->id,
+                    'examen_id' => $examen->id
+                ], ['respuestas' => '[]']);
+
+                if ($entrega->is_editable()) {
+                    return view('aula.examen_estudiante', compact(['entrega', 'examen']));
+                }
+            }
+            return redirect()
+                ->route('aula.ver-examen', $examen->id)
+                ->with('warning', 'El examen ya se ha terminado');
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    /**
+     * 
+     * Para las respuestas múltiples, solo se está teniendo en cuenta
+     * que tan solo una opción sea correcta para marcar la pregunta
+     * como respondida acertivamente
+     */
+    public function entregas_examen($id) {
+        $examen = ExamenGrupoInvestigacion::findOrFail($id);
+        $grupo = $examen->grupo;
+
+        if ($this->_usuario_puede_crear_examen(['examen' => $examen])) {
+            $preguntas = json_decode($examen->preguntas);
+            return view('aula.entregas_examen', compact(['examen', 'entregas', 'grupo', 'preguntas']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function entrega_examen($id) {
+        $entrega = \App\Models\EntregaExamenEstudiante::findOrFail($id);
+        
+        if ($this->_usuario_puede_crear_examen(['examen' => $entrega->examen])) {
+            $examen = $entrega->examen;
+            $grupo = $examen->grupo;
+            $preguntas = json_decode($examen->preguntas);
+            return view('aula.entrega_examen', compact('examen', 'grupo', 'entrega', 'preguntas'));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function guardar_respuesta_estudiante(Request $request, $id) {
+        $entrega = \App\Models\EntregaExamenEstudiante::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if ($entrega->is_editable() && $entrega->usuario->id == $usuario->id) {
+            $validated_data = $request->validate([
+                'respuestas' => 'required'
+            ]);
+            $entrega->update([
+                'respuestas' => $validated_data['respuestas']
+            ]);
+            return response()->json([
+                'code' => 200,
+                'message' => 'Respuesta actualizada con éxito'
+            ]);
         }
         abort(404, 'Página no encontrada');
     }
