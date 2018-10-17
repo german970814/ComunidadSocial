@@ -236,5 +236,5 @@ $(document).ready(function () {
         });
       }
     });
-  })
+  });
 })

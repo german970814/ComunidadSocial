@@ -128,6 +128,34 @@ Route::middleware('notificacion')->group( function () {
                 '/{tipo}/institucion/{usuario_id}',
                 'GrupoInvestigacionController@grupos_investigacion_institucion'
             )->name('grupos.grupos-investigacion-institucion');
+            Route::get(
+                '{id}/foros/',
+                'GrupoInvestigacionController@ver_foros'
+            )->name('grupos.ver-foros');
+            Route::get(
+                '{id}/foros/crear',
+                'GrupoInvestigacionController@crear_foro'
+            )->name('grupos.crear-foro');
+            Route::post(
+                '{id}/foros/crear',
+                'GrupoInvestigacionController@guardar_foro'
+            )->name('grupos.guardar-foro');
+            Route::get(
+                'foros/{id}',
+                'GrupoInvestigacionController@ver_foro'
+            )->name('grupos.ver-foro');
+            Route::get(
+                'foros/{id}/editar',
+                'GrupoInvestigacionController@editar_foro'
+            )->name('grupos.editar-foro');
+            Route::post(
+                'foros/{id}/editar',
+                'GrupoInvestigacionController@actualizar_foro'
+            )->name('grupos.actualizar-foro');
+            Route::post(
+                'foros/{id}/respuesta',
+                'GrupoInvestigacionController@guardar_respuesta_foro'
+            )->name('grupos.guardar-respuesta-foro');
         });
 
         Route::prefix('/aula')->group(function() {

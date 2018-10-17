@@ -88,6 +88,11 @@ class AulaVirtual extends Migration
             $table->boolean('cerrada')->default(false);  // Para saber si un usuario puede modificar sus respuestas
         });
 
+        /**
+         * Tabla para guardar los foros de un grupo
+         * 
+         * @model \App\Models\ForoGrupo
+         */
         Schema::create('foros_grupo', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
@@ -96,6 +101,11 @@ class AulaVirtual extends Migration
             $table->integer('grupo_investigacion_id')->unsigned();
         });
 
+        /**
+         * Tabla para guardar las respuestas de un foro de grupo
+         * 
+         * @model \App\Models\RespuestaForoGrupo
+         */
         Schema::create('respuestas_foro_grupo', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();

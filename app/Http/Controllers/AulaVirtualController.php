@@ -199,7 +199,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
                 ->header('Content-Type', $content_type)
                 ->header('Content-Disposition', 'attachment; filename="' . $documento->get_nombre() . '"');
         }
-        abort(404, 'Página no econtrada');
+        abort(404, 'Página no encontrada');
     }
 
     public function eliminar_documento($id) {
@@ -378,7 +378,7 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         if (Permissions::has_perm('ver_examen', ['examen' => $examen])) {
             return view('aula.ver_examen', compact(['grupo', 'examen']));
         }
-        abort(404, 'Página no econtrada');
+        abort(404, 'Página no encontrada');
     }
 
     /**

@@ -100,6 +100,10 @@ class GrupoInvestigacion extends ModelForm
             ->orderBy('fecha_inicio', 'asc');
     }
 
+    public function foros() {
+        return $this->hasMany('\App\Models\ForoGrupo', 'grupo_investigacion_id');
+    }
+
     public function examenes_activos() {
         $now = new \DateTime();
         return $this->examenes()->where('fecha_inicio', '<=', $now)
