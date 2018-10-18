@@ -21,8 +21,6 @@
 <div id="logged-users"></div>
 <div id="chat" style="position: fixed; bottom: 0; right: 300px;"></div>
 
-
-<script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
 <script>
 // const Chat = Vue.component('chat', {
 //     delimiters: ['{(', ')}'],

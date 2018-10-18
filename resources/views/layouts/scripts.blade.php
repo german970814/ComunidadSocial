@@ -101,6 +101,7 @@
 <script src="{{ asset('/js/custom.js') }}"></script>
 
 @if (Auth::check())
+<script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
 <script src="{{ asset('/js/io.js') }}"></script>
 <script src="{{ asset('/js/client.js') }}"></script>
 @endif

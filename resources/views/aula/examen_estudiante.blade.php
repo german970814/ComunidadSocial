@@ -24,7 +24,7 @@
 
 
 @section('custom_script')
-<script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
+{{-- <script src="{{ asset('assets/plugins/vue/vue.js') }}"></script> --}}
 <script>
 
 function shuffleArray(array) {

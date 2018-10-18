@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
 use App\Models\Mensaje;
 use App\Models\Conversacion;
@@ -67,6 +68,19 @@ class MensajeController extends Controller {
             'conversacion_id' => $conversacion->id,
             'mensaje' => $validated_data['mensaje']
         ]);
+
+        if ($conversacion->emisor_id == $usuario->id) {
+            $receptor = $conversacion->receptor_id;
+        } else {
+            $receptor = $conversacion->emisor_id;
+        }
+
+        if (Redis::command('get', ['user' . $receptor])) {
+            Redis::publish('user.message', json_encode([
+                'user' => $receptor,
+                'message' => $mensaje->toArray()
+            ]));
+        }
 
         return response()->json([
             'code' => 200,

@@ -12,6 +12,15 @@ const Chat = Vue.component('chat', {
     }
   },
   created() {
+    document.addEventListener('_user_message', e => {
+      if (e.detail.conversacion_id === this.id) {
+        this.mensajes.push(e.detail);
+        setTimeout(() => {
+          this.scrollEnd();
+        }, 300);
+      }
+    });
+  
     $.ajax({
       url: window._getUrl('verConversacion', this.id),
       method: 'GET',
@@ -23,6 +32,10 @@ const Chat = Vue.component('chat', {
     });
   },
   methods: {
+    scrollEnd() {
+      var container = this.$el.querySelector(`#chat-scroll-${this.id}`);
+      container.scrollTop = container.scrollHeight;
+    },
     renderFriendMessage(mensaje) {
       return this.$createElement('div', {
         style: {
@@ -82,7 +95,14 @@ const Chat = Vue.component('chat', {
         h('input', {
           'class': 'form-control',
           attrs: {
-            name: 'mensaje'
+            name: 'mensaje',
+            'data-emojiable': 'true',
+            'data-emoji-input': 'unicode'
+          },
+          domProps: {
+            value: this.mensaje,
+            'data-emojiable': 'true',
+            'data-emoji-input': 'unicode'
           },
           on: {
             input: (event) => {
@@ -100,6 +120,14 @@ const Chat = Vue.component('chat', {
                   success: (data) => {
                     console.log(data);
                     if (data.code == 200) {
+                      this.mensajes.push({
+                        self: true,
+                        mensaje: this.mensaje,
+                        conversacion_id: this.id,
+                      });
+                      setTimeout(() => {
+                        this.scrollEnd();
+                      }, 300);
                       this.mensaje = '';
                     }
                   }
@@ -125,6 +153,13 @@ const Chat = Vue.component('chat', {
           href: `#collapse-a-${this.id}`,
           'aria-expanded': "false"
         },
+        on: {
+          click: () => {
+            setTimeout(() => {
+              this.scrollEnd();
+            }, 100);
+          }
+        }
       }, [h('span', {}, ['Conversación'])]);
     },
     renderBody(h) {
@@ -141,7 +176,10 @@ const Chat = Vue.component('chat', {
           'class': 'panel-body',
           style: { height: '300px' }
         }, [
-          h('div', { style: { height: '225px', overflow: 'scroll' } }, [
+          h('div', {
+            style: { height: '225px', overflow: 'scroll' },
+            attrs: { id: `chat-scroll-${this.id}` }
+          }, [
             this.renderMessages(h)
           ]),
           this.renderInput(h)
@@ -218,19 +256,34 @@ const LoggedFriends = Vue.component('logged-friends', {
       });
 
       socket.on('connected_users', (data) => {
-        console.log(data);
+        // console.log(data);
         if (!this.friends.find(friend => friend.id == data.id)) {
           this.friends.push(data);
         }
-      })
+      });
+
+      socket.on('ping', function() {
+        socket.emit('verify_conection', {
+          'id': window._app_config.server.loggedUserId,
+          'name': window._app_config.server.loggedUserFullName
+        });
+      });
+
+      socket.on('user_message', (data) => {
+        console.log(data);
+        let userMessageEvent = new CustomEvent('_user_message', {
+          detail: data
+        });
+        document.dispatchEvent(userMessageEvent);
+      });
 
       socket.on('user_disconnect', (data) => {
-        console.log('user discconected')
+        // console.log('user discconected')
         var user_in_friends = this.friends.findIndex(friend => friend.id == data);
         if (user_in_friends + 1) {
           this.friends.splice(user_in_friends, 1);
         }
-      })
+      });
 
       socket.on('connect_error', (data) => {
         socket.close();  // cierra la conexión

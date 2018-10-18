@@ -7,7 +7,7 @@ $(function() {
     // Initializes and creates emoji set from sprite sheet
     window.emojiPicker = new EmojiPicker({
         emojiable_selector: '[data-emojiable=true]',
-        assetsPath: '../lib/img/',
+        // assetsPath: '../lib/img/',
         assetsPath: '{{ asset("assets/img/emojis/") }}',
         popupButtonClasses: 'fa fa-smile-o'
     });
