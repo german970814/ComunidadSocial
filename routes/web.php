@@ -46,6 +46,19 @@ Route::prefix('json')->group(function () {
         '/aula/examen/{id}/respuesta',
         '\App\Http\Controllers\AulaVirtualController@guardar_respuesta_estudiante'
     )->name('aula.guardar-respuesta-estudiante');
+
+    Route::middleware('auth')->post(
+        '/mensajes/conversacion/get/{id}',
+        'MensajeController@get_conversacion'
+    )->name('mensajes.get-conversacion');
+    Route::middleware('auth')->post(
+        '/mensajes/conversacion/{id}/mensaje/nuevo',
+        'MensajeController@guardar_mensaje'
+    )->name('mensajes.guardar-mensaje');
+    Route::middleware('auth')->get(
+        '/mensajes/conversacion/{id}',
+        'MensajeController@ver_conversacion'
+    )->name('mensajes.ver-conversacion');
 });
 
 Route::middleware('notificacion')->group( function () {

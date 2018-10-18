@@ -48,6 +48,9 @@
             "reportarComentario": "{{ route('comentario.reportar', 99) }}",
             "departamentoMunicipios": "{{ route('departamento.municipios', 99) }}",
             "solicitarIngresoInstitucion": "{{ route('institucion.solicitud-ingreso-institucion', 99) }}",
+            "getConversacion": "{{ route('mensajes.get-conversacion', 99) }}",
+            "guardarMensaje": "{{ route('mensajes.guardar-mensaje', 99) }}",
+            "verConversacion": "{{ route('mensajes.ver-conversacion', 99) }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))

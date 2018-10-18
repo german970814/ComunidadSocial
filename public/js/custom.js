@@ -2,6 +2,8 @@ $(document).ready(function () {
   function get_url(name, id) {
     return window._app_config.routes[name].replace('99', id);
   }
+  window._getUrl = get_url;  // attacht to window
+
   /**
    * Mensajes desde el servidor
    */

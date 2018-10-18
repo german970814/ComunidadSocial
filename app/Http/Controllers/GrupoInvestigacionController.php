@@ -18,47 +18,49 @@ class GrupoInvestigacionController extends Controller
     }
 
     public function create($tipo, $institucion_id) {
-        $usuario = \Auth::guard()->user()->usuario;
+        $usuario_request = \Auth::guard()->user()->usuario;
         $institucion = \App\Models\Institucion::findOrFail($institucion_id);
 
-        if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
-            abort(404, 'El tipo de red temática consultada no existe');
-        } elseif (!($usuario->is_administrador() || $usuario->is_institucion())) {
-            abort(403, 'No tienes permisos para realizar esta acción');
-        } elseif ($usuario->is_institucion() && !($usuario->institucion->id == $institucion->id)) {
-            return redirect()->route('grupos.create', [$tipo, $usuario->institucion->id]);
+        if (Permissions::has_perm('crear_grupo', compact(['institucion']))) {
+            if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
+                abort(404, 'El tipo grupo consultado no existe');
+            }
+
+            if ($tipo == 'tematica') {
+                $title = 'Crear red temática';
+                $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
+                    'tipo', \App\Models\LineaInvestigacion::$TEMATICA
+                )->get();
+            } else {
+                $title = 'Crear grupo de investigación';
+                $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
+                    'tipo', \App\Models\LineaInvestigacion::$INVESTIGACION
+                )->get();
+            }
+
+            $opciones = [];
+            $opciones_linea_investigacion->map(function ($opcion) use (&$opciones) {
+                $opciones[$opcion->id] = $opcion->get_nombre();
+                return null;
+            });
+
+            $usuario = $institucion->usuario;
+            $form = new Form(GrupoInvestigacion::class, [
+                'nombre', 'descripcion',
+                'linea_investigacion_id'
+            ], [
+                'linea_investigacion_id' => [
+                    'type' => 'select',
+                    'opciones' => $opciones,
+                    'label' => 'Linea investigación',
+                    'param' => 'nombre'
+                ]
+            ]);
+            return view('grupos.create', compact(['form', 'title', 'institucion', 'tipo', 'usuario']));
+        } else if ($usuario_request->is_institucion($institucion)) {
+            return redirect()->route('grupos.create', [$tipo, $usuario_request->institucion->id]);
         }
-
-        if ($tipo == 'tematica') {
-            $title = 'Crear red temática';
-            $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
-                'tipo', \App\Models\LineaInvestigacion::$TEMATICA
-            )->get();
-        } else {
-            $title = 'Crear grupo de investigación';
-            $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
-                'tipo', \App\Models\LineaInvestigacion::$INVESTIGACION
-            )->get();
-        }
-
-        $opciones = [];
-        $opciones_linea_investigacion->map(function ($opcion) use (&$opciones) {
-            $opciones[$opcion->id] = $opcion->get_nombre();
-            return null;
-        });
-
-        $form = new Form(GrupoInvestigacion::class, [
-            'nombre', 'descripcion',
-            'linea_investigacion_id'
-        ], [
-            'linea_investigacion_id' => [
-                'type' => 'select',
-                'opciones' => $opciones,
-                'label' => 'Linea investigación',
-                'param' => 'nombre'
-            ]
-        ]);
-        return view('grupos.create', compact(['form', 'title', 'institucion', 'tipo']));
+        abort(404, 'Página no econtrada');
     }
 
     /**
@@ -68,29 +70,30 @@ class GrupoInvestigacionController extends Controller
         $usuario = \Auth::guard()->user()->usuario;
         $institucion = \App\Models\Institucion::findOrFail($institucion_id);
 
-        if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
-            abort(404, 'El tipo de red temática consultada no existe');
-        } elseif (!($usuario->is_administrador() || $usuario->is_institucion())) {
-            abort(403, 'No tienes permisos para realizar esta acción');
+        if (Permissions::has_perm('crear_grupo', compact(['institucion']))) {
+            if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
+                abort(404, 'El tipo de grupo consultado no existe');
+            }
+
+            $validated_data = $request->validate([
+                'descripcion' => '',
+                'nombre' => 'required',
+                'linea_investigacion_id' => 'required|exists:lineas_investigacion,id'
+            ], $this->messages);
+
+            GrupoInvestigacion::create(array_merge($validated_data, [
+                'institucion_id' => $institucion_id,
+                'tipo' => $tipo == 'tematica' ? GrupoInvestigacion::$TEMATICA : GrupoInvestigacion::$INVESTIGACION
+            ]));
+
+            return redirect()
+                ->route('grupos.grupos-investigacion-institucion', [$tipo, $institucion->usuario->id])
+                ->with('success', $tipo == 'tematica' ?
+                    'Se ha creacdo la red temática exitosamente' :
+                    'Se ha creado el grupo de investigación exitosamente'
+                );
         }
-
-        $validated_data = $request->validate([
-            'descripcion' => '',
-            'nombre' => 'required',
-            'linea_investigacion_id' => 'required|exists:lineas_investigacion,id'
-        ], $this->messages);
-
-        GrupoInvestigacion::create(array_merge($validated_data, [
-            'institucion_id' => $institucion_id,
-            'tipo' => $tipo == 'tematica' ? GrupoInvestigacion::$TEMATICA : GrupoInvestigacion::$INVESTIGACION
-        ]));
-
-        return redirect()
-            ->route('grupos.grupos-investigacion-institucion', [$tipo, $institucion->usuario->id])
-            ->with('success', $tipo == 'tematica' ?
-                'Se ha creacdo la red temática exitosamente' :
-                'Se ha creado el grupo de investigación exitosamente'
-            );
+        abort(404, 'Página no existe');
     }
 
     /**

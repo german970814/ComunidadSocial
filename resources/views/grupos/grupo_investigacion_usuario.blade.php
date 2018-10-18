@@ -2,7 +2,7 @@
 
 @section('section')
 <section>
-    @if ((\Auth::guard()->user()->usuario->is_institucion() && \Auth::guard()->user()->usuario->institucion->id == $usuario->institucion->id) || \Auth::guard()->user()->is_administrador())
+    @if ($usuario->is_institucion() && \App\Libraries\Permissions::has_perm('crear_grupo', ['institucion' => $usuario->institucion]))
         @include('layouts.title_page', ['title_page' => $title, 'button' => ['type' => 'link', 'href' => route('grupos.create', [$tipo, $usuario->institucion->id]), 'text' => $tipo == 'tematica' ? 'Crear Red' : 'Crear Grupo']])
     @else
         @include('layouts.title_page', ['title_page' => $title])
