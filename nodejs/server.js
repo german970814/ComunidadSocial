@@ -60,8 +60,11 @@ server.listen(3000, 'localhost', () => {
         if (redis_data.user) {
           let user = redis_data.user;
           let message = redis_data.message;
+          let emisor = redis_data.emisor;
           if (user in users && users[user].online) {
-            users[user].connection.emit('user_message', message);
+            users[user].connection.emit('user_message', {
+              ...message, name: emisor
+            });
           }
         }
         break;
@@ -130,7 +133,11 @@ io.listen(server).on('connection', function(client) {
     if (!client._user_id || !(client._user_id in users)) return;
 
     if (data != 'ping timeout') {
-      if (!users[client._user_id].fromRedis) {
+      // Si hace un transport error lo desconecta, si se encuentra
+      // una razón por la que hace transport error que no sea que el
+      // usuario cambie de página, se debe limitar a la respuesta de redis
+      // if (!users[client._user_id].fromRedis) {
+      if (data == 'transport error') {
         users[client._user_id].friends && users[client._user_id].friends.forEach(friend => {
           if (friend in users && users[friend].online) {
             users[friend].connection.emit('user_disconnect', client._user_id)
@@ -140,6 +147,7 @@ io.listen(server).on('connection', function(client) {
         users[client._user_id] = { online : false };
         console.log(`[User][${client._user_id}]: Disconnect successfull`)
       }
+      // }
     }
   });
 });

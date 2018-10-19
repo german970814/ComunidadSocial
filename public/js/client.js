@@ -3,7 +3,7 @@
 const Chat = Vue.component('chat', {
   delimiters: ['{(', ')}'],
   props: {
-    id: Number
+    id: Number, name: String
   },
   data() {
     return {
@@ -46,7 +46,7 @@ const Chat = Vue.component('chat', {
       }, [
         this.$createElement('div', {}, [
           this.$createElement('a', { domProps: { href: '#' } }, [
-            'Usuario'
+            this.name
           ])
         ]),
         this.$createElement('div', {}, [
@@ -140,7 +140,10 @@ const Chat = Vue.component('chat', {
     },
     renderHeader(h) {
       return h('div', {
-        'class': 'panel-heading accordion-toggle collapsed',
+        'class': 'bg-color-3 panel-heading accordion-toggle collapsed',
+        style: {
+          color: 'white'
+        },
         attrs: {
           'data-toggle': 'collapse',
           'data-parent': `accordion_${this.id}`,
@@ -160,7 +163,7 @@ const Chat = Vue.component('chat', {
             }, 100);
           }
         }
-      }, [h('span', {}, ['Conversación'])]);
+      }, [h('span', {}, [this.name])]);
     },
     renderBody(h) {
       return h('div', {
@@ -178,7 +181,15 @@ const Chat = Vue.component('chat', {
         }, [
           h('div', {
             style: { height: '225px', overflow: 'scroll' },
-            attrs: { id: `chat-scroll-${this.id}` }
+            attrs: { id: `chat-scroll-${this.id}` },
+            on: {
+              scroll: (e) => {
+                let element = this.$el.querySelector(`#chat-scroll-${this.id}`);
+                if (element.scrollTop < 15) {
+                  console.log('Ve trayendo datos')
+                }
+              }
+            }
           }, [
             this.renderMessages(h)
           ]),
@@ -271,10 +282,7 @@ const LoggedFriends = Vue.component('logged-friends', {
 
       socket.on('user_message', (data) => {
         console.log(data);
-        let userMessageEvent = new CustomEvent('_user_message', {
-          detail: data
-        });
-        document.dispatchEvent(userMessageEvent);
+        this.$emit('newUserMessage', data);
       });
 
       socket.on('user_disconnect', (data) => {
@@ -330,6 +338,45 @@ new Vue({
       chats: []
     }
   },
+  created() {
+    let chats = window.sessionStorage.getItem('_chatsIds') || '';
+    window.sessionStorage.removeItem('_chatsIds');
+
+    if (chats) {
+      try {
+        chats = JSON.parse(chats);
+        $(document).ready(() => {
+          chats.forEach(chatObj => this.addChat(chatObj))
+        });
+      } catch (exception) {
+        console.log(exception);
+      }
+    }
+  },
+  methods: {
+    addChat(data) {
+      if (!this.chats.find(chat => chat.id == data.id)) {
+        let chatId = parseInt(data.id);
+        if (chatId) {
+          this.chats.push({
+            id: chatId, name: data.name
+          });
+  
+          window.sessionStorage.setItem(
+            '_chatsIds',
+            // this.chats.map(chat => chat.id).join(',')
+            JSON.stringify(this.chats.map(chat => {
+              return {
+                id: chat.id, name: chat.name
+              }
+            }))
+          )
+          return true;
+        }
+      }
+      return false;
+    }
+  },
   render(h) {
     return h('div', [
       h('logged-friends', {
@@ -344,14 +391,27 @@ new Vue({
               success: (data) => {
                 console.log(data);
                 if (data.code == 200) {
-                  if (!this.chats.find(chat => chat.id == data.data.id)) {
-                    this.chats.push({
-                      id: data.data.id
-                    });
-                  }
+                  this.addChat({
+                    id: data.data.id,
+                    name: data.data.name
+                  });
                 }
               }
             });
+          },
+          newUserMessage: (data) => {
+            let userMessageEvent = new CustomEvent('_user_message', {
+              detail: data
+            });
+            let chatExists = this.chats.find(chat => chat.id == data.conversacion_id);
+            if (chatExists) {
+              document.dispatchEvent(userMessageEvent);
+            } else {
+              this.addChat({
+                id: data.conversacion_id,
+                name: data.name
+              })
+            }
           }
         }
       }, []),
@@ -361,55 +421,10 @@ new Vue({
             right: `${300 * (ind + 1)}px`
           },
           props: {
-            id: chat.id
+            id: chat.id, name: chat.name
           }
         }, []);
       })
     ]);
   }
 });
-
-
-// try {
-//   var socket = io.connect('http://127.0.0.1:3000/');
-//   var friends = [];
-  
-//   socket.on('connect', function(data) {
-//     // console.log('connected');
-//     socket.emit('add user', {
-//       'id': window._app_config.server.loggedUserId,
-//       'name': window._app_config.server.loggedUserFullName
-//     });
-//   });
-  
-//   socket.on('connected_users', function(data) {
-//     if (!friends.find(friend => friend.id == data.id)) {
-//       friends.push(data);
-
-//       $('#num-connected-users').html(`(${friends.length})`);
-//       $('.list-group').html(friends.map(el => {
-//         return `<a href="#" class="list-group-item">${el.name}</a>`
-//       }).join(''));
-//     }
-//   })
-
-//   socket.on('user_disconnect', function(data) {
-//     console.log('user discconected')
-//     var user_in_friends = friends.findIndex(friend => friend.id == data);
-//     if (user_in_friends + 1) {
-//       friends.splice(friends.findIndex, 1);  // review error
-//     }
-
-//     $('#num-connected-users').html(`(${friends.length})`);
-//     $('.list-group').html(friends.map(el => {
-//       return `<a href="#" class="list-group-item">${el.name}</a>`
-//     }).join(''));
-//   })
-
-//   socket.on('connect_error', function (data) {
-//     socket.close();  // cierra la conexión
-//   });
-// } catch (exception) {
-//   // 
-//   console.log(exception)
-// }

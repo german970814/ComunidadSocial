@@ -28,10 +28,15 @@ class MensajeController extends Controller {
             ]);
         }
 
+        $chat_usuario = $conversacion->receptor_id == $usuario_emisor->id ?
+            $conversacion->emisor : $conversacion->receptor;
+
         return response()->json([
             'code' => 200,
             'message' => 'Ok',
-            'data' => $conversacion->toArray()
+            'data' => array_merge($conversacion->toArray(), [
+                'name' => $chat_usuario->get_full_name()
+            ])
         ]);
     }
 
@@ -39,20 +44,23 @@ class MensajeController extends Controller {
         $conversacion = Conversacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        $mensajes = $conversacion->mensajes->map(function($mensaje) use ($usuario) {
-            if ($mensaje->usuario_id == $usuario->id) {
-                $mensaje->self = true;
-            }
-            return $mensaje;
-        });
-
-        return response()->json([
-            'code' => 200,
-            'message' => 'Ok',
-            'data' => [
-                'mensajes' => $mensajes->toArray()
-            ]
-        ]);
+        if ($conversacion->emisor_id == $usuario->id || $conversacion->receptor_id == $usuario->id) {
+            $mensajes = $conversacion->mensajes->map(function($mensaje) use ($usuario) {
+                if ($mensaje->usuario_id == $usuario->id) {
+                    $mensaje->self = true;
+                }
+                return $mensaje;
+            });
+    
+            return response()->json([
+                'code' => 200,
+                'message' => 'Ok',
+                'data' => [
+                    'mensajes' => $mensajes->toArray()
+                ]
+            ]);
+        }
+        abort(404, 'Página no existe');
     }
 
     public function guardar_mensaje(Request $request, $id) {
@@ -78,7 +86,8 @@ class MensajeController extends Controller {
         if (Redis::command('get', ['user' . $receptor])) {
             Redis::publish('user.message', json_encode([
                 'user' => $receptor,
-                'message' => $mensaje->toArray()
+                'message' => $mensaje->toArray(),
+                'emisor' => $usuario->get_full_name()
             ]));
         }
 
