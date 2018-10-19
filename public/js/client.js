@@ -8,7 +8,9 @@ const Chat = Vue.component('chat', {
   data() {
     return {
       mensaje: '',
-      mensajes: []
+      mensajes: [],
+      next: '',
+      requesting: false,
     }
   },
   created() {
@@ -24,9 +26,11 @@ const Chat = Vue.component('chat', {
     $.ajax({
       url: window._getUrl('verConversacion', this.id),
       method: 'GET',
-      success: (data) => {
-        if (data.code == 200) {
-          this.mensajes = data.data.mensajes;
+      success: (response) => {
+        if (response.code == 200) {
+          console.log(response)
+          this.mensajes = response.data.data;
+          this.next = response.data.next_page_url;
         }
       }
     });
@@ -44,13 +48,13 @@ const Chat = Vue.component('chat', {
           padding: '7px'
         }
       }, [
+        // this.$createElement('div', {}, [
+        //   this.$createElement('a', { domProps: { href: '#' } }, [
+        //     this.name
+        //   ])
+        // ]),
         this.$createElement('div', {}, [
-          this.$createElement('a', { domProps: { href: '#' } }, [
-            this.name
-          ])
-        ]),
-        this.$createElement('div', {}, [
-          this.$createElement('p', {}, [
+          this.$createElement('p', { style: { margin: 0 } }, [
             mensaje.mensaje
           ])
         ])
@@ -59,15 +63,15 @@ const Chat = Vue.component('chat', {
     renderSelfMessage(mensaje) {
       return this.$createElement('div', {
         'class': '',
-        style: { textAlign: 'right' }
+        style: { textAlign: 'right', padding: '7px' }
       }, [
+        // this.$createElement('div', {}, [
+        //   this.$createElement('a', { domProps: { href: '#' } }, [
+        //     'Tú'
+        //   ])
+        // ]),
         this.$createElement('div', {}, [
-          this.$createElement('a', { domProps: { href: '#' } }, [
-            'Tú'
-          ])
-        ]),
-        this.$createElement('div', {}, [
-          this.$createElement('p', {}, [
+          this.$createElement('p', { style: { margin: 0 } }, [
             mensaje.mensaje
           ])
         ])
@@ -187,6 +191,22 @@ const Chat = Vue.component('chat', {
                 let element = this.$el.querySelector(`#chat-scroll-${this.id}`);
                 if (element.scrollTop < 15) {
                   console.log('Ve trayendo datos')
+                  if (!this.requesting && this.next) {
+                    this.requesting = true;
+                    $.ajax({
+                      url: this.next,
+                      method: 'GET',
+                      success: (response) => {
+                        if (response.code == 200) {
+                          console.log(response)
+                          this.next = response.data.next_page_url;
+                          // this.mensajes = response.data.data;
+                          this.mensajes.splice(0, 0, ...response.data.data);
+                          this.requesting = false;
+                        }
+                      }
+                    });
+                  }
                 }
               }
             }
@@ -200,6 +220,7 @@ const Chat = Vue.component('chat', {
   },
   render(h) {
     return h('div', {
+      'class': 'chat-container',
       style: {
         position: 'fixed',
         bottom: '0'
@@ -224,27 +245,6 @@ const Chat = Vue.component('chat', {
       ])
     ]);
   }
-  // template: `
-  //   <div style="position: fixed; bottom: 0; right: 300px;" class="">
-  //     <div style="width: 300px;" class="" :id=" 'accordion_' + id ">
-  //       <div style="margin-bottom: 0;" class="panel panel-default">
-  //         <div class="panel-heading accordion-toggle collapsed" data-toggle="collapse" :data-parent=" 'accordion_' + id " :href="'#collapse-a-' + id" aria-expanded="false">
-  //           <span class="">Conversación</span>
-  //         </div>
-  //         <div :id="'collapse-a-' + id" class="panel-collapse collapse" aria-expanded="false">
-  //           <div style="height: 300px;" class="panel-body">
-  //             <div style="height: 225px; overflow: scroll;">
-  //               {( renderMessages() )}
-  //             </div>
-  //             <div style="position: absolute; bottom: 0; width: 90%;" class="form-group">
-  //               <input v-model="mensaje" class="form-control" />
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // `
 });
 
 const LoggedFriends = Vue.component('logged-friends', {

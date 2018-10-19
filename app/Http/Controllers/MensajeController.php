@@ -45,19 +45,21 @@ class MensajeController extends Controller {
         $usuario = \Auth::guard()->user()->usuario;
 
         if ($conversacion->emisor_id == $usuario->id || $conversacion->receptor_id == $usuario->id) {
-            $mensajes = $conversacion->mensajes->map(function($mensaje) use ($usuario) {
-                if ($mensaje->usuario_id == $usuario->id) {
-                    $mensaje->self = true;
+            $mensajes = $conversacion->mensajes()->paginate(15);
+            $mensajes->withPath('/json/mensajes/conversacion/' . $conversacion->id);
+            $paginated_response = $mensajes->toArray();
+
+            $paginated_response['data'] = array_map(function($mensaje) use ($usuario) {
+                if ($mensaje['usuario_id'] == $usuario->id) {
+                    $mensaje['self'] = true;
                 }
                 return $mensaje;
-            });
+            }, $paginated_response['data']);
     
             return response()->json([
                 'code' => 200,
                 'message' => 'Ok',
-                'data' => [
-                    'mensajes' => $mensajes->toArray()
-                ]
+                'data' => $paginated_response
             ]);
         }
         abort(404, 'Página no existe');

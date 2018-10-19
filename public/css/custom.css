@@ -421,7 +421,7 @@ input.examen-opcion {
     overflow: inherit;
 }
 
-.amigos_activos input.form-control {
+.chat-container input.form-control {
     border: 1px solid #ccc;
 }
 
