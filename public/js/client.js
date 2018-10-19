@@ -167,7 +167,21 @@ const Chat = Vue.component('chat', {
             }, 100);
           }
         }
-      }, [h('span', {}, [this.name])]);
+      }, [
+        h('span', { style: { cursor: 'pointer' } }, [this.name]),
+        h('span', {
+          style: {
+            float: 'right',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          },
+          on: {
+            click: () => {
+              this.$emit('closeChat');
+            }
+          }
+        }, ['X']),
+      ]);
     },
     renderBody(h) {
       return h('div', {
@@ -354,6 +368,16 @@ new Vue({
     }
   },
   methods: {
+    refreshSessionChats() {
+      window.sessionStorage.setItem(
+        '_chatsIds',
+        JSON.stringify(this.chats.map(chat => {
+          return {
+            id: chat.id, name: chat.name
+          }
+        }))
+      );
+    },
     addChat(data) {
       if (!this.chats.find(chat => chat.id == data.id)) {
         let chatId = parseInt(data.id);
@@ -361,20 +385,18 @@ new Vue({
           this.chats.push({
             id: chatId, name: data.name
           });
-  
-          window.sessionStorage.setItem(
-            '_chatsIds',
-            // this.chats.map(chat => chat.id).join(',')
-            JSON.stringify(this.chats.map(chat => {
-              return {
-                id: chat.id, name: chat.name
-              }
-            }))
-          )
+          this.refreshSessionChats();
           return true;
         }
       }
       return false;
+    },
+    closeChat(chat) {
+      let chatExists = this.chats.findIndex(ch => ch.id == chat.id);
+      if (chatExists + 1) {
+        this.chats.splice(chatExists, 1);
+        this.refreshSessionChats();
+      }
     }
   },
   render(h) {
@@ -422,6 +444,11 @@ new Vue({
           },
           props: {
             id: chat.id, name: chat.name
+          },
+          on: {
+            closeChat: () => {
+              this.closeChat(chat);
+            }
           }
         }, []);
       })
