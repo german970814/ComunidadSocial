@@ -5,7 +5,6 @@
 
 'use strict';
 // TODO: cambiar la validacion en el controlador si el usuario está conectado
-// TODO: Consultar usuarios conectados directamente en redis
 
 const express = require('express');
 const http = require('http');
@@ -14,11 +13,13 @@ const app = express();
 const server = http.createServer(app);
 
 const redis = require('redis');
-const io = require('socket.io');
+const io = require('socket.io')();
 const clientPub = redis.createClient();
 
-let users = {};
+// let users = {};
 const redisClient = redis.createClient();
+
+const EXPIRE_REDIS_SESSION = 60 * 1  // 1 minute
 
 server.listen(3000, 'localhost', () => {
   console.log('Server started on port 3000')
@@ -32,41 +33,24 @@ server.listen(3000, 'localhost', () => {
 
   redisClient.on('message', function (channel, data) {
     console.log(`[Redis][Channel]: ${channel}`)
-    const redis_data = JSON.parse(data);
+    const redisData = JSON.parse(data);
 
     switch (channel) {
       case 'user.connection':  // cuando se conecta un usuario
-        // let redis_data = JSON.parse(data);
-        data = JSON.parse(redis_data)
-
-        if (data.id in users) {
-          users[data.id] = Object.assign({}, users[data.id], {
-            name: data.name,
-            fromRedis: true,
-            friends: data.friends,
-          });
-        } else {
-          users[data.id] = {
-            online: false,
-            name: data.name,
-            fromRedis: true,
-            friends: data.friends,
-          }
-        }
-
-        console.log(`[Server]: Online users ${Object.keys(users).length}`)
+        // console.log(`[Server]: Online users ${Object.keys(users).length}`)
         break;
       case 'user.message':  // cuando le envían un mensaje al usuario
-        if (redis_data.user) {
-          let user = redis_data.user;
-          let message = redis_data.message;
-          let emisor = redis_data.emisor;
-          if (user in users && users[user].online) {
-            users[user].connection.emit('user_message', {
-              ...message, name: emisor
-            });
+        clientPub.get(`user${redisData.user}`, (err, reply) => {
+          if (reply) {
+            let receptorData = JSON.parse(reply);
+            if (receptorData.socketId && receptorData.socketId in io.sockets.connected) {
+              io.sockets.connected[receptorData.socketId].emit('user_message', {
+                ...redisData.message, name: redisData.emisor
+              });
+              console.log(`[Server] Message sent from #${redisData.message.emisor_id} to #${redisData.user}`)
+            }
           }
-        }
+        });
         break;
       default:
         break;
@@ -82,27 +66,44 @@ io.listen(server).on('connection', function(client) {
    * poder emitir eventos
    */
   client.on('add user', function(data) {
-    if (data.id in users) {
-      console.log(`[User] Connected user ${data.id}`)
-      // users[data.id].connect = true;
-      client._user_id = data.id;
-      users[data.id] = Object.assign({}, users[data.id], {
-        online: true, connection: client, fromRedis: false
-      });
+    // const dataToRedis = JSON.stringify(data);
+    client._userId = data.id;
+    clientPub.get(`user${client._userId}`, (err, reply) => {
+      if (!reply) {
+        console.log(`[Redis] Usuario #${client._userId} no ha sido encontrado`);
+      } else {
+        let userData = JSON.parse(reply);
+        userData.socketId = client.id;
 
-      users[data.id].friends && users[data.id].friends.forEach(friend => {
-        if (friend in users && users[friend].online) {
-          users[friend].connection.emit('connected_users', {
-            id: data.id,
-            name: users[data.id].name,
+        client._userId && clientPub.set(
+          `user${client._userId}`,
+          JSON.stringify(userData),
+          'EX', EXPIRE_REDIS_SESSION
+        );
+        console.log(`[User] Connected user ${data.id}`);
+
+        userData.friends && userData.friends.forEach(friend => {
+          clientPub.get(`user${friend}`, (err, replyFriend) => {
+            if (replyFriend) {
+              const friendData = JSON.parse(replyFriend);
+              if (friendData.socketId && friendData.socketId in io.sockets.connected) {
+                io.sockets.connected[friendData.socketId].emit('connected_users', {
+                  id: userData.id,
+                  name: userData.name
+                });
+                client.emit('connected_users', {
+                  id: friendData.id,
+                  name: friendData.name
+                });
+              } else if (friendData.socketId && !(friendData.socketId in io.sockets.connected)) {
+                client.emit('user_disconnect', friendData.id);
+                clientPub.del(`user${friendData.id}`);
+              }
+            }
           });
-          users[data.id].connection.emit('connected_users', {
-            id: friend,
-            name: users[friend].name,
-          });
-        }
-      });
-    }
+        });
+      }
+    });
   });
 
   /**
@@ -111,14 +112,32 @@ io.listen(server).on('connection', function(client) {
    * de no estar, lo vuelve a activar
    */
   client.on('verify_conection', function (data) {
-    clientPub.get(`user${client._user_id}`, (err, reply) => {
+    clientPub.get(`user${client._userId}`, (err, reply) => {
       if (!reply) {
-        let dataToRedis = {
-          id: client._user_id,
-          name: users[client._user_id].name,
-          friends: users[client._user_id].friends,
-        }
-        clientPub.set(`user${client._user_id}`, JSON.stringify(dataToRedis), 'EX', 60 * 10);
+        console.log(
+          `[Redis] No se pueden encontrar los amigos del usuario ${client._userId}`
+        );
+      } else {
+        const userData = JSON.parse(reply);
+
+        client._userId && clientPub.set(
+          `user${client._userId}`, reply,
+          'EX', EXPIRE_REDIS_SESSION
+        );
+
+        // notify if someone user got out
+        userData.friends && userData.friends.forEach(friendId => {
+          clientPub.get(`user${friendId}`, (err, replyFriend) => {
+            if (replyFriend) {
+              if (replyFriend.socketId && !(replyFriend.socketId in io.sockets.connected)) {
+                clientPub.del(`user${friendId}`);
+              } else {
+                return;
+              }
+            }
+            client.emit('user_disconnect', friendId);
+          });
+        });
       }
     });
   });
@@ -128,26 +147,27 @@ io.listen(server).on('connection', function(client) {
    * para que pueda re-renderizar el dom
    */
   client.on('disconnect', function(data) {
-    console.log(`[User][${client._user_id}]: Disconnect with ${data}`)
+    console.log(`[User][${client._userId}]: Disconnect with ${data}`)
 
-    if (!client._user_id || !(client._user_id in users)) return;
+    if (data == 'transport error') {
+      clientPub.get(`user${client._userId}`, (err, reply) => {
+        if (reply) {
+          const userData = JSON.parse(reply);
 
-    if (data != 'ping timeout') {
-      // Si hace un transport error lo desconecta, si se encuentra
-      // una razón por la que hace transport error que no sea que el
-      // usuario cambie de página, se debe limitar a la respuesta de redis
-      // if (!users[client._user_id].fromRedis) {
-      if (data == 'transport error') {
-        users[client._user_id].friends && users[client._user_id].friends.forEach(friend => {
-          if (friend in users && users[friend].online) {
-            users[friend].connection.emit('user_disconnect', client._user_id)
-          }
-        });
-    
-        users[client._user_id] = { online : false };
-        console.log(`[User][${client._user_id}]: Disconnect successfull`)
-      }
-      // }
+          userData.friends && userData.friends.forEach(friendId => {
+            clientPub.get(`user${friendId}`, (err, reply) => {
+              if (reply) {
+                const friendData = JSON.parse(reply);
+
+                if (friendData.socketId && friendData.socketId in io.sockets.connected) {
+                  io.sockets.connected[friendData.socketId].emit('user_disconnect', userData.id);
+                }
+              }
+            });
+          });
+        }
+        console.log(`[User][${client._userId}]: Disconnect successfull`)
+      });
     }
   });
 });

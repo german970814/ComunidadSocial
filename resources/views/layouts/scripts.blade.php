@@ -51,6 +51,7 @@
             "getConversacion": "{{ route('mensajes.get-conversacion', 99) }}",
             "guardarMensaje": "{{ route('mensajes.guardar-mensaje', 99) }}",
             "verConversacion": "{{ route('mensajes.ver-conversacion', 99) }}",
+            "buscarAmigos": "{{ route('usuario.buscar-amigos') }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))

@@ -59,6 +59,10 @@ Route::prefix('json')->group(function () {
         '/mensajes/conversacion/{id}',
         'MensajeController@ver_conversacion'
     )->name('mensajes.ver-conversacion');
+    Route::get(
+        '/usuarios/buscar/amigos',
+        'UsuarioController@buscar_amigos'
+    )->name('usuario.buscar-amigos');
 });
 
 Route::middleware('notificacion')->group( function () {

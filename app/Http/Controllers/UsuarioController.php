@@ -337,4 +337,31 @@ class UsuarioController extends Controller
         $show_chat = false;
         return view('usuarios.mensajes', compact(['usuario', 'show_chat']));
     }
+
+    public function buscar_amigos(Request $request) {
+        $usuario = \Auth::guard()->user()->usuario;
+        $validated_data = $request->validate([
+            'search' => 'required'
+        ]);
+
+        $amigos = $usuario->_amigos()
+            ->where(function ($query) use ($validated_data) {
+                $query
+                    ->where('nombres', 'ILIKE', '%' . $validated_data['search'] . '%')
+                    ->orWhere('apellidos', 'ILIKE', '%' . $validated_data['search'] . '%');
+            })->distinct()->get();
+
+        $amigos = $amigos->map(function ($amigo) {
+            return [
+                'id' => $amigo->id,
+                'nombre' => $amigo->get_full_name()
+            ];
+        });
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $amigos->toArray()
+        ]);
+    }
 }

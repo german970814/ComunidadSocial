@@ -30,7 +30,7 @@ class ConnectionMiddleware
                         'friends' => $usuario->amigos_ids()
                     ]);
                     Redis::command('set', [$key, $user_data]);
-                    Redis::command('expire', [$key, 60 * 10]);  // Expire in 10 min
+                    Redis::command('expire', [$key, 60 * 1]);  // Expire in 10 min
                 }
 
                 Redis::publish('user.connection', json_encode($user_data));

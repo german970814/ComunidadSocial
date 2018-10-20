@@ -147,7 +147,7 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
     /**
      * Amigos del usuario
      */
-    public function amigos() {
+    public function _amigos() {
         $amigos_enviaron_solicitud_query = \DB::table('usuarios')
             ->join('solicitudes_usuario', 'solicitudes_usuario.usuario_id', 'usuarios.id')
             ->join('solicitudes', 'solicitudes.id', 'solicitudes_usuario.solicitud_id')
@@ -171,7 +171,13 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
             return $result->id;
         });
 
-        return Usuario::find($amigos_enviaron_solicitud->merge($amigos_self_solicitud)->all());
+        return Usuario::whereIn(
+            'id', $amigos_enviaron_solicitud->merge($amigos_self_solicitud)->all()
+        );
+    }
+
+    public function amigos() {
+        return $this->_amigos()->get();
     }
 
     public function amigos_ids() {

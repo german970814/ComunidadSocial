@@ -11,16 +11,48 @@
 
 const Conversaciones = Vue.component('conversaciones', {
     delimiters: ['{(', ')}'],
-    props: { conversaciones: Array },
+    data() {
+        return {
+            search: '',
+            newConversaciones: []
+        }
+    },
+    props: { conversaciones: Array, conversacionSelected: Number },
+    watch: {
+        search() {
+            if (this.search.length >= 3) {
+                $.ajax({
+                    url: window._getUrl('buscarAmigos', '') + `?search=${this.search}`,
+                    method: 'GET',
+                    success: (response) => {
+                        if (response.code == 200) {
+                            this.newConversaciones = response.data;
+                        }
+                    }
+                });
+            }
+        }
+    },
+    methods: {
+        newConversacion(id) {
+            this.$emit('newConversacion', id);
+        }
+    },
     template: `
         <div class="col-xs-4">
             <div class="panel panel-default conversaciones-tab courseSidebar">
                 <div class="panel-heading bg-color-1 border-color-1">
                     <div class="panel-title">Conversaciones</div>
                 </div>
+                <div style="padding: 8px 0">
+                    <div class="form-group">
+                        <input placeholder="Buscar..." class="form-control" v-model="search" />
+                    </div>
+                </div>
                 <div class="panel-body">
                     <div class="list-group">
-                        <a v-for="conversacion of conversaciones" href="javascript:void(0)" class="list-group-item">{( conversacion.name )}</a>
+                        <a v-for="usuario of newConversaciones" :class="{ 'list-group-item': true }" href="javascript:void(0)">{( usuario.nombre )}</a>
+                        <a v-for="conversacion of conversaciones" :class="{ active: conversacionSelected == conversacion.id, 'list-group-item': true }" @click.stop="newConversacion(conversacion.id)" href="javascript:void(0)">{( conversacion.name )}</a>
                     </div>
                 </div>
             </div>
@@ -34,7 +66,7 @@ const Chat = Vue.component('chat', {
         return { mensaje: '' }
     },
     props: {
-        mensajes: Array, id: Number
+        mensajes: Array, id: Number, name: String
     },
     created() {
         setTimeout(() => {
@@ -48,7 +80,7 @@ const Chat = Vue.component('chat', {
         },
         renderHeader() {
             return this.$createElement('div', { 'class': 'panel-heading' }, [
-                this.$createElement('div', {'class': 'panel-title'}, ['German Alzate'])
+                this.$createElement('div', {'class': 'panel-title'}, [this.name])
             ]);
         },
         renderBody() {
@@ -190,10 +222,22 @@ new Vue({
             conversaciones: {!! $usuario->conversaciones->toJson() !!}
         }
     },
-    created() {
-        this.conversacionSelected = this.conversaciones[0].id;
-
-        $(document).ready(() => {
+    computed: {
+        conversacion() {
+            return this.conversaciones.find(
+                conversacion => conversacion.id == this.conversacionSelected
+            );
+        }
+    },
+    watch: {
+        conversacionSelected(newValue, oldValue) {
+            if (oldValue != 0) {
+                this.getConversacion();
+            }
+        }
+    },
+    methods: {
+        getConversacion() {
             $.ajax({
                 url: window._getUrl('verConversacion', this.conversacionSelected),
                 method: 'GET',
@@ -207,19 +251,35 @@ new Vue({
                     }
                 }
             });
+        }
+    },
+    created() {
+        this.conversacionSelected = this.conversaciones[0].id;
+
+        $(document).ready(() => {
+            this.getConversacion();
         });
     },
     render(h) {
         return h('section', {'class': 'row'}, [
             h('conversaciones', {
                 props: {
-                    conversaciones: this.conversaciones
+                    conversaciones: this.conversaciones,
+                    conversacionSelected: this.conversacionSelected
+                },
+                on: {
+                    newConversacion: (id) => {
+                        if (this.conversacionSelected != id) {
+                            this.conversacionSelected = id;
+                        }
+                    }
                 }
             }),
             h('chat', {
                 props: {
                     mensajes: this.mensajes,
-                    id: this.conversacionSelected
+                    id: this.conversacionSelected,
+                    name: this.conversacion.name || ''
                 }
             }, [])
         ]);

@@ -102,6 +102,11 @@
                             <a href="{{ route('institucion.integrantes', $usuario->institucion->id) }}">Integrantes</a>
                         </li>
                     @endif
+                    @if (\App\Libraries\Permissions::has_perm('ver_mensajes', $usuario))
+                        <li>
+                            <a href="{{ route('usuario.mensajes') }}">Mensajes</a>
+                        </li>
+                    @endif
                     @if ($usuario->is_administrador() && \Auth::guard()->user()->is_administrador())
                         <li>
                             <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>

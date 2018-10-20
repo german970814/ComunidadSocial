@@ -68,6 +68,19 @@ class Permissions
     }
 
     /**
+     * Puede ver mensajes si el usuario es administrador, maestro o
+     * estudiante
+     */
+    public static function ver_mensajes($user) {
+        $same_user = $user->id == \Auth::guard()->user()->usuario->id;
+        return $same_user && (
+            $user->is_estudiante() ||
+            $user->is_administrador() ||
+            $user->is_maestro()
+        );
+    }
+
+    /**
      * Se puede ver las solicitudes de un grupo si es administrador
      * o si es un asesor de grupo
      */
