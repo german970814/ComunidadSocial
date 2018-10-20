@@ -28,8 +28,9 @@ const Chat = Vue.component('chat', {
       method: 'GET',
       success: (response) => {
         if (response.code == 200) {
-          console.log(response)
-          this.mensajes = response.data.data;
+          let responseData = response.data.data;
+          responseData.reverse();
+          this.mensajes = responseData;
           this.next = response.data.next_page_url;
         }
       }
@@ -214,8 +215,9 @@ const Chat = Vue.component('chat', {
                         if (response.code == 200) {
                           console.log(response)
                           this.next = response.data.next_page_url;
-                          // this.mensajes = response.data.data;
-                          this.mensajes.splice(0, 0, ...response.data.data);
+                          let responseData = response.data.data;
+                          responseData.reverse();
+                          this.mensajes.splice(0, 0, ...responseData);
                           this.requesting = false;
                         }
                       }

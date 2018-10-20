@@ -25,6 +25,6 @@ class Conversacion extends ModelForm
     public function mensajes() {
         return $this
             ->hasMany('\App\Models\Mensaje', 'conversacion_id')
-            ->orderBy('created_at', 'asc');
+            ->orderBy('created_at', 'desc');
     }
 }

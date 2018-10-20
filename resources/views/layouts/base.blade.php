@@ -29,7 +29,7 @@
     @yield('content')
 	
     @include('layouts/footer')
-    @if (Auth::check())
+    @if (Auth::check() && (isset($show_chat) ? $show_chat : true))
       @include('usuarios.amigos_activos')
     @endif
   </div>

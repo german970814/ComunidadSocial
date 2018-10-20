@@ -99,9 +99,9 @@
 <script src="{{ asset('assets/plugins/datetimepicker/datetimepicker.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 <script src="{{ asset('/js/custom.js') }}"></script>
-
-@if (Auth::check())
 <script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
+
+@if (Auth::check() && (isset($show_chat) ? $show_chat : true))
 <script src="{{ asset('/js/io.js') }}"></script>
 <script src="{{ asset('/js/client.js') }}"></script>
 @endif

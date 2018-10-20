@@ -273,6 +273,7 @@ Route::middleware('notificacion')->group( function () {
         Route::get('/{id}/photo', 'UsuarioController@get_user_profile_photo')->name('usuario.profile-photo');
         Route::get('/buscar', 'UsuarioController@buscar_usuarios')->name('usuario.buscar_usuarios');
         Route::get('/solicitudes-amistad/{id?}', 'UsuarioController@solicitudes_amistad_usuario')->name('usuario.solicitudes-amistad');
+        Route::get('/mensajes', 'UsuarioController@mensajes_usuario')->name('usuario.mensajes');
         Route::middleware('auth')->get(
             '/{id}/solicitud-amistad/',
             'SolicitudAmistadController@solicitud_amistad'

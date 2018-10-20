@@ -328,4 +328,13 @@ class UsuarioController extends Controller
             'message' => 'User not found'
         ]);
     }
+
+    /**
+     * Vista para ver los mensajes de los usuarios
+     */
+    public function mensajes_usuario() {
+        $usuario = \Auth::guard()->user()->usuario;
+        $show_chat = false;
+        return view('usuarios.mensajes', compact(['usuario', 'show_chat']));
+    }
 }

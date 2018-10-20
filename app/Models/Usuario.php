@@ -129,6 +129,21 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         return $this->hasMany('App\Models\Notification');
     }
 
+    public function conversaciones() {
+        $conversaciones = \App\Models\Conversacion::where('emisor_id', $this->id)
+            ->orWhere('receptor_id', $this->id)
+            ->get();
+
+        return $conversaciones->map(function ($conversacion) {
+            if ($conversacion->emisor_id == $this->id) {
+                $conversacion->name = $conversacion->receptor->get_full_name();
+            } else {
+                $conversacion->name = $conversacion->emisor->get_full_name();
+            }
+            return $conversacion;
+        });
+    }
+
     /**
      * Amigos del usuario
      */
