@@ -28,7 +28,7 @@
 @endsection
 
 @section('custom_script')
-<script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
+{{-- <script src="{{ asset('assets/plugins/vue/vue.js') }}"></script> --}}
 <script>
 
 const OpcionComponent = Vue.component('opcion-pregunta', {

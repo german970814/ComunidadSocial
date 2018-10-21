@@ -48,6 +48,10 @@
             "reportarComentario": "{{ route('comentario.reportar', 99) }}",
             "departamentoMunicipios": "{{ route('departamento.municipios', 99) }}",
             "solicitarIngresoInstitucion": "{{ route('institucion.solicitud-ingreso-institucion', 99) }}",
+            "getConversacion": "{{ route('mensajes.get-conversacion', 99) }}",
+            "guardarMensaje": "{{ route('mensajes.guardar-mensaje', 99) }}",
+            "verConversacion": "{{ route('mensajes.ver-conversacion', 99) }}",
+            "buscarAmigos": "{{ route('usuario.buscar-amigos') }}",
         },
         messages: {
             @if($session_message_success = Session::get('success'))
@@ -66,6 +70,7 @@
         server: {
             @auth
                 "loggedUserId": {{ Auth::guard()->user()->usuario->id }},
+                "socketHost": "{{ env('SOCKET_SERVER_HOST', '127.0.0.1') . ':' . env('SOCKET_SERVER_PORT') }}",
                 "loggedUserFullName": "{{ Auth::guard()->user()->usuario->get_full_name() }}",
                 @if (isset($usuario) && $usuario->id)
                     "usuarioId": "{{ $usuario->id }}",
@@ -96,8 +101,9 @@
 <script src="{{ asset('assets/plugins/datetimepicker/datetimepicker.js') }}"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 <script src="{{ asset('/js/custom.js') }}"></script>
+<script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
 
-@if (Auth::check())
+@if (Auth::check() && (isset($show_chat) ? $show_chat : true))
 <script src="{{ asset('/js/io.js') }}"></script>
 <script src="{{ asset('/js/client.js') }}"></script>
 @endif

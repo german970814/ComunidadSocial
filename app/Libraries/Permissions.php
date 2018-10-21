@@ -67,14 +67,83 @@ class Permissions
         return $user->is_institucion();
     }
 
+    /**
+     * Puede ver mensajes si el usuario es administrador, maestro o
+     * estudiante
+     */
+    public static function ver_mensajes($user) {
+        $same_user = $user->id == \Auth::guard()->user()->usuario->id;
+        return $same_user && (
+            $user->is_estudiante() ||
+            $user->is_administrador() ||
+            $user->is_maestro()
+        );
+    }
+
+    /**
+     * Se puede ver las solicitudes de un grupo si es administrador
+     * o si es un asesor de grupo
+     */
+    public static function ver_solicitudes_grupo($user, $args) {
+        $grupo = $args['grupo'];
+        return $user->is_administrador() || $user->is_asesor($grupo);
+    }
+
+    /**
+     * Se puede crear un foro si es administrador, asesor, o
+     * si perteneces al grupo
+     */
     public static function crear_foro($user, $args) {
         $grupo = $args['grupo'];
         $pertenece = $user->pertenece_grupo($grupo);
         return $user->is_administrador() || $user->is_asesor($grupo) || $pertenece;
     }
 
+    /**
+     * Se puede editar un foro si eres administrador, asesor,
+     * o si creaste el foro
+     */
     public static function editar_foro($user, $args) {
-        return self::crear_foro($user, $args);
+        $foro = $args['foro'];
+        $grupo = $foro->grupo;
+        return $user->is_administrador() ||
+            $user->is_asesor($grupo) ||
+            (
+                $user->pertenece_grupo($grupo) &&
+                $user->id == $foro->usuario->id
+            );
+    }
+
+    /**
+     * Se puede ver un foro si eres administrador,
+     * asesor, o perteneces a un grupo
+     */
+    public static function ver_foro($user, $args) {
+        $foro = $args['foro'];
+
+        return $user->is_administrador() ||
+            $user->is_asesor($foro->grupo) ||
+            $user->pertenece_grupo($foro->grupo);
+    }
+
+    public static function ver_foros($user, $args) {
+        $grupo = $args['grupo'];
+
+        return $user->is_administrador() ||
+            $user->is_asesor($foro->grupo) ||
+            $user->pertenece_grupo($foro->grupo);
+    }
+
+    /**
+     * Se puede participar en un foro si eres administrador,
+     * asesor, o perteneces a un grupo
+     */
+    public static function participar_foro($user, $args) {
+        $foro = $args['foro'];
+
+        return $user->is_administrador() ||
+            $user->is_asesor($foro->grupo) ||
+            $user->pertenece_grupo($foro->grupo);
     }
 
     /**

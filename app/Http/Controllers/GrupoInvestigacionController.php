@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GrupoInvestigacion;
-use App\Libraries\Form;
+use App\Libraries\{ Form, Permissions };
 
 class GrupoInvestigacionController extends Controller
 {
@@ -18,47 +18,49 @@ class GrupoInvestigacionController extends Controller
     }
 
     public function create($tipo, $institucion_id) {
-        $usuario = \Auth::guard()->user()->usuario;
+        $usuario_request = \Auth::guard()->user()->usuario;
         $institucion = \App\Models\Institucion::findOrFail($institucion_id);
 
-        if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
-            abort(404, 'El tipo de red temática consultada no existe');
-        } elseif (!($usuario->is_administrador() || $usuario->is_institucion())) {
-            abort(403, 'No tienes permisos para realizar esta acción');
-        } elseif ($usuario->is_institucion() && !($usuario->institucion->id == $institucion->id)) {
-            return redirect()->route('grupos.create', [$tipo, $usuario->institucion->id]);
+        if (Permissions::has_perm('crear_grupo', compact(['institucion']))) {
+            if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
+                abort(404, 'El tipo grupo consultado no existe');
+            }
+
+            if ($tipo == 'tematica') {
+                $title = 'Crear red temática';
+                $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
+                    'tipo', \App\Models\LineaInvestigacion::$TEMATICA
+                )->get();
+            } else {
+                $title = 'Crear grupo de investigación';
+                $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
+                    'tipo', \App\Models\LineaInvestigacion::$INVESTIGACION
+                )->get();
+            }
+
+            $opciones = [];
+            $opciones_linea_investigacion->map(function ($opcion) use (&$opciones) {
+                $opciones[$opcion->id] = $opcion->get_nombre();
+                return null;
+            });
+
+            $usuario = $institucion->usuario;
+            $form = new Form(GrupoInvestigacion::class, [
+                'nombre', 'descripcion',
+                'linea_investigacion_id'
+            ], [
+                'linea_investigacion_id' => [
+                    'type' => 'select',
+                    'opciones' => $opciones,
+                    'label' => 'Linea investigación',
+                    'param' => 'nombre'
+                ]
+            ]);
+            return view('grupos.create', compact(['form', 'title', 'institucion', 'tipo', 'usuario']));
+        } else if ($usuario_request->is_institucion($institucion)) {
+            return redirect()->route('grupos.create', [$tipo, $usuario_request->institucion->id]);
         }
-
-        if ($tipo == 'tematica') {
-            $title = 'Crear red temática';
-            $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
-                'tipo', \App\Models\LineaInvestigacion::$TEMATICA
-            )->get();
-        } else {
-            $title = 'Crear grupo de investigación';
-            $opciones_linea_investigacion = \App\Models\LineaInvestigacion::where(
-                'tipo', \App\Models\LineaInvestigacion::$INVESTIGACION
-            )->get();
-        }
-
-        $opciones = [];
-        $opciones_linea_investigacion->map(function ($opcion) use (&$opciones) {
-            $opciones[$opcion->id] = $opcion->get_nombre();
-            return null;
-        });
-
-        $form = new Form(GrupoInvestigacion::class, [
-            'nombre', 'descripcion',
-            'linea_investigacion_id'
-        ], [
-            'linea_investigacion_id' => [
-                'type' => 'select',
-                'opciones' => $opciones,
-                'label' => 'Linea investigación',
-                'param' => 'nombre'
-            ]
-        ]);
-        return view('grupos.create', compact(['form', 'title', 'institucion', 'tipo']));
+        abort(404, 'Página no econtrada');
     }
 
     /**
@@ -68,29 +70,30 @@ class GrupoInvestigacionController extends Controller
         $usuario = \Auth::guard()->user()->usuario;
         $institucion = \App\Models\Institucion::findOrFail($institucion_id);
 
-        if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
-            abort(404, 'El tipo de red temática consultada no existe');
-        } elseif (!($usuario->is_administrador() || $usuario->is_institucion())) {
-            abort(403, 'No tienes permisos para realizar esta acción');
+        if (Permissions::has_perm('crear_grupo', compact(['institucion']))) {
+            if (!($tipo == 'tematica' || $tipo == 'investigacion')) {
+                abort(404, 'El tipo de grupo consultado no existe');
+            }
+
+            $validated_data = $request->validate([
+                'descripcion' => '',
+                'nombre' => 'required',
+                'linea_investigacion_id' => 'required|exists:lineas_investigacion,id'
+            ], $this->messages);
+
+            GrupoInvestigacion::create(array_merge($validated_data, [
+                'institucion_id' => $institucion_id,
+                'tipo' => $tipo == 'tematica' ? GrupoInvestigacion::$TEMATICA : GrupoInvestigacion::$INVESTIGACION
+            ]));
+
+            return redirect()
+                ->route('grupos.grupos-investigacion-institucion', [$tipo, $institucion->usuario->id])
+                ->with('success', $tipo == 'tematica' ?
+                    'Se ha creacdo la red temática exitosamente' :
+                    'Se ha creado el grupo de investigación exitosamente'
+                );
         }
-
-        $validated_data = $request->validate([
-            'descripcion' => '',
-            'nombre' => 'required',
-            'linea_investigacion_id' => 'required|exists:lineas_investigacion,id'
-        ], $this->messages);
-
-        GrupoInvestigacion::create(array_merge($validated_data, [
-            'institucion_id' => $institucion_id,
-            'tipo' => $tipo == 'tematica' ? GrupoInvestigacion::$TEMATICA : GrupoInvestigacion::$INVESTIGACION
-        ]));
-
-        return redirect()
-            ->route('grupos.grupos-investigacion-institucion', [$tipo, $institucion->usuario->id])
-            ->with('success', $tipo == 'tematica' ?
-                'Se ha creacdo la red temática exitosamente' :
-                'Se ha creado el grupo de investigación exitosamente'
-            );
+        abort(404, 'Página no existe');
     }
 
     /**
@@ -238,36 +241,101 @@ class GrupoInvestigacionController extends Controller
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($usuario->is_administrador() || $usuario->is_asesor() || $usuario->grupo_pertenece($grupo)) {
+        if (Permissions::has_perm('crear_foro', ['grupo' => $grupo])) {
             $form = new Form(\App\Models\ForoGrupo::class, ['tema']);
             return view('grupos.crear_foro', compact(['form', 'grupo', 'usuario']));
         }
-        abort(404, 'Página no econtrada');
+        abort(404, 'Página no encontrada');
     }
 
     public function guardar_foro(Request $request, $id) {
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user()->usuario;
 
-        if ($usuario->is_administrador() || $usuario->is_asesor() || $usuario->grupo_pertenece($grupo)) {
+        if (Permissions::has_perm('crear_foro', ['grupo' => $grupo])) {
             $validated_data = $request->validate([
                 'tema' => 'required'
             ], $this->messages);
 
             $foro = \App\Models\ForoGrupo::create([
-                'tema' => $validated_data['tema']
+                'usuario_id' => $usuario->id,
+                'tema' => $validated_data['tema'],
+                'grupo_investigacion_id' => $grupo->id,
             ]);
 
             return redirect()
-                ->route('grupo.ver-foro', $foro->id)
+                ->route('grupos.ver-foro', $foro->id)
                 ->with('success', 'Has creado un nuevo tema en el foro');
         }
-        abort(404, 'Página no econtrada');
+        abort(404, 'Página no encontrada');
     }
 
-    // public function ver_foro($id) {
-    //     $foro = \App\Models\ForoGrupo::findOrFail($id);
-    //     $usuario = \Auth::guard()->user()->usuario;
-    //     // $usuario->grupo_pertenece($grupo)
-    // }
+    public function ver_foros($id) {
+        $grupo = GrupoInvestigacion::findOrFail($id);
+
+        if (Permissions::has_perm('ver_foros', ['grupo' => $grupo])) {
+            return view('grupos.foros', compact(['grupo']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function ver_foro($id) {
+        $foro = \App\Models\ForoGrupo::findOrFail($id);
+        
+        if (Permissions::has_perm('ver_foro', ['foro' => $foro])) {
+            $grupo = $foro->grupo;
+            return view('grupos.foro', compact(['foro', 'grupo']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function editar_foro($id) {
+        $foro = \App\Models\ForoGrupo::findOrFail($id);
+
+        if (Permissions::has_perm('editar_foro', ['foro' => $foro])) {
+            $grupo = $foro->grupo;
+            $form = new Form($foro, ['tema']);
+            return view('grupos.crear_foro', compact(['form', 'grupo', 'foro']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function actualizar_foro(Request $request, $id) {
+        $foro = \App\Models\ForoGrupo::findOrFail($id);
+
+        if (Permissions::has_perm('editar_foro', ['foro' => $foro])) {
+            $validated_data = $request->validate([
+                'tema' => 'required'
+            ], $this->messages);
+
+            $foro->update([
+                'tema' => $validated_data['tema']
+            ]);
+
+            return redirect()->route('grupos.ver-foro', $foro->id)
+                ->with('success', 'Se ha editado el foro');
+        }
+        abort(404, 'Página no disponible');
+    }
+
+    public function guardar_respuesta_foro(Request $request, $id) {
+        $foro = \App\Models\ForoGrupo::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if (Permissions::has_perm('participar_foro', ['foro' => $foro])) {
+            $validated_data = $request->validate([
+                'descripcion' => 'required'
+            ], $this->messages);
+
+            \App\Models\RespuestaForoGrupo::create([
+                'foro_id' => $foro->id,
+                'usuario_id' => $usuario->id,
+                'descripcion' => $validated_data['descripcion'],
+            ]);
+
+            return back()
+                ->with('success', 'Ha agregado una respuesta al foro');
+        }
+        abort(404, 'Página no encontrada');
+    }
 }

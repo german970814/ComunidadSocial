@@ -46,6 +46,23 @@ Route::prefix('json')->group(function () {
         '/aula/examen/{id}/respuesta',
         '\App\Http\Controllers\AulaVirtualController@guardar_respuesta_estudiante'
     )->name('aula.guardar-respuesta-estudiante');
+
+    Route::middleware('auth')->post(
+        '/mensajes/conversacion/get/{id}',
+        'MensajeController@get_conversacion'
+    )->name('mensajes.get-conversacion');
+    Route::middleware('auth')->post(
+        '/mensajes/conversacion/{id}/mensaje/nuevo',
+        'MensajeController@guardar_mensaje'
+    )->name('mensajes.guardar-mensaje');
+    Route::middleware('auth')->get(
+        '/mensajes/conversacion/{id}',
+        'MensajeController@ver_conversacion'
+    )->name('mensajes.ver-conversacion');
+    Route::get(
+        '/usuarios/buscar/amigos',
+        'UsuarioController@buscar_amigos'
+    )->name('usuario.buscar-amigos');
 });
 
 Route::middleware('notificacion')->group( function () {
@@ -128,6 +145,34 @@ Route::middleware('notificacion')->group( function () {
                 '/{tipo}/institucion/{usuario_id}',
                 'GrupoInvestigacionController@grupos_investigacion_institucion'
             )->name('grupos.grupos-investigacion-institucion');
+            Route::get(
+                '{id}/foros/',
+                'GrupoInvestigacionController@ver_foros'
+            )->name('grupos.ver-foros');
+            Route::get(
+                '{id}/foros/crear',
+                'GrupoInvestigacionController@crear_foro'
+            )->name('grupos.crear-foro');
+            Route::post(
+                '{id}/foros/crear',
+                'GrupoInvestigacionController@guardar_foro'
+            )->name('grupos.guardar-foro');
+            Route::get(
+                'foros/{id}',
+                'GrupoInvestigacionController@ver_foro'
+            )->name('grupos.ver-foro');
+            Route::get(
+                'foros/{id}/editar',
+                'GrupoInvestigacionController@editar_foro'
+            )->name('grupos.editar-foro');
+            Route::post(
+                'foros/{id}/editar',
+                'GrupoInvestigacionController@actualizar_foro'
+            )->name('grupos.actualizar-foro');
+            Route::post(
+                'foros/{id}/respuesta',
+                'GrupoInvestigacionController@guardar_respuesta_foro'
+            )->name('grupos.guardar-respuesta-foro');
         });
 
         Route::prefix('/aula')->group(function() {
@@ -232,6 +277,7 @@ Route::middleware('notificacion')->group( function () {
         Route::get('/{id}/photo', 'UsuarioController@get_user_profile_photo')->name('usuario.profile-photo');
         Route::get('/buscar', 'UsuarioController@buscar_usuarios')->name('usuario.buscar_usuarios');
         Route::get('/solicitudes-amistad/{id?}', 'UsuarioController@solicitudes_amistad_usuario')->name('usuario.solicitudes-amistad');
+        Route::get('/mensajes', 'UsuarioController@mensajes_usuario')->name('usuario.mensajes');
         Route::middleware('auth')->get(
             '/{id}/solicitud-amistad/',
             'SolicitudAmistadController@solicitud_amistad'
