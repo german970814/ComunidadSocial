@@ -9,6 +9,7 @@
 const express = require('express');
 const http = require('http');
 const app = express();
+require('dotenv').config();
 
 const server = http.createServer(app);
 
@@ -21,7 +22,7 @@ const redisClient = redis.createClient();
 
 const EXPIRE_REDIS_SESSION = 60 * 1  // 1 minute
 
-server.listen(3000, 'localhost', () => {
+server.listen(process.env.SOCKET_SERVER_PORT, 'localhost', () => {
   console.log('Server started on port 3000')
 
   // Nos subscribimos al canal que nos dice si hay usuarios conectados

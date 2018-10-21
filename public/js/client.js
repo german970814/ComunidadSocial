@@ -272,7 +272,7 @@ const LoggedFriends = Vue.component('logged-friends', {
   },
   created () {
     try {
-      const socket = io.connect('http://127.0.0.1:3000/');
+      const socket = io.connect(`http://${window._app_config.server.socketHost}`);
 
       socket.on('connect', (data) => {
         // console.log('connected');

@@ -70,6 +70,7 @@
         server: {
             @auth
                 "loggedUserId": {{ Auth::guard()->user()->usuario->id }},
+                "socketHost": "{{ env('SOCKET_SERVER_HOST', '127.0.0.1') . ':' . env('SOCKET_SERVER_PORT') }}",
                 "loggedUserFullName": "{{ Auth::guard()->user()->usuario->get_full_name() }}",
                 @if (isset($usuario) && $usuario->id)
                     "usuarioId": "{{ $usuario->id }}",
