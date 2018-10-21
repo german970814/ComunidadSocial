@@ -23,7 +23,7 @@ const redisClient = redis.createClient();
 const EXPIRE_REDIS_SESSION = 60 * 1  // 1 minute
 
 server.listen(process.env.SOCKET_SERVER_PORT, 'localhost', () => {
-  console.log('Server started on port 3000')
+  console.log(`Server started on port ${process.env.SOCKET_SERVER_PORT}`);
 
   // Nos subscribimos al canal que nos dice si hay usuarios conectados
   redisClient.subscribe('user.connection');
