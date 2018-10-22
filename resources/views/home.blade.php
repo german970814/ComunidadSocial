@@ -253,7 +253,7 @@
 	<!--====================================
     ——— PROMOTION SECTION
     ===================================== -->
-    <section class="promotionWrapper " style="background-image: url(assets/img/home/promotion-1.jpg);" >
+    <section class="promotionWrapper " style="background-image: url( {{ asset('assets/img/home/promotion-1.jpg') }} );" >
       <div class="container">
         <div class="promotionInfo wow fadeInUp">
           <h2>Need More Information?</h2>
