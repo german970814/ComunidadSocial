@@ -35,11 +35,13 @@
                     </form>
                     @endauth
                 </div>
-                <div class="col-xs-1 hidden-sm hidden-md hidden-lg hidden-xl">
-                    <button type="button" id="sidebarCollapse" class="shop-cart bg-color-4">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                </div>
+                @auth
+                    <div class="col-xs-1 hidden-sm hidden-md hidden-lg hidden-xl">
+                        <button type="button" id="sidebarCollapse" class="shop-cart bg-color-4">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                @endauth
                 <div class="col-md-9 col-xs-11">
                     <ul class="list-inline functionList">
                         @auth
@@ -83,10 +85,9 @@
         </div> --}}
     </div>
 
-    @if (!Auth::check())
+    {{-- @if (!Auth::check())
         <nav id="menuBar" class="hidden-md hidden-sm hidden-lg hidden-xl navbar navbar-default lightHeader" role="navigation">
             <div class="container">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                         <span class="sr-only">Toggle navigation</span>
@@ -97,7 +98,7 @@
                     <a class="navbar-brand" href="/"><img src="{{ asset('assets/img/logo-school.png') }}" alt="Kidz School"></a>
                 </div>
 
-                <!-- Collect the nav links, forms, and other content for toggling -->
+
                 <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown color-1">
@@ -115,24 +116,9 @@
                                 <i class="fa fa-file-text-o bg-color-2" aria-hidden="true"></i> <span>Crear una cuenta</span>
                             </a>
                         </li>
-                        {{-- <li class="dropdown color-4 ">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-pencil-square-o bg-color-4" aria-hidden="true"></i> <span>Contenido Digital</span>
-                            </a>
-                        </li>
-                        <li class="dropdown color-5  ">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-calendar bg-color-5" aria-hidden="true"></i> <span>Tutoriales</span>
-                            </a>
-                        </li>
-                        <li class="dropdown color-6 ">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-gg bg-color-6" aria-hidden="true"></i> <span>Soporte</span>
-                            </a>
-                        </li> --}}
                     </ul>
                 </div>
             </div>
         </nav>
-    @endif
+    @endif --}}
 </header>
