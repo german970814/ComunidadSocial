@@ -402,7 +402,9 @@ new Vue({
     }
   },
   render(h) {
-    return h('div', [
+    return h('div', {
+      'class': 'hidden-sm hidden-xs'
+    }, [
       h('logged-friends', {
         on: {
           initChat: (id) => {

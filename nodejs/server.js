@@ -48,7 +48,7 @@ server.listen(process.env.SOCKET_SERVER_PORT, 'localhost', () => {
               io.sockets.connected[receptorData.socketId].emit('user_message', {
                 ...redisData.message, name: redisData.emisor
               });
-              console.log(`[Server] Message sent from #${redisData.message.emisor_id} to #${redisData.user}`)
+              console.log(`[Server] Message sent from #${redisData.message.usuario_id} to #${redisData.user}`);
             }
           }
         });

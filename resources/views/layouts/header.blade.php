@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="top-info-bar bg-color-primary hidden-xs">
+    <div class="top-info-bar bg-color-primary">
         <div class="container">
             <div class="row">
                 {{-- <div class="col-sm-7">
@@ -25,18 +25,22 @@
                     <li><i class="fa fa-phone bg-color-2" aria-hidden="true"></i> +1 234 567 8900</li>
                     <li><i class="fa fa-clock-o bg-color-6" aria-hidden="true"></i> Open: 9am - 6pm</li>
                     </ul>
+                </div> --}}
+                <div class="col-md-3 hidden-xs">
+                    @auth
+                    <form action="{{ route('usuario.buscar_usuarios') }}" method="GET">
+                        <div class="form-group formField">
+                            <input type="text" name="q" class="form-control" placeholder="Buscar" />
+                        </div>
+                    </form>
+                    @endauth
                 </div>
-                <div class="col-sm-5"> --}}
-                    <div class="col-sm-2">
-                        @auth
-                        <form action="{{ route('usuario.buscar_usuarios') }}" method="GET">
-                            <div class="form-group formField">
-                                <input type="text" name="q" class="form-control" placeholder="Buscar" />
-                            </div>
-                        </form>
-                        @endauth
-                    </div>
-                <div class="col-sm-offset-5 col-sm-5">
+                <div class="col-xs-1 hidden-sm hidden-md hidden-lg hidden-xl">
+                    <button type="button" id="sidebarCollapse" class="shop-cart bg-color-4">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+                <div class="col-md-9 col-xs-11">
                     <ul class="list-inline functionList">
                         @auth
                             <li><i class="fa fa-user bg-color-accent-2" aria-hidden="true"></i> <a href="{{ route('usuario.profile') }}">{{ Auth::guard()->user()->usuario->get_full_name() }}</a></li>
@@ -72,59 +76,63 @@
                         @endauth
                     </ul>
                 </div>
-                {{-- </div> --}}
             </div>
         </div>
+        {{-- <div class="hidden-sm hidden-md hidden-lg hidden-xl" id="sidebar">
+            @yield('sidebar')
+        </div> --}}
     </div>
 
-    {{-- <nav id="menuBar" class="navbar navbar-default lightHeader" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/"><img src="{{ asset('assets/img/logo-school.png') }}" alt="Kidz School"></a>
-            </div>
+    @if (!Auth::check())
+        <nav id="menuBar" class="hidden-md hidden-sm hidden-lg hidden-xl navbar navbar-default lightHeader" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/"><img src="{{ asset('assets/img/logo-school.png') }}" alt="Kidz School"></a>
+                </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown singleDrop color-1   active ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-home bg-color-1" aria-hidden="true"></i> <span class="active">Inicio</span>
-                        </a>
-                    </li>
-                    <li class="dropdown singleDrop color-3 ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-list-ul bg-color-3" aria-hidden="true"></i> <span>Periódico</span>
-                        </a>
-                    </li>
-                    <li class=" dropdown megaDropMenu color-2 ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-close-others="true" aria-expanded="false">
-                            <i class="fa fa-file-text-o bg-color-2" aria-hidden="true"></i> <span>Preguntas Frecuentes</span>
-                        </a>
-                    </li>
-                    <li class="dropdown singleDrop color-4 ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-pencil-square-o bg-color-4" aria-hidden="true"></i> <span>Contenido Digital</span>
-                        </a>
-                    </li>
-                    <li class="dropdown singleDrop color-5  ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-calendar bg-color-5" aria-hidden="true"></i> <span>Tutoriales</span>
-                        </a>
-                    </li>
-                    <li class="dropdown singleDrop color-6 ">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-gg bg-color-6" aria-hidden="true"></i> <span>Soporte</span>
-                        </a>
-                    </li>
-                </ul>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown color-1">
+                            <a href="/">
+                                <i class="fa fa-home bg-color-1" aria-hidden="true"></i> <span class="active">Inicio</span>
+                            </a>
+                        </li>
+                        <li class="dropdown color-3 ">
+                            <a href="{{ route('login') }}">
+                                <i class="fa fa-list-ul bg-color-3" aria-hidden="true"></i> <span>Entrar</span>
+                            </a>
+                        </li>
+                        <li class=" dropdown color-2 ">
+                            <a href="{{ route('usuario.create') }}">
+                                <i class="fa fa-file-text-o bg-color-2" aria-hidden="true"></i> <span>Crear una cuenta</span>
+                            </a>
+                        </li>
+                        {{-- <li class="dropdown color-4 ">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-pencil-square-o bg-color-4" aria-hidden="true"></i> <span>Contenido Digital</span>
+                            </a>
+                        </li>
+                        <li class="dropdown color-5  ">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-calendar bg-color-5" aria-hidden="true"></i> <span>Tutoriales</span>
+                            </a>
+                        </li>
+                        <li class="dropdown color-6 ">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-gg bg-color-6" aria-hidden="true"></i> <span>Soporte</span>
+                            </a>
+                        </li> --}}
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav> --}}
+        </nav>
+    @endif
 </header>

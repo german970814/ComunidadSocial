@@ -130,8 +130,8 @@ class Permissions
         $grupo = $args['grupo'];
 
         return $user->is_administrador() ||
-            $user->is_asesor($foro->grupo) ||
-            $user->pertenece_grupo($foro->grupo);
+            $user->is_asesor($grupo) ||
+            $user->pertenece_grupo($grupo);
     }
 
     /**
