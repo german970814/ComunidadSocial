@@ -7,6 +7,7 @@
 @endsection
 
 @section('custom_script')
+<script src="{{ asset('/js/io.js') }}"></script>
 <script>
 
 const Conversaciones = Vue.component('conversaciones', {
@@ -36,6 +37,23 @@ const Conversaciones = Vue.component('conversaciones', {
     methods: {
         newConversacion(id) {
             this.$emit('newConversacion', id);
+        },
+        getNuevaConversacion(id) {
+            $.ajax({
+                url: window._getUrl('getConversacion', id),
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                success: (data) => {
+                    console.log(data);
+                    if (data.code == 200) {
+                        this.$emit('addNewConversacion', data.data);
+                        this.search = '';
+                        this.newConversaciones = [];
+                    }
+                }
+            });
         }
     },
     template: `
@@ -51,7 +69,7 @@ const Conversaciones = Vue.component('conversaciones', {
                 </div>
                 <div class="panel-body">
                     <div class="list-group">
-                        <a v-for="usuario of newConversaciones" :class="{ 'list-group-item': true }" href="javascript:void(0)">{( usuario.nombre )}</a>
+                        <a v-for="usuario of newConversaciones" @click.stop="getNuevaConversacion(usuario.id)" :class="{ 'list-group-item': true }" href="javascript:void(0)">{( usuario.nombre )}</a>
                         <a v-for="conversacion of conversaciones" :class="{ active: conversacionSelected == conversacion.id, 'list-group-item': true }" @click.stop="newConversacion(conversacion.id)" href="javascript:void(0)">{( conversacion.name )}</a>
                     </div>
                 </div>
@@ -72,6 +90,12 @@ const Chat = Vue.component('chat', {
         setTimeout(() => {
             this.scrollEnd()
         }, 1000);
+
+        document.addEventListener('scroll_down_chat', e => {
+            setTimeout(() => {
+                this.scrollEnd()
+            }, 300);
+        })
     },
     methods: {
         scrollEnd() {
@@ -254,10 +278,46 @@ new Vue({
         }
     },
     created() {
-        this.conversacionSelected = this.conversaciones[0].id;
+        if (this.conversaciones.length) {
+            this.conversacionSelected = this.conversaciones[0].id;
+        }
+
+        try {
+            const socket = io.connect(`http://${window._app_config.server.socketHost}`);
+    
+            socket.on('connect', data => {
+                socket.emit('add user', {
+                    id: window._app_config.server.loggedUserId,
+                    name: window._app_config.server.logedUserFullName
+                });
+            });
+    
+            socket.on('ping', function() {
+                socket.emit('verify_conection', {
+                    id: window._app_config.server.loggedUserId,
+                    name: window._app_config.server.loggedUserFullName
+                });
+            });
+    
+            socket.on('user_message', (data) => {
+                if (data.conversacion_id == this.conversacionSelected) {
+                    this.mensajes.push(data);
+                    let scrollDownChatEvent = new CustomEvent('scroll_down_chat', {
+                        detail: { scroll: true }
+                    });
+                    document.dispatchEvent(scrollDownChatEvent);
+                }
+            });
+    
+            socket.on('connect_error', (data) => {
+                socket.close();  // cierra la conexión
+            });
+        } catch (error) {
+            console.log(error)
+        }
 
         $(document).ready(() => {
-            this.getConversacion();
+            this.conversacionSelected && this.getConversacion();
         });
     },
     render(h) {
@@ -272,6 +332,10 @@ new Vue({
                         if (this.conversacionSelected != id) {
                             this.conversacionSelected = id;
                         }
+                    },
+                    addNewConversacion: (data) => {
+                        this.conversaciones.push(data);
+                        this.conversacionSelected = data.id;
                     }
                 }
             }),
@@ -279,7 +343,7 @@ new Vue({
                 props: {
                     mensajes: this.mensajes,
                     id: this.conversacionSelected,
-                    name: this.conversacion.name || ''
+                    name: this.conversacion ? (this.conversacion.name || '') : ''
                 }
             }, [])
         ]);

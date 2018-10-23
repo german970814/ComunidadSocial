@@ -27,6 +27,10 @@
     {{-- @include('layouts/errors') --}}
 
     @yield('content')
+
+    <div class="hidden-sm hidden-md hidden-lg hidden-xl" id="sidebar">
+      @yield('sidebar')
+    </div>
 	
     @include('layouts/footer')
     @if (Auth::check() && (isset($show_chat) ? $show_chat : true))
