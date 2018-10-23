@@ -146,6 +146,10 @@ $(document).ready(function() {
     var numero_documento = $('input[name="numero_documento"]');
     var tipo_usuario = $('select[name="tipo_usuario"]');
 
+    if (numero_documento.val().length >= 8 && tipo_usuario.val()) {
+        $('.content-hidden').fadeIn();
+    }
+
     function get_remote_data(e) {
         if (numero_documento.val().length >= 8 && tipo_usuario.val()) {
             $('.content-hidden').fadeIn();
