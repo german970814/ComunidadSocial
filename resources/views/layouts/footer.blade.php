@@ -136,7 +136,7 @@
                 </div>
                 <div class="col-sm-7 col-sm-pull-5 col-xs-12">
                     <div class="copyRightText">
-                        <p>© 2016 Copyright Kidz School Bootstrap Template by <a href="https://www.iamabdus.com/">Abdus</a>.</p>
+                        <p>© 2018 Todos los derechos reservados </p>
                     </div>
                 </div>
             </div>
