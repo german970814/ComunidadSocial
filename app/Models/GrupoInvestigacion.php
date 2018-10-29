@@ -95,9 +95,14 @@ class GrupoInvestigacion extends ModelForm
             ->where('fecha_fin', '>=', $now);
     }
 
-    public function examenes() {
+    public function _examenes() {
         return $this->hasMany('\App\Models\ExamenGrupoInvestigacion', 'grupo_investigacion_id')
             ->orderBy('fecha_inicio', 'asc');
+    }
+
+    public function examenes() {
+        $now = new \DateTime();
+        return $this->_examenes()->where('fecha_fin', '>=', $now);
     }
 
     public function foros() {
@@ -106,7 +111,7 @@ class GrupoInvestigacion extends ModelForm
 
     public function examenes_activos() {
         $now = new \DateTime();
-        return $this->examenes()->where('fecha_inicio', '<=', $now)
+        return $this->_examenes()->where('fecha_inicio', '<=', $now)
             ->where('fecha_fin', '>=', $now);
     }
 
@@ -130,7 +135,25 @@ class GrupoInvestigacion extends ModelForm
         }))->where('tipo_usuario', \App\Models\Usuario::$ESTUDIANTE)->all();
     }
 
-    public function get_imagen_url() {
+    public function asesores() {
+        $asesores = \DB::table('coordinadores_grupos_investigacion')
+            ->where('linea_investigacion_id', $this->id)
+            ->select('usuario_id')
+            ->get();
+
+        if (count($asesores)) {
+            return \App\Models\Usuario::find($asesores->map(function ($asesor_id) {
+                return $asesor_id->usuario_id;
+            })->all())->all();
+        }
+        return [];
+    }
+
+    public function get_imagen_url() { // TODO: Se puede cambiar imagen
         return asset('assets/img/group-none.png');
+    }
+
+    public function get_url() {
+        return route('grupos.show', $this->id);
     }
 }

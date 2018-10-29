@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\GrupoInvestigacion;
-use App\Libraries\{ Helper, Form };
+use App\Libraries\{ Helper, Form, Permissions };
 
 
 class AdministradorController extends Controller
@@ -103,7 +103,7 @@ class AdministradorController extends Controller
                 }
             }
 
-            return redirect()->route('admin.create-usuario-asesor')->with('success', 'Se ha creado el usuario acesor con éxito');
+            return redirect()->route('admin.create-usuario-asesor')->with('success', 'Se ha creado el usuario asesor con éxito');
         }
         abort(404, 'Pagina solicitada no existe');
     }
@@ -189,5 +189,59 @@ class AdministradorController extends Controller
                 ->with('success', 'Se ha añadido el asesor al grupo');
         }
         abort(404, 'No tienes permisos de estar aquí');
+    }
+
+    public function reportes_comentarios() {
+        if (Permissions::has_perm('administrador')) {
+            $usuario = \Auth::guard()->user()->usuario;
+            $reportes_ids = \App\Models\ReporteComentarioPost::join('comentarios_posts', 'comentarios_posts.id', '=', 'reportes_comentarios_posts.comentario_id')
+                ->whereNotNull('reportes_comentarios_posts.comentario_id')
+                ->where('comentarios_posts.estado', \App\Models\ComentarioPost::$ACTIVO)
+                ->select('reportes_comentarios_posts.id as id')->get();
+            $reportes = \App\Models\ReporteComentarioPost::find($reportes_ids->map(function ($reporte) {
+                return $reporte->id;
+            })->all());
+            return view('admin.reportes', compact(['reportes', 'usuario']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function reportes_posts() {
+        if (Permissions::has_perm('administrador')) {
+            $usuario = \Auth::guard()->user()->usuario;
+            $reportes_ids = \App\Models\ReporteComentarioPost::join('posts', 'posts.id', '=', 'reportes_comentarios_posts.post_id')
+                ->whereNotNull('reportes_comentarios_posts.post_id')
+                ->where('posts.estado', \App\Models\Post::$ACTIVO)
+                ->select('reportes_comentarios_posts.id as id')->get();
+            $reportes = \App\Models\ReporteComentarioPost::find($reportes_ids->map(function ($reporte) {
+                return $reporte->id;
+            })->all());
+            return view('admin.reportes', compact(['reportes', 'usuario']));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function inactivar_comentario_post($id) {
+        $reporte = \App\Models\ReporteComentarioPost::findOrFail($id);
+
+        if (Permissions::has_perm('administrador')) {
+            $is_comentario = $reporte->get_tipo() == \App\Models\ReporteComentarioPost::$COMENTARIO;
+            $obj = $is_comentario ?
+                $reporte->comentario : $reporte->post;
+            $obj->update(['estado' => $is_comentario ?
+                \App\Models\ComentarioPost::$INACTIVO : \App\Models\Post::$INACTIVO]);
+            return back()->with('success', 'Se ha inactivado el ' . ($is_comentario ? 'comentario' : 'post'));
+        }
+        abort(404, 'Página no encontrada');
+    }
+
+    public function eliminar_reporte($id) {
+        $reporte = \App\Models\ReporteComentarioPost::findOrFail($id);
+
+        if (Permissions::has_perm('administrador')) {
+            $reporte->delete();
+            return back()->with('success', 'Se omite el reporte');
+        }
+        abort(404, 'Página no encontrada');
     }
 }

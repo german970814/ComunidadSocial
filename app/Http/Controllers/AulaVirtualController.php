@@ -406,6 +406,21 @@ class AulaVirtualController extends Controller  // TODO: Validar el asesor sea e
         abort(404, 'Página no encontrada');
     }
 
+    public function cerrar_examen($id) {
+        $entrega = \App\Models\EntregaExamenEstudiante::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        if (Permissions::has_perm('ver_examen', ['examen' => $entrega->examen])) {
+            if ($entrega->is_editable()) {
+                $entrega->update(['cerrada' => true]);
+                return redirect()->route('aula.ver-examen', $entrega->examen->id)
+                    ->with('success', 'Examen entregado con exito');
+            }
+        }
+        return redirect()->route('aula.ver-examen', $entrega->examen->id)
+            ->with('warning', 'El examen ya se cerró');
+    }
+
     /**
      * 
      * Para las respuestas múltiples, solo se está teniendo en cuenta

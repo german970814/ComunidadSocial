@@ -60,7 +60,7 @@ class GrupoInvestigacionController extends Controller
         } else if ($usuario_request->is_institucion($institucion)) {
             return redirect()->route('grupos.create', [$tipo, $usuario_request->institucion->id]);
         }
-        abort(404, 'Página no econtrada');
+        abort(404, 'Página no encontrada');
     }
 
     /**
@@ -81,10 +81,17 @@ class GrupoInvestigacionController extends Controller
                 'linea_investigacion_id' => 'required|exists:lineas_investigacion,id'
             ], $this->messages);
 
-            GrupoInvestigacion::create(array_merge($validated_data, [
+            $grupo = GrupoInvestigacion::create(array_merge($validated_data, [
                 'institucion_id' => $institucion_id,
                 'tipo' => $tipo == 'tematica' ? GrupoInvestigacion::$TEMATICA : GrupoInvestigacion::$INVESTIGACION
             ]));
+
+            if ($usuario->is_asesor()) {
+                \DB::table('coordinadores_grupos_investigacion')->insert([
+                    'linea_investigacion_id' => $grupo->id,
+                    'usuario_id' => $usuario->id
+                ]);
+            }
 
             return redirect()
                 ->route('grupos.grupos-investigacion-institucion', [$tipo, $institucion->usuario->id])
@@ -165,7 +172,7 @@ class GrupoInvestigacionController extends Controller
         $grupo = GrupoInvestigacion::findOrFail($id);
         $usuario = \Auth::guard()->user();
 
-        if ($usuario->is_administrador() || $usuario->is_asesor()) {
+        if ($usuario->is_administrador() || $usuario->is_asesor($grupo)) {
             return view('grupos.solicitudes', compact(['grupo']));
         }
         abort(419, 'No tienes permisos de estar aquí');
@@ -186,16 +193,31 @@ class GrupoInvestigacionController extends Controller
 
             if ($solicitud) {
                 $solicitud->delete();
+
+                foreach ($grupo->asesores as $asesor) {
+                    \App\Models\Notificacion::where('usuario_sender_id', $usuario->id)
+                        ->where('usuario_id', $asesor->id)
+                        ->where('tipo', \App\Models\Notificacion::$ingreso_grupo_tipo)
+                        ->delete();
+                }
+
                 return back()->with('info', $grupo->tipo == GrupoInvestigacion::$TEMATICA ?
                     'Se ha cancelado la solicitud a unirse a la red temática' :
                     'Se ha cancelado la solicitud a unirse al grupo de investigación'
                 );
             }
-            \App\Models\SolicitudGrupoInvestigacion::create([
+
+            $solicitud = \App\Models\SolicitudGrupoInvestigacion::create([
                 'grupo_investigacion_id' => $grupo->id,
                 'usuario_id' => $usuario->id,
                 'aceptada' => false
             ]);
+
+            foreach ($grupo->asesores as $asesor) {
+                \App\Models\Notificacion::create_ingreso_grupo($solicitud, [
+                    'usuario_id' => $asesor->id
+                ]);
+            }
             
             return back()->with('success', $grupo->tipo == GrupoInvestigacion::$TEMATICA ?
                 'Solicitud de ingreso a red temática envíada' :

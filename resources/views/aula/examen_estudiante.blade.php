@@ -106,7 +106,8 @@ const Pregunta = Vue.component('pregunta', {
     delimiters: ['{(', ')}'],
     props: {
         pregunta: Object,
-        respuesta: Object
+        respuesta: Object,
+        isUltima: Boolean
     },
     computed: {
         isMultiple() {
@@ -121,7 +122,11 @@ const Pregunta = Vue.component('pregunta', {
     },
     methods: {
         siguientePregunta() {
-            this.$emit('siguientePregunta')
+            if (this.isUltima) {
+                this.$emit('guardarExamen')
+            } else {
+                this.$emit('siguientePregunta')
+            }
         },
         onInput(val, opcion) {
             // this.$emit('respuestaUpdate', this.respuesta)
@@ -163,7 +168,7 @@ const Pregunta = Vue.component('pregunta', {
                         </ul>
                     </div>
                     <div style="float: right">
-                        <button class="btn btn-info" type="button" @click.stop="siguientePregunta">Siguiente</button>
+                        <button class="btn btn-info" type="button" @click.stop="siguientePregunta">{( isUltima ? 'Terminar prueba' : 'Siguiente' )}</button>
                     </div>
                 </div>
             </div>
@@ -225,6 +230,12 @@ new Vue({
             this.preguntaSelected = this.preguntas[0];
         }
     },
+    computed: {
+        isUltima() {
+            return this.preguntaSelected &&
+                this.preguntas[this.preguntas.length - 1].id == this.preguntaSelected.id;
+        }
+    },
     methods: {
         getRespuesta() {
             var respuesta = this.respuestas.find(rp => rp.pregunta == this.preguntaSelected.id)
@@ -281,7 +292,8 @@ new Vue({
             h('pregunta', {
                 props: {
                     pregunta: this.preguntaSelected,
-                    respuesta: this.getRespuesta()
+                    respuesta: this.getRespuesta(),
+                    isUltima: this.isUltima
                 },
                 on: {
                     siguientePregunta: () => {
@@ -292,6 +304,19 @@ new Vue({
                                 this.preguntaSelected = this.preguntas[newIndex]
                             }
                         }
+                    },
+                    guardarExamen: () => {
+                        swal({
+                            title: "Terminar prueba",
+                            text: "¿Seguro que quieres terminar esta prueba?\n\nAl terminar la prueba no podrás modificarla",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        }).then((willDelete) => {
+                            if (willDelete) {
+                                window.location.href = "{{ route('aula.cerrar-entrega', $entrega->id) }}"
+                            }
+                        });
                     },
                     respuestaUpdate: (respuesta) => {  // TODO: remover esto
                         let _respuestas = this.respuestas.filter(rp => rp.pregunta != respuesta.pregunta)

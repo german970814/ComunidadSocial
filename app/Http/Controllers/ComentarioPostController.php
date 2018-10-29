@@ -37,12 +37,29 @@ class ComentarioPostController extends Controller
         ]);
     }
 
-    public function inactivar_comentario(Request $request, $id) {
-        $comentario = ComentarioPost::findOrFail($id);
-        $comentario->update(['estado', ComentarioPost::$INACTIVO]);
+    public function reportar_post(Request $request, $id) {
+        $post = \App\Models\Post::findOrFail($id);
+        $usuario = \Auth::guard()->user()->usuario;
+
+        $query = ReporteComentarioPost::where('usuario_id', $usuario->id)
+            ->where('post_id', $post->id);
+
+        if (!$query->exists()) {
+            $reporte = ReporteComentarioPost::create([
+                'usuario_id' => $usuario->id,
+                'post_id' => $post->id,
+                'razon' => isset($request['razon']) ? $request['razon'] : ''
+            ]);
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Gracias por avisarnos, estaremos revisando este post pronto'
+            ]);
+        }
+
         return response()->json([
-            'code' => 200,
-            'message' => ''
+            'code' => 204,
+            'message' => 'Ya ha realizado un reporte para este comentario'
         ]);
     }
 }

@@ -3,11 +3,11 @@
 @section('section')
 <section>
     @if (\App\Libraries\Permissions::has_perm('editar_foro', ['foro' => $foro]))
-        @include('layouts.title_page', ['title_page' => 'Foro', 'button' => ['type' => 'link', 'href' => route('grupos.editar-foro', $grupo->id), 'text' => 'Editar']])
+        @include('layouts.title_page', ['title_page' => 'Foro', 'button' => ['type' => 'link', 'href' => route('grupos.editar-foro', $foro->id), 'text' => 'Editar']])
     @else
         @include('layouts.title_page', ['title_page' => 'Foro'])
     @endif
-    <div class="row">
+    <div class="col-xs-12">
         <h3>{{ $foro->tema }}</h3>
     </div>
 

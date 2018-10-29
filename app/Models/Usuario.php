@@ -87,6 +87,10 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         ],
         'numero_documento' => [
             'type' => 'number',
+        ],
+        'fecha_nacimiento' => [
+            'label' => 'Fecha de nacimiento',
+            'type' => 'date'
         ]
     ];
 
@@ -356,6 +360,12 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
         ]);
     }
 
+    public function update_user_password($password) {
+        return $this->user->update([
+            'password' => Hash::make($password)
+        ]);
+    }
+
     /**
      * Institución a la que pertenece
      * 
@@ -479,6 +489,36 @@ class Usuario extends ModelForm  // TODO: Implements CacheMethods traits
             ->where('usuario_id', $this->id)
             ->where('linea_investigacion_id', $grupo->id)
             ->exists();
+    }
+
+    public function redes_tematicas_asesora() {
+        if ($this->is_asesor()) {
+            $asesoramiento = \DB::table('coordinadores_grupos_investigacion')
+                ->where('usuario_id', $this->id)
+                ->select('linea_investigacion_id')
+                ->get();
+            return \App\Models\GrupoInvestigacion::whereIn('id', $asesoramiento->map(function ($inst) {
+                    return $inst->linea_investigacion_id;
+                })->all())
+                ->where('tipo', \App\Models\GrupoInvestigacion::$TEMATICA)
+                ->get();
+        }
+        return null;
+    }
+
+    public function grupos_investigacion_asesora() {
+        if ($this->is_asesor()) {
+            $asesoramiento = \DB::table('coordinadores_grupos_investigacion')
+                ->where('usuario_id', $this->id)
+                ->select('linea_investigacion_id')
+                ->get();
+            return \App\Models\GrupoInvestigacion::whereIn('id', $asesoramiento->map(function ($inst) {
+                    return $inst->linea_investigacion_id;
+                })->all())
+                ->where('tipo', \App\Models\GrupoInvestigacion::$INVESTIGACION)
+                ->get();
+        }
+        return null;
     }
 
     /**

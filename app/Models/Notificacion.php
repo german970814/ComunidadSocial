@@ -22,11 +22,16 @@ class Notificacion extends Model
     static $like_post_tipo = 'like-own-post';
     static $publicacion_post_tipo = 'publicacion-post';
     static $comentario_post_tipo = 'comentario-post';
+    static $ingreso_grupo_tipo = 'ingreso-grupo';
+    static $ingreso_institucion_tipo = 'ingreso-institucion';
+
     static $solicitud_amistad_message = 'Te ha enviado una solicitud de amistad';
     static $solicitud_amistad_aceptada_message = 'Ha aceptado tu solicitud de amistad';
     static $like_post_message = 'Le ha gustado tu <a href="%s">publicación</a>';
     static $publicacion_post_message = 'Ha realizado una <a href="%s">publicación</a> en tu <a href="%s">muro</a>';
     static $comentario_post_message = 'Ha realizado un <a href="%s">comentario</a> a una <a href="%s">publicación</a>';
+    static $ingreso_grupo_message = 'Ha solicitado unirse al grupo <a href="%s">%s</a>';
+    static $ingreso_institucion_message = '<a href="%s">Ha solicitado unirse a la institución</a>';
 
     static $base_with_image = '
         <div class="media">
@@ -89,6 +94,31 @@ class Notificacion extends Model
         return Notificacion::create($data);
     }
 
+    public static function create_ingreso_grupo(\App\Models\SolicitudGrupoInvestigacion $solicitud, $data) {
+        $data['leida'] = false;
+        $data['link'] = route('grupos.solicitudes', $solicitud->grupo_investigacion_id);
+        $data['usuario_sender_id'] = $solicitud->usuario_id;
+        $data['tipo'] = Notificacion::$ingreso_grupo_tipo;
+        $data['mensaje'] = sprintf(
+            Notificacion::$ingreso_grupo_message,
+            route('grupos.solicitudes', $solicitud->grupo_investigacion_id),
+            $solicitud->grupo_investigacion->get_nombre()
+        );
+        return Notificacion::create($data);
+    }
+
+    public static function create_ingreso_institucion(\App\Models\SolicitudInstitucion $solicitud, $data) {
+        $data['leida'] = false;
+        $data['link'] = route('institucion.solicitudes-ingreso-institucion', $solicitud->institucion_id);
+        $data['usuario_sender_id'] = $solicitud->usuario_id;
+        $data['tipo'] = Notificacion::$ingreso_institucion_tipo;
+        $data['mensaje'] = sprintf(
+            Notificacion::$ingreso_institucion_message,
+            $data['link']
+        );
+        return Notificacion::create($data);
+    }
+
     public function render() {
         switch($this->tipo) {
             case Notificacion::$solicitud_amistad_tipo:
@@ -146,6 +176,24 @@ class Notificacion extends Model
                     $this->usuario_sender->get_profile_url(),
                     $this->usuario_sender->get_full_name(),
                     sprintf($this->mensaje, $this->link, $this->link)
+                );
+            case Notificacion::$ingreso_grupo_tipo:
+                return sprintf(
+                    Notificacion::$base_with_image,
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_profile_photo_url(),
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_full_name(),
+                    $this->mensaje
+                );
+            case Notificacion::$ingreso_institucion_tipo:
+                return sprintf(
+                    Notificacion::$base_with_image,
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_profile_photo_url(),
+                    $this->usuario_sender->get_profile_url(),
+                    $this->usuario_sender->get_full_name(),
+                    $this->mensaje
                 );
             default:
                 return sprintf(

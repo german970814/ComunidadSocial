@@ -37,7 +37,7 @@ class EntregaExamenEstudiante extends ModelForm
         // $a->add(new DateInterval("PT{minutes}M")) // for minutes
         $now = new \DateTime();
         $created = $this->get_fecha_fin(false);
-        return $this->examen->is_activo() && $now <= $created;
+        return $this->examen->is_activo() && $now <= $created && !$this->cerrada;
     }
 
     public function get_respuesta_pregunta($pregunta_id) {
@@ -50,6 +50,10 @@ class EntregaExamenEstudiante extends ModelForm
             }
         }
         return null;
+    }
+
+    public function get_calificacion() {
+        return ((float)$this->get_respuestas_correctas()) / ((float) json_decode($this->examen->preguntas));
     }
 
     public function get_respuestas_correctas() {

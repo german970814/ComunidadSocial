@@ -151,7 +151,7 @@ class Permissions
      */
     public static function crear_grupo($user, $args) {
         $institucion = $args['institucion'];
-        return $user->is_administrador() || $user->is_institucion($institucion);
+        return $user->is_administrador() || $user->is_institucion($institucion) || $user->is_asesor();
     }
 
     /**
@@ -268,5 +268,9 @@ class Permissions
         $examen = $args['examen'];
         $pertenece = $user->pertenece_grupo($examen->grupo);
         return $user->is_estudiante() && $pertenece;
+    }
+
+    public static function enviar_solicitud_institucion($user) {
+        return ($user->is_estudiante() || $user->is_maestro()) && !$user->institucion_pertenece();
     }
 }

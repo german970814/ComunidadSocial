@@ -46,6 +46,7 @@
             "likePost": "{{ route('post.like', 99) }}",
             "detallePost": "{{ route('post.show', 99) }}",
             "reportarComentario": "{{ route('comentario.reportar', 99) }}",
+            "reportarPost": "{{ route('posts.reportar', 99) }}",
             "departamentoMunicipios": "{{ route('departamento.municipios', 99) }}",
             "solicitarIngresoInstitucion": "{{ route('institucion.solicitud-ingreso-institucion', 99) }}",
             "getConversacion": "{{ route('mensajes.get-conversacion', 99) }}",
