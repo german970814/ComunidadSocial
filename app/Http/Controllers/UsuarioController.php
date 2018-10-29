@@ -18,7 +18,9 @@ class UsuarioController extends Controller
     private $messages = [
         'required' => 'Este campo es requerido',
         'numero_documento.unique' => 'Parece que ya existe un usuario con este número de documento',
-        'email.unique' => 'Parece que ya existe un usuario con este email'
+        'email.unique' => 'Parece que ya existe un usuario con este email',
+        'date' => 'Esto no parece una fecha válida',
+        'confirmed' => 'Parece que las contraseñas no coinciden'
     ];
 
     public function __construct()
@@ -160,9 +162,22 @@ class UsuarioController extends Controller
     public function edit($id) {
         $usuario = Usuario::findOrFail($id);
         if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->usuario->id == $id) {
-            $form_fields = ['nombres', 'apellidos', 'sexo', 'tipo_documento', 'numero_documento', 'grupo_etnico'];
-            // $form = new Form('\App\Models\Usuario', $form);
-            $form = new Form($usuario, $form_fields);
+            $form_fields = [
+                'nombres', 'apellidos', 'sexo',
+                'tipo_documento', 'numero_documento',
+                'grupo_etnico', 'fecha_nacimiento',
+                'password', 'password_confirmation'
+            ];
+            $form = new Form($usuario, $form_fields, [
+                'password' => [
+                    'type' => 'password',
+                    'label' => 'Contraseña'
+                ],
+                'password_confirmation' => [
+                    'type' => 'password',
+                    'label' => 'Confirmar contraseña'
+                ]
+            ]);
             return view('usuarios.edit', ['usuario' => $usuario, 'form' => $form]);
         }
         abort(404, 'La página que solicita no existe');
@@ -179,16 +194,32 @@ class UsuarioController extends Controller
         if (\Auth::guard()->user()->is_administrador() || \Auth::guard()->user()->usuario->id == $id) {
             $validated_data = $request->validate([
                 'sexo' => 'required',
+                'grupo_etnico' => '',
                 'nombres' => 'required',
                 'apellidos' => 'required',
+                'fecha_nacimiento' => 'date',
                 'tipo_documento' => 'required',
                 'numero_documento' => 'required',
+                'password' => 'confirmed',
             ], $this->messages);
     
             try {
                 DB::beginTransaction();
-                $usuario->update(array_merge($validated_data));
-                $user = $usuario->user->update($validated_data);
+                $usuario->update([
+                    'sexo' => $validated_data['sexo'],
+                    'nombres' => $validated_data['nombres'],
+                    'apellidos' => $validated_data['apellidos'],
+                    'grupo_etnico' => $validated_data['grupo_etnico'],
+                    'tipo_documento' => $validated_data['tipo_documento'],
+                    'fecha_nacimiento' => $validated_data['fecha_nacimiento'],
+                    'numero_documento' => $validated_data['numero_documento'],
+                ]);
+
+                if (isset($validated_data['password']) && $validated_data['password']) {
+                    // $user = $usuario->user;  // ->update($validated_data);
+                    $usuario->update_user_password($validated_data['password']);
+                    \Auth::login($usuario->user);
+                }
                 DB::commit();
     
                 return redirect()
@@ -363,5 +394,13 @@ class UsuarioController extends Controller
             'message' => 'Success',
             'data' => $amigos->toArray()
         ]);
+    }
+
+    public function grupos_asesora_usuario($id) {
+        $usuario = Usuario::findOrFail($id);
+        if ($usuario->is_asesor()) {
+            return view('usuarios.grupos_asesora', compact(['usuario']));
+        }
+        abort(404, 'Página no encontrada');
     }
 }

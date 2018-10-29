@@ -21,7 +21,7 @@ class InstitucionController extends Controller {
         if (\Auth::guard()->user()->is_administrador()) {
             $usuario = \Auth::guard()->user()->usuario;
             $form = new Form(Institucion::class, [
-                'dane', 'nombre', 'codigo', 'director',
+                'dane', 'nombre', 'codigo',
                 'telefono', 'fax', 'email',
                 'departamento', 'municipio_id'
             ]);
@@ -36,8 +36,7 @@ class InstitucionController extends Controller {
             $institucion = $usuario->institucion;
             $municipio = $institucion->municipio;
             $form = new Form($institucion, [
-                'nombre', 'director',
-                'telefono', 'fax', 'email',
+                'nombre', 'telefono', 'fax', 'email',
                 'departamento', 'municipio_id'
             ], [
                 'departamento' => ['value' => $municipio->departamento->id]
@@ -55,7 +54,7 @@ class InstitucionController extends Controller {
         if ($administrador->is_administrador()) {
             $usuario = $institucion->usuario;
             $form = new Form($institucion, [
-                'dane', 'nombre', 'codigo', 'director',
+                'dane', 'nombre', 'codigo',
                 'telefono', 'fax', 'email',
                 'departamento', 'municipio_id'
             ]);
@@ -74,7 +73,6 @@ class InstitucionController extends Controller {
                 'dane' => '',
                 'nombre' => 'required',
                 'codigo' => '',
-                'director' => 'required',
                 'telefono' => '',
                 'fax' => '',
                 'email' => '',
@@ -98,7 +96,7 @@ class InstitucionController extends Controller {
     /**
      * @return JsonResponse
      */
-    public function solicitud_ingreso_institucion($id) {  // TODO: Notificacion
+    public function solicitud_ingreso_institucion($id) {  // TODO: cancelar ingreso a institución
         $usuario = \Auth::guard()->user()->usuario;
         $institucion = Institucion::findOrFail($id);
         if ($usuario->is_estudiante() || $usuario->is_maestro()) {
@@ -107,12 +105,22 @@ class InstitucionController extends Controller {
                     ->first();
 
                 if ($solicitud) {
+                    \App\Models\Notificacion::where('usuario_id', $solicitud->institucion->usuario_id)
+                        ->where('usuario_sender_id', $usuario->id)
+                        ->where('tipo', \App\Models\Notificacion::$ingreso_institucion_tipo)
+                        ->delete();
                     $solicitud->update(['institucion_id' => $institucion->id]);
+                    \App\Models\Notificacion::create_ingreso_institucion($solicitud, [
+                        'usuario_id' => $institucion->usuario->id
+                    ]);
                 } else {
-                    \App\Models\SolicitudInstitucion::create([
+                    $solicitud = \App\Models\SolicitudInstitucion::create([
                         'usuario_id' => $usuario->id,
                         'institucion_id' => $institucion->id,
                         'aceptada' => false
+                    ]);
+                    \App\Models\Notificacion::create_ingreso_institucion($solicitud, [
+                        'usuario_id' => $institucion->usuario->id
                     ]);
                 }
                 return back()->with('success', 'Solicitud de ingreso envíada');
@@ -176,7 +184,6 @@ class InstitucionController extends Controller {
                 'dane' => 'required',
                 'nombre' => 'required',
                 'codigo' => 'required',
-                'director' => 'required',
                 'telefono' => '',
                 'fax' => '',
                 'email' => '',
@@ -204,7 +211,7 @@ class InstitucionController extends Controller {
                 ]);
     
                 $institucion = Institucion::create(array_merge($validated_data, [
-                    'usuario_id' => $usuario->id
+                    'usuario_id' => $usuario->id, 'director' => '-'
                 ]));
             });
     

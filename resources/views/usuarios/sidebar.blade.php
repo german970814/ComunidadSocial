@@ -40,7 +40,7 @@
                                     <i class="fa fa-user-plus"></i>
                                 </a>
                             @endif
-                        @elseif ($usuario->is_institucion() && !(Auth::user()->is_institucion()) && !(Auth::user()->is_administrador()))
+                        @elseif ($usuario->is_institucion() && \App\Libraries\Permissions::has_perm('enviar_solicitud_institucion'))
                             @if (Auth::user()->usuario->espera_respuesta_institucion($usuario->institucion))
                                 <a data-original-title="Cancelar solicitud a institución" data-placement="bottom" data-toggle="tooltip" class="link-circle bg-color-3">
                                     <i class="fa fa-user-times"></i>
@@ -54,6 +54,11 @@
                     @endauth
                 </div>
                 <ul class="list-unstyled categoryItem">
+                    @if ((\Auth::guard()->user()->is_administrador() && $usuario->is_institucion()) || (\Auth::guard()->user()->is_institucion() && \Auth::guard()->user()->usuario->id == $usuario->id))
+                    <li>
+                        <a href="{{ route('institucion.solicitudes-ingreso-institucion', $usuario->institucion->id) }}">Solicitudes Ingreso Institución</a>
+                    </li>
+                    @endif
                     <li>
                         <a href="{{ route('usuario.show', $usuario->id) }}">Muro</a>
                     </li>
@@ -81,16 +86,19 @@
                         @endif
                     </li>
                     @endif
+                    @if ((($usuario->is_estudiante() || $usuario->is_maestro()) && \Auth::guard()->user()->usuario->id == $usuario->id) || \Auth::guard()->user()->is_administrador())
                     <li>
-                        @if ((\Auth::guard()->user()->is_administrador() && $usuario->is_institucion()) || (\Auth::guard()->user()->is_institucion() && \Auth::guard()->user()->usuario->id == $usuario->id))
-                            <a href="{{ route('institucion.solicitudes-ingreso-institucion', $usuario->institucion->id) }}">Solicitudes Ingreso Institución</a>
-                        @elseif ((($usuario->is_estudiante() || $usuario->is_maestro()) && \Auth::guard()->user()->usuario->id == $usuario->id) || \Auth::guard()->user()->is_administrador())
-                            <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">Ver solicitudes de amistad</a>
-                        @endif
+                        <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">Ver solicitudes de amistad</a>
                     </li>
+                    @endif
                     @if (($usuario->is_estudiante() || $usuario->is_maestro()) && $usuario->institucion_pertenece())
                         <li>
                             <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">Institución a la que pertenece</a>
+                        </li>
+                    @endif
+                    @if ($usuario->is_asesor())
+                        <li>
+                            <a href="{{ route('usuario.asesorias', $usuario->id) }}">Grupo y redes que asesora</a>
                         </li>
                     @endif
                     @if (!$usuario->is_institucion())
@@ -113,6 +121,12 @@
                         </li>
                         <li>
                             <a href="{{ route('institucion.create') }}">Crear Institución</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reportes-comentarios') }}">Ver reportes de comentarios</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reportes-posts') }}">Ver reportes de publicaciones</a>
                         </li>
                     @endif
                 </ul>

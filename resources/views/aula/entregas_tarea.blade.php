@@ -16,7 +16,7 @@
                     @foreach ($tarea->entregas->all() as $entrega)
                         <tr>
                             <td>{{ $entrega->usuario->get_full_name() }}</td>
-                            <td><a href="{{ route('aula.ver-entrega', $entrega->id) }}">Linkg a Entrega</a></td>
+                            <td><a href="{{ route('aula.ver-entrega', $entrega->id) }}">Link a Entrega</a></td>
                             <td>0</td>
                         </tr>
                     @endforeach

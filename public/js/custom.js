@@ -202,8 +202,22 @@ $(document).ready(function () {
     })
     .then((willDelete) => {
       if (willDelete !== null) {
-        swal("Se ha envíado el reporte", {
-          icon: "success",
+        const postId = $(this).parents('[data-post-id]').data('post-id');
+      
+        $.ajax({
+          url: get_url('reportarPost', postId) + `?razon=${willDelete || ''}`,
+          method: 'GET',
+          success: (data) => {
+            if (data.code === 200) {
+              swal("Se ha envíado el reporte", {
+                icon: "success",
+              });
+            } else if (data.code === 204) {
+              $.notify({ message: data.message }, { type: 'info' })
+            } else {
+              $.notify({ message: data.message }, { type: 'danger' })
+            }
+          }
         });
       }
     });

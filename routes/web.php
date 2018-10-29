@@ -27,6 +27,11 @@ Route::prefix('json')->group(function () {
         '\App\Http\Controllers\ComentarioPostController@reportar_comentario'
     )->name('comentario.reportar');
 
+    Route::middleware('auth')->get(
+        '/reportes/post/{id}',
+        '\App\Http\Controllers\ComentarioPostController@reportar_post'
+    )->name('posts.reportar');
+
     Route::get(
         '/notificacion/{id}/leer/',
         '\App\Http\Controllers\NotificacionController@read_notificacion'
@@ -96,6 +101,22 @@ Route::middleware('notificacion')->group( function () {
                 '/grupos/{id}/asignar-asesor',
                 'AdministradorController@guardar_asesor_grupo'
             )->name('admin.guardar-asesor-grupo');
+            Route::get(
+                'reportes/comentarios',
+                'AdministradorController@reportes_comentarios'
+            )->name('admin.reportes-comentarios');
+            Route::get(
+                'reportes/posts',
+                'AdministradorController@reportes_posts'
+            )->name('admin.reportes-posts');
+            Route::get(
+                'reportes/{id}/inactivar',
+                'AdministradorController@inactivar_comentario_post'
+            )->name('admin.reportes-inactivar');
+            Route::get(
+                'reportes/{id}/eliminar',
+                'AdministradorController@eliminar_reporte'
+            )->name('admin.reportes-eliminar');
         });
 
 
@@ -253,6 +274,10 @@ Route::middleware('notificacion')->group( function () {
                 'AulaVirtualController@examen_estudiante'
             )->name('aula.examen-estudiante');
             Route::get(
+                '/examenes/entrega/{id}/cerrar',
+                'AulaVirtualController@cerrar_examen'
+            )->name('aula.cerrar-entrega');
+            Route::get(
                 '/examenes/{id}/entregas',
                 'AulaVirtualController@entregas_examen'
             )->name('aula.entregas-examen');
@@ -277,6 +302,7 @@ Route::middleware('notificacion')->group( function () {
         Route::get('/{id}/photo', 'UsuarioController@get_user_profile_photo')->name('usuario.profile-photo');
         Route::get('/buscar', 'UsuarioController@buscar_usuarios')->name('usuario.buscar_usuarios');
         Route::get('/solicitudes-amistad/{id?}', 'UsuarioController@solicitudes_amistad_usuario')->name('usuario.solicitudes-amistad');
+        Route::get('/{id}/asesorias', 'UsuarioController@grupos_asesora_usuario')->name('usuario.asesorias');
         Route::get('/mensajes', 'UsuarioController@mensajes_usuario')->name('usuario.mensajes');
         Route::middleware('auth')->get(
             '/{id}/solicitud-amistad/',
