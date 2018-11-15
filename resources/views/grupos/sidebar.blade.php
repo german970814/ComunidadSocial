@@ -44,7 +44,7 @@
                     </li>
                     <li>
                         <a href="{{ route('usuario.show', $grupo->institucion->usuario->id) }}">
-                            <i class="fa fa-bank icon-menu"></i>
+                            <i class="fa fa-university icon-menu"></i>
                             Institución
                         </a>
                     </li>
@@ -74,7 +74,7 @@
                     @if (\App\Libraries\Permissions::has_perm('ver_tareas', ['grupo' => $grupo]))
                     <li>
                         <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">
-                            <i class="fa fa-pencil icon-menu"></i>
+                            <i class="fa fa-scroll icon-menu"></i>
                             Tareas
                         </a>
                     </li>
@@ -82,7 +82,7 @@
                     @if (\App\Libraries\Permissions::has_perm('ver_examenes', ['grupo' => $grupo]))
                     <li>
                         <a href="{{ route('aula.examenes-grupo', $grupo->id) }}">
-                            <i class="fa fa-mortar-board icon-menu"></i>
+                            <i class="fa fa-graduation-cap icon-menu"></i>
                             Exámenes
                         </a>
                     </li>
@@ -90,7 +90,7 @@
                     @if (\App\Libraries\Permissions::has_perm('ver_foros', ['grupo' => $grupo]))
                     <li>
                         <a href="{{ route('grupos.ver-foros', $grupo->id) }}">
-                            <i class="fa fa-reorder icon-menu"></i>
+                            <i class="fa fa-question icon-menu"></i>
                             Foros
                         </a>
                     </li>

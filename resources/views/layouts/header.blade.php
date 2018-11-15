@@ -55,7 +55,7 @@
                             </li>
                             <li class="header-item block">
                                 <a href="{{ route('usuario.amigos', \Auth::guard()->user()->usuario->id) }}">
-                                    <i class="fa fa-group bg-color-accent-2" aria-hidden="true"></i>
+                                    <i class="fa fa-handshake bg-color-accent-2" aria-hidden="true"></i>
                                     <span>
                                         AMIGOS
                                     </span>

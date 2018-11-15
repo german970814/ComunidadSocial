@@ -94,7 +94,7 @@
                     @if (($usuario->is_estudiante() || $usuario->is_maestro()) && $usuario->institucion_pertenece())
                         <li>
                             <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">
-                                <i class="fa fa-bank icon-menu"></i>
+                                <i class="fa fa-university icon-menu"></i>
                                 Institución a la que pertenece
                             </a>
                         </li>
@@ -102,7 +102,7 @@
                     @if (!$usuario->is_institucion())
                         <li>
                             <a href="{{ route('usuario.amigos', $usuario->id) }}">
-                                <i class="fa fa-users icon-menu"></i>
+                                <i class="fa fa-handshake icon-menu"></i>
                                 Amigos
                             </a>
                         </li>
@@ -145,13 +145,13 @@
                     </li>
                     <li>
                         <a href="{{ route('admin.reportes-comentarios') }}">
-                            <i class="fa fa-newspaper-o icon-menu"></i>
+                            <i class="fa fa-chart-line icon-menu"></i>
                             Ver reportes de comentarios
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.reportes-posts') }}">
-                            <i class="fa fa-newspaper-o icon-menu"></i>
+                            <i class="fa fa-chart-bar icon-menu"></i>
                             Ver reportes de publicaciones
                         </a>
                     </li>
@@ -181,12 +181,12 @@
                     <li>
                         @if ($usuario->is_estudiante() || $usuario->is_maestro())
                         <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">
-                            <i class="fa fa-joomla icon-menu"></i>
+                            <i class="fa fa-network-wired icon-menu"></i>
                             Redes temáticas
                         </a>
                         @elseif ($usuario->is_institucion())
                         <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">
-                            <i class="fa fa-joomla icon-menu"></i>
+                            <i class="fa fa-network-wired icon-menu"></i>
                             Redes temáticas
                         </a>
                         @endif
