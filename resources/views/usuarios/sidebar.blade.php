@@ -63,39 +63,63 @@
                 <ul class="list-unstyled categoryItem">
                     @if ((\Auth::guard()->user()->is_administrador() && $usuario->is_institucion()) || (\Auth::guard()->user()->is_institucion() && \Auth::guard()->user()->usuario->id == $usuario->id))
                     <li>
-                        <a href="{{ route('institucion.solicitudes-ingreso-institucion', $usuario->institucion->id) }}">Solicitudes Ingreso Institución</a>
+                        <a href="{{ route('institucion.solicitudes-ingreso-institucion', $usuario->institucion->id) }}">
+                            <i class="fa fa-user-plus icon-menu"></i>
+                            Solicitudes Ingreso Institución
+                        </a>
                     </li>
                     @endif
                     <li>
-                        <a href="{{ route('usuario.show', $usuario->id) }}">Muro</a>
+                        <a href="{{ route('usuario.show', $usuario->id) }}">
+                            <i class="fa fa-home icon-menu"></i>
+                            <span>Muro</span>
+                        </a>
                     </li>
                     @if (!$usuario->is_institucion())
                     <li>
-                        <a href="{{ route('usuario.detail', $usuario->id) }}">Información</a>
+                        <a href="{{ route('usuario.detail', $usuario->id) }}">
+                            <i class="fa fa-user icon-menu"></i>
+                            Información
+                        </a>
                     </li>
                     @endif
                     @if ((($usuario->is_estudiante() || $usuario->is_maestro()) && \Auth::guard()->user()->usuario->id == $usuario->id) || \Auth::guard()->user()->is_administrador())
                     <li>
-                        <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">Ver solicitudes de amistad</a>
+                        <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">
+                            <i class="fa fa-users icon-menu"></i>
+                            Ver solicitudes de amistad
+                        </a>
                     </li>
                     @endif
                     @if (($usuario->is_estudiante() || $usuario->is_maestro()) && $usuario->institucion_pertenece())
                         <li>
-                            <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">Institución a la que pertenece</a>
+                            <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">
+                                <i class="fa fa-bank icon-menu"></i>
+                                Institución a la que pertenece
+                            </a>
                         </li>
                     @endif
                     @if (!$usuario->is_institucion())
                         <li>
-                            <a href="{{ route('usuario.amigos', $usuario->id) }}">Amigos</a>
+                            <a href="{{ route('usuario.amigos', $usuario->id) }}">
+                                <i class="fa fa-users icon-menu"></i>
+                                Amigos
+                            </a>
                         </li>
                     @else
                         <li>
-                            <a href="{{ route('institucion.integrantes', $usuario->institucion->id) }}">Integrantes</a>
+                            <a href="{{ route('institucion.integrantes', $usuario->institucion->id) }}">
+                                <i class="fa fa-home icon-menu"></i>
+                                Integrantes
+                            </a>
                         </li>
                     @endif
                     @if (\App\Libraries\Permissions::has_perm('ver_mensajes', $usuario))
                         <li>
-                            <a href="{{ route('usuario.mensajes') }}">Mensajes</a>
+                            <a href="{{ route('usuario.mensajes') }}">
+                                <i class="fa fa-comments icon-menu"></i>
+                                Mensajes
+                            </a>
                         </li>
                     @endif
                 </ul>
@@ -108,16 +132,28 @@
             <div class="panel-body">
                 <ul class="list-unstyled categoryItem">
                     <li>
-                        <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>
+                        <a href="{{ route('admin.create-usuario-asesor') }}">
+                            <i class="fa fa-user-plus icon-menu"></i>
+                            Crear Asesores
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('institucion.create') }}">Crear Institución</a>
+                        <a href="{{ route('institucion.create') }}">
+                            <i class="fa fa-plus icon-menu"></i>
+                            Crear Institución
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.reportes-comentarios') }}">Ver reportes de comentarios</a>
+                        <a href="{{ route('admin.reportes-comentarios') }}">
+                            <i class="fa fa-newspaper-o icon-menu"></i>
+                            Ver reportes de comentarios
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.reportes-posts') }}">Ver reportes de publicaciones</a>
+                        <a href="{{ route('admin.reportes-posts') }}">
+                            <i class="fa fa-newspaper-o icon-menu"></i>
+                            Ver reportes de publicaciones
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -131,22 +167,37 @@
                     @if ($usuario->is_estudiante() || $usuario->is_maestro() || $usuario->is_institucion())
                     <li>
                         @if ($usuario->is_estudiante() || $usuario->is_maestro())
-                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['investigacion', $usuario->id]) }}">
+                            <i class="fa fa-flask icon-menu"></i>
+                            Grupos de investigación
+                        </a>
                         @elseif ($usuario->is_institucion())
-                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['investigacion', $usuario->id]) }}">
+                            <i class="fa fa-flask icon-menu"></i>
+                            Grupos de investigación
+                        </a>
                         @endif
                     </li>
                     <li>
                         @if ($usuario->is_estudiante() || $usuario->is_maestro())
-                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">
+                            <i class="fa fa-joomla icon-menu"></i>
+                            Redes temáticas
+                        </a>
                         @elseif ($usuario->is_institucion())
-                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">
+                            <i class="fa fa-joomla icon-menu"></i>
+                            Redes temáticas
+                        </a>
                         @endif
                     </li>
                     @endif
                     @if ($usuario->is_asesor())
                         <li>
-                            <a href="{{ route('usuario.asesorias', $usuario->id) }}">Grupo y redes que asesora</a>
+                            <a href="{{ route('usuario.asesorias', $usuario->id) }}">
+                                <i class="fa fa-tasks icon-menu"></i>
+                                Grupo y redes que asesora
+                            </a>
                         </li>
                     @endif
                 </ul>

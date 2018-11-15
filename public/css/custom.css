@@ -535,3 +535,7 @@ input.examen-opcion {
 .list-unstyled.categoryItem a:hover {
     background-color: #dfeaef;
 }
+
+.fa.icon-menu {
+    text-indent: 0;
+}

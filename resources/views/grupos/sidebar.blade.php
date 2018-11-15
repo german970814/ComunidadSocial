@@ -30,21 +30,36 @@
                 <ul class="list-unstyled categoryItem">
                     @if (\App\Libraries\Permissions::has_perm('ver_solicitudes_grupo', ['grupo' => $grupo]))
                     <li>
-                        <a href="{{ route('grupos.solicitudes', $grupo->id) }}">Solicitudes</a>
+                        <a href="{{ route('grupos.solicitudes', $grupo->id) }}">
+                            <i class="fa fa-user-plus icon-menu"></i>
+                            Solicitudes
+                        </a>
                     </li>
                     @endif
                     <li>
-                        <a href="{{ route('grupos.show', $grupo->id) }}">Muro</a>
+                        <a href="{{ route('grupos.show', $grupo->id) }}">
+                            <i class="fa fa-home icon-menu"></i>
+                            Muro
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('usuario.show', $grupo->institucion->usuario->id) }}">Institución</a>
+                        <a href="{{ route('usuario.show', $grupo->institucion->usuario->id) }}">
+                            <i class="fa fa-bank icon-menu"></i>
+                            Institución
+                        </a>
                     </li>
                     <li>
-                        <a href="{{ route('grupos.integrantes', $grupo->id) }}">Integrantes</a>
+                        <a href="{{ route('grupos.integrantes', $grupo->id) }}">
+                            <i class="fa fa-users icon-menu"></i>
+                            Integrantes
+                        </a>
                     </li>
                     @if (\App\Libraries\Permissions::has_perm('administrador'))
                     <li>
-                        <a href="{{ route('admin.asignar-asesor-grupo', $grupo->id) }}">Asignar asesor</a>
+                        <a href="{{ route('admin.asignar-asesor-grupo', $grupo->id) }}">
+                            <i class="fa fa-user-plus icon-menu"></i>
+                            Asignar asesor
+                        </a>
                     </li>
                     @endif
                 </ul>
@@ -58,17 +73,26 @@
                 <ul class="list-unstyled categoryItem">
                     @if (\App\Libraries\Permissions::has_perm('ver_tareas', ['grupo' => $grupo]))
                     <li>
-                        <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">Tareas</a>
+                        <a href="{{ route('aula.tareas-grupo', $grupo->id) }}">
+                            <i class="fa fa-pencil icon-menu"></i>
+                            Tareas
+                        </a>
                     </li>
                     @endif
                     @if (\App\Libraries\Permissions::has_perm('ver_examenes', ['grupo' => $grupo]))
                     <li>
-                        <a href="{{ route('aula.examenes-grupo', $grupo->id) }}">Exámenes</a>
+                        <a href="{{ route('aula.examenes-grupo', $grupo->id) }}">
+                            <i class="fa fa-mortar-board icon-menu"></i>
+                            Exámenes
+                        </a>
                     </li>
                     @endif
                     @if (\App\Libraries\Permissions::has_perm('ver_foros', ['grupo' => $grupo]))
                     <li>
-                        <a href="{{ route('grupos.ver-foros', $grupo->id) }}">Foros</a>
+                        <a href="{{ route('grupos.ver-foros', $grupo->id) }}">
+                            <i class="fa fa-reorder icon-menu"></i>
+                            Foros
+                        </a>
                     </li>
                     @endif
                 </ul>
