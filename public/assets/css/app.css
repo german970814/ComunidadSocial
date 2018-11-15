@@ -160,7 +160,7 @@ h5 {
 
 @media (min-width: 1200px) {
   .container {
-    width: 1170px;
+    width: 1139px;
   }
 }
 
@@ -1719,7 +1719,7 @@ aside {
 
 @media (min-width: 768px) {
   .functionList > li {
-    margin-right: 5px;
+    /*margin-right: 5px;*/
     padding: 0;
     font-size: 10px;
   }
@@ -1727,7 +1727,7 @@ aside {
 
 @media (min-width: 992px) {
   .functionList > li {
-    margin-right: 10px;
+    /*margin-right: 10px;*/
     padding: 0;
     font-size: 14px;
   }
@@ -1735,7 +1735,7 @@ aside {
 
 @media (min-width: 1200px) {
   .functionList > li {
-    margin-right: 15px;
+    /*margin-right: 15px;*/
     padding: 0 5px;
   }
 }
@@ -2332,7 +2332,7 @@ aside {
 
 /*======== 3.2 TOP INFO BAR ========*/
 .top-info-bar {
-  padding: 15px 0 12px 0;
+  /*padding: 15px 0 12px 0;*/
   display: block;
   width: 100%;
   z-index: 1000;
@@ -7383,7 +7383,7 @@ footer .color-bar {
 }
 
 .courseSidebar .panel-heading {
-  border-radius: 7px 7px 0 0;
+  /*border-radius: 7px 7px 0 0;*/
 }
 
 .courseSidebar .panel-heading .panel-title {
@@ -7396,7 +7396,7 @@ footer .color-bar {
 .courseSidebar .panel-body {
   border: 1px solid #dedede;
   border-top: none;
-  border-radius: 0 0 7px 7px;
+  /*border-radius: 0 0 7px 7px;*/
 }
 
 .courseSidebar .panel-body > .input-group {
@@ -7799,7 +7799,7 @@ footer .color-bar {
 }
 
 .rightSidebar .panel .panel-heading {
-  border-radius: 7px 7px 0 0;
+  /*border-radius: 7px 7px 0 0;*/
 }
 
 .rightSidebar .panel .panel-heading .panel-title {
@@ -7812,8 +7812,8 @@ footer .color-bar {
 
 .rightSidebar .panel .panel-body {
   border: 1px solid #dedede;
-  border-top: 0;
-  border-radius: 0 0 7px 7px;
+  /* border-top: 0; */
+  /* border-radius: 0 0 7px 7px; */
   padding: 0;
 }
 

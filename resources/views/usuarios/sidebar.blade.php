@@ -1,14 +1,15 @@
 <aside>
     <div class="rightSidebar">
         <div class="panel panel-default courseSidebar">
-            <div class="panel-heading bg-color-1 border-color-1">
-                <h3 class="panel-title">{{ $usuario->is_institucion() ? 'Información Institución' : 'Información Personal' }}</h3>
-            </div>
             <div class="panel-body">
-                @include('usuarios.profile_photo')
-                <div class="teamInfo teamTeacher">
-                    <h3 class="color-3">{{ $usuario->get_full_name() }}</h3>
-                    <p>{{ $usuario->get_tipo_usuario_display() }}</p>
+                <div class="media-profile teamAdjust">
+                    <div class="sidebar-pic">
+                        <img class="img-responsive" style="height: 100%; width: 100%" src="{{ $usuario->get_profile_photo_url() }}" alt="profile" />
+                    </div>
+                    <div class="teamInfo">
+                        <h5 class="color-3">{{ $usuario->get_full_name() }}</h5>
+                        <span>{{ $usuario->get_tipo_usuario_display() }}</span>
+                    </div>
                 </div>
                 <div class="actions">
                     @auth
@@ -53,6 +54,12 @@
                         @endif
                     @endauth
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="rightSidebar">
+        <div class="panel panel-default courseSidebar">
+            <div class="panel-body">
                 <ul class="list-unstyled categoryItem">
                     @if ((\Auth::guard()->user()->is_administrador() && $usuario->is_institucion()) || (\Auth::guard()->user()->is_institucion() && \Auth::guard()->user()->usuario->id == $usuario->id))
                     <li>
@@ -67,25 +74,6 @@
                         <a href="{{ route('usuario.detail', $usuario->id) }}">Información</a>
                     </li>
                     @endif
-                    {{-- <li>
-                        <a href="#">Fotos</a>
-                    </li> --}}
-                    @if ($usuario->is_estudiante() || $usuario->is_maestro() || $usuario->is_institucion())
-                    <li>
-                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
-                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
-                        @elseif ($usuario->is_institucion())
-                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
-                        @endif
-                    </li>
-                    <li>
-                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
-                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">Redes temáticas</a>
-                        @elseif ($usuario->is_institucion())
-                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">Redes temáticas</a>
-                        @endif
-                    </li>
-                    @endif
                     @if ((($usuario->is_estudiante() || $usuario->is_maestro()) && \Auth::guard()->user()->usuario->id == $usuario->id) || \Auth::guard()->user()->is_administrador())
                     <li>
                         <a href="{{ route('usuario.solicitudes-amistad', $usuario->id) }}">Ver solicitudes de amistad</a>
@@ -94,11 +82,6 @@
                     @if (($usuario->is_estudiante() || $usuario->is_maestro()) && $usuario->institucion_pertenece())
                         <li>
                             <a href="{{ route('usuario.show', $usuario->institucion_pertenece()->usuario->id) }}">Institución a la que pertenece</a>
-                        </li>
-                    @endif
-                    @if ($usuario->is_asesor())
-                        <li>
-                            <a href="{{ route('usuario.asesorias', $usuario->id) }}">Grupo y redes que asesora</a>
                         </li>
                     @endif
                     @if (!$usuario->is_institucion())
@@ -115,22 +98,60 @@
                             <a href="{{ route('usuario.mensajes') }}">Mensajes</a>
                         </li>
                     @endif
-                    @if ($usuario->is_administrador() && \Auth::guard()->user()->is_administrador())
+                </ul>
+            </div>
+        </div>
+    </div>
+    @if ($usuario->is_administrador() && \Auth::guard()->user()->is_administrador())
+    <div class="rightSidebar">
+        <div class="panel panel-default courseSidebar">
+            <div class="panel-body">
+                <ul class="list-unstyled categoryItem">
+                    <li>
+                        <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('institucion.create') }}">Crear Institución</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.reportes-comentarios') }}">Ver reportes de comentarios</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.reportes-posts') }}">Ver reportes de publicaciones</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="rightSidebar">
+        <div class="panel panel-default courseSidebar">
+            <div class="panel-body">
+                <ul class="list-unstyled categoryItem">
+                    @if ($usuario->is_estudiante() || $usuario->is_maestro() || $usuario->is_institucion())
+                    <li>
+                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        @elseif ($usuario->is_institucion())
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['investigacion', $usuario->id]) }}">Grupos de investigación</a>
+                        @endif
+                    </li>
+                    <li>
+                        @if ($usuario->is_estudiante() || $usuario->is_maestro())
+                        <a href="{{ route('grupos.grupos-investigacion-usuario', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        @elseif ($usuario->is_institucion())
+                        <a href="{{ route('grupos.grupos-investigacion-institucion', ['tematica', $usuario->id]) }}">Redes temáticas</a>
+                        @endif
+                    </li>
+                    @endif
+                    @if ($usuario->is_asesor())
                         <li>
-                            <a href="{{ route('admin.create-usuario-asesor') }}">Crear Asesores</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('institucion.create') }}">Crear Institución</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.reportes-comentarios') }}">Ver reportes de comentarios</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.reportes-posts') }}">Ver reportes de publicaciones</a>
+                            <a href="{{ route('usuario.asesorias', $usuario->id) }}">Grupo y redes que asesora</a>
                         </li>
                     @endif
                 </ul>
             </div>
         </div>
     </div>
+    @endif
 </aside>

@@ -493,3 +493,45 @@ input.examen-opcion {
 /* a, .sectionTitle h2, .formField .help-block a:hover, .tabCommon .media-body .media-heading, .pagerArea > .pager li a:hover, .pagerArea > .pager li.active a, .navbar-default.lightHeader .navbar-nav > li.active.color-3 > a, .navbar-nav > li.color-3 > a:hover span, .navbar-nav > li.color-3.singleDrop > .dropdown-menu li.active > a, .navbar-nav > li.color-3.singleDrop > .dropdown-menu li.active li.active a, .navbar-nav > li.color-3.singleDrop.open a > span, .copyRightText p a:hover, .tp-caption.rs-caption-1 span, .sectionLink:hover .border-color-3, .schoolInfo h2, .teamInfo h3 a:hover, .teamContent.teamAdjust .teamInfo h3 a, .teamContent.teamAdjust .teamInfo h3 a:hover, .teamStyle .media-body h4 a:hover, .teachersInfo h3, .eventContent .list-inline.btn-red .btn-primary:hover, .isotopeSelector:hover h4, .homeContactContent h2, .footer-2 .copyRightText p a, .blogComments h3, .count-down #simple_timer .table-cell.minute .tab-val, .priceBtn h5 span, .progress-wizard > .progress-wizard-step > .progress-wizard-dot i, .checkoutInfo .checkbox a:hover, .lowerPartTitle h4, .product-review .tab-content h3 {
     color: #FF0000;
 } */
+
+.sidebar-pic {
+    height: 60px;
+    width: 60px;
+}
+
+.buscar {
+    background-color: #49b5e8;
+    border: 1px solid #49b5e8;
+    border-radius: 3px;
+    color: white;
+    width: 255px;
+}
+
+.buscar::placeholder {
+    color: #85caea;
+}
+
+.buscar::-moz-placeholder {
+    color: #85caea;
+}
+
+.buscar::-webkit-input-placeholder {
+    color: #85caea;
+}
+
+.header-item.block {
+    padding: 5px !important;
+    text-align: center;
+}
+
+.header-item.inline {
+    padding: 15px;
+}
+
+.header-item span {
+    display: block;
+}
+
+.list-unstyled.categoryItem a:hover {
+    background-color: #dfeaef;
+}

@@ -26,11 +26,11 @@
                     <li><i class="fa fa-clock-o bg-color-6" aria-hidden="true"></i> Open: 9am - 6pm</li>
                     </ul>
                 </div> --}}
-                <div class="col-md-3 hidden-xs">
+                <div class="col-md-3 hidden-xs header-item inline">
                     @auth
                     <form action="{{ route('usuario.buscar_usuarios') }}" method="GET">
                         <div class="form-group formField">
-                            <input type="text" name="q" class="form-control" placeholder="Buscar" />
+                            <input type="text" name="q" class="buscar" placeholder="Buscar" />
                         </div>
                     </form>
                     @endauth
@@ -45,9 +45,38 @@
                 <div class="col-md-9 col-xs-11">
                     <ul class="list-inline functionList">
                         @auth
-                            <li><i class="fa fa-user bg-color-accent-2" aria-hidden="true"></i> <a href="{{ route('usuario.profile') }}">{{ Auth::guard()->user()->usuario->get_full_name() }}</a></li>
-                            <li><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href="/logout">Salir</a></li>
-                            <li class="cart-dropdown">
+                            <li class="header-item block">
+                                <a href="{{ route('usuario.profile') }}">
+                                    <i class="fa fa-home bg-color-accent-2" aria-hidden="true"></i>
+                                    <span>
+                                        INICIO
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="header-item block">
+                                <a href="{{ route('usuario.amigos', \Auth::guard()->user()->usuario->id) }}">
+                                    <i class="fa fa-group bg-color-accent-2" aria-hidden="true"></i>
+                                    <span>
+                                        AMIGOS
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="header-item block">
+                                <a href="{{ route('usuario.mensajes') }}">
+                                    <i class="fa fa-envelope bg-color-accent-2" aria-hidden="true"></i>
+                                    <span>
+                                        MENSAJES
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="header-item inline">
+                                <i class="fa fa-user bg-color-accent-2" aria-hidden="true"></i>
+                                <a href="{{ route('usuario.profile') }}">
+                                    {{ Auth::guard()->user()->usuario->get_full_name() }}
+                                </a>
+                            </li>
+                            <li class="header-item inline"><i class="fa fa-unlock-alt bg-color-5" aria-hidden="true"></i> <a href="/logout">Salir</a></li>
+                            <li class="header-item inline cart-dropdown">
                                 <a href="#" class="bg-color-3 shop-cart" tabindex="2">
                                     <i class="fa fa-bell" aria-hidden="true"></i>
                                     <span id="notificaciones-pendientes" class="badge bg-color-accent-2 {{ $notificaciones_pendientes() >= 1 ? '' : 'hidden' }}">{{ $notificaciones_pendientes() }}</span>
